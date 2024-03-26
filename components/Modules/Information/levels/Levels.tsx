@@ -9,11 +9,12 @@ import SortableIcon from "@/Utils/Icons/SortableIcon";
 import ScheduledSessionTable from "./ScheduledSessionsTable";
 import { GetLevels } from "@/actions/GetRequests";
 
-interface LevelsProps<T> {
-  response: LevelsData[];
-}
+// interface LevelsProps<T> {
+//   response: LevelsData[];
+// }
+// { response }: LevelsProps<LevelsData[]>
 
-function Levels({ response }: LevelsProps<LevelsData[]>) {
+function Levels() {
   const { state, dispatch } = useGlobalState();
   const [levelsArr, setLevelsArr] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
