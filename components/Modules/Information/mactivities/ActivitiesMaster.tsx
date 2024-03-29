@@ -6,10 +6,12 @@ import ViewController from "./ViewController";
 import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import DateFormatter from "@/Utils/DateFormatter";
+import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 
 function ActivityMaster() {
   const { state, dispatch } = useGlobalState();
   const [ActivitiesArr, setActivitiesArr] = useState([]);
+  const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
   const [queryArr, setQueryArr] = useState([
@@ -17,6 +19,16 @@ function ActivityMaster() {
     { size: 10 }, // a default page size
     { sort: "id" },
   ]);
+
+  const handleAddItemToColumnNameArr = (option: { value: string }) => {
+    if (columnNamesArr.includes(option.value)) {
+      setColumnNamesArr(
+        columnNamesArr.filter((selected) => selected !== option.value)
+      );
+    } else {
+      setColumnNamesArr([...columnNamesArr, option.value]);
+    }
+  };
 
   //Function to sort
   const SortElements = (sortBy: any) => {
@@ -72,17 +84,37 @@ function ActivityMaster() {
   }, [dispatch]);
   return (
     <div className={`min-h-screen`}>
-      <h1
-        className={`md:py-10 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
-          state.theme.theme === "LIGHT"
-            ? "border-b-gray-200"
-            : "border-b-stone-800"
-        }`}
-      >
-        Activities List
-      </h1>
-      <div className="my-3">
-        <ViewController handleCustomisation={handleCustomisation} />
+      <div className="my-3 flex items-center justify-between">
+        <div></div>
+        <div className="flex items-center gap-5">
+          <button
+            className={`my-3 px-4 py-2 text-lg rounded-xl font-semibold ${
+              state.theme.theme === "LIGHT"
+                ? "bg-blue-50 text-blue-500"
+                : "bg-blue-950 bg-opacity-40 text-blue-300"
+            }`}
+            onClick={() => console.log(true)}
+          >
+            + Activity
+          </button>
+          <ViewController
+            handleHidables={handleAddItemToColumnNameArr}
+            options={columnNamesArr}
+            handleCustomisation={handleCustomisation}
+            columnNames={[
+              { columnName: "ACTIVITY NAME", field: "ACTIVITY_NAME" },
+              {
+                columnName: "ACTIVITY DESCRIPTION",
+                field: "ACTIVITY_DESCRIPTION",
+              },
+              {
+                columnName: "ACTIVITY CREATEDBY",
+                field: "ACTIVITY_CREATEDBY",
+              },
+              { columnName: "DATE OF CREATION", field: "DATE_OF_CREATION" },
+            ]}
+          />
+        </div>
       </div>
       {isLoading ? (
         <>
@@ -108,15 +140,25 @@ function ActivityMaster() {
                       : "border-b-2 border-stone700"
                   }`}
                 >
-                  <th className=" whitespace-nowrap font-bold pb-3">
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="ACTIVITY_NAME"
+                  >
                     <SortableIcon
                       fieldName={"name"}
                       tableHeading={"ACTIVITY NAME"}
                       handleCheck={SortElements}
                       isSorted={queryArr.some((obj) => obj.sort === "name")}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="ACTIVITY_DESCRIPTION"
+                  >
                     <SortableIcon
                       fieldName={"programName"}
                       tableHeading={"ACTIVITY DESCRIPTION"}
@@ -125,8 +167,13 @@ function ActivityMaster() {
                         (obj) => obj.sort === "programName"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="ACTIVITY_CREATEDBY"
+                  >
                     <SortableIcon
                       fieldName={"coordinator"}
                       tableHeading={"CREATED BY"}
@@ -135,21 +182,29 @@ function ActivityMaster() {
                         (obj) => obj.sort === "coordinator"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="DATE_OF_CREATION"
+                  >
                     <SortableIcon
                       tableHeading={"DATE OF CREATION"}
                       handleCheck={SortElements}
                     />
-                  </th>
+                  </HidableColumns>
                 </tr>
               </thead>
               <tbody>
                 {ActivitiesArr.length > 0 ? (
                   ActivitiesArr.map((item: ActivityMaster, index) => (
                     <tr key={index}>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
+                      <HidableColumns
+                        ColumnToHide="ACTIVITY_NAME"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`whitespace-nowrap text-center border-b ${
                           customisationObjs.cellSize === "bigger"
                             ? "py-2"
                             : customisationObjs.cellSize === "biggest"
@@ -162,9 +217,12 @@ function ActivityMaster() {
                         }`}
                       >
                         {item.name}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
+                      </HidableColumns>
+                      <HidableColumns
+                        ColumnToHide="ACTIVITY_DESCRIPTION"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`whitespace-nowrap text-center border-b ${
                           customisationObjs.cellSize === "bigger"
                             ? "py-2"
                             : customisationObjs.cellSize === "biggest"
@@ -177,9 +235,12 @@ function ActivityMaster() {
                         }`}
                       >
                         {item.description}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
+                      </HidableColumns>
+                      <HidableColumns
+                        ColumnToHide="ACTIVITY_CREATEDBY"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`whitespace-nowrap text-center border-b ${
                           customisationObjs.cellSize === "normal"
                             ? "py-2"
                             : customisationObjs.cellSize === "bigger"
@@ -192,9 +253,12 @@ function ActivityMaster() {
                         }`}
                       >
                         {item.createdBy}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
+                      </HidableColumns>
+                      <HidableColumns
+                        ColumnToHide="DATE_OF_CREATION"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`whitespace-nowrap text-center border-b ${
                           customisationObjs.cellSize === "bigger"
                             ? "py-2"
                             : customisationObjs.cellSize === "biggest"
@@ -207,7 +271,7 @@ function ActivityMaster() {
                         }`}
                       >
                         <DateFormatter dateString={item.created} />
-                      </td>
+                      </HidableColumns>
                     </tr>
                   ))
                 ) : (

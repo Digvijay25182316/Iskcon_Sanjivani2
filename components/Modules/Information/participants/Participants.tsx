@@ -4,6 +4,7 @@ import { useGlobalState } from "@/Utils/State";
 import React, { useEffect, useState } from "react";
 import ViewController from "./ViewController";
 import LoadingSkeleton from "@/Utils/LoadingSkeleton";
+import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 
 interface PariticipantData {
   firstName: string;
@@ -13,9 +14,12 @@ interface PariticipantData {
   gender: string;
 }
 
-function Participants() {
+const Participants: React.FC<responseDataFetched<PariticipantData>> = ({
+  response,
+}) => {
   const { state, dispatch } = useGlobalState();
-  const [participantsArr, setProgramsArr] = useState([]);
+
+  const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
 
@@ -30,181 +34,194 @@ function Participants() {
     }));
   }
 
-  useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/admin/information/participants");
-        if (response.ok) {
-          const responseData = await response.json();
-          setProgramsArr(responseData.content.content);
-        } else {
-          const errorData = await response.json();
-          dispatch({
-            type: "SHOW_TOAST",
-            payload: { message: errorData.message, type: "ERROR" },
-          });
-        }
-      } catch (error: any) {
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "ERROR", message: error.message },
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [dispatch]);
+  const handleAddItemToColumnNameArr = (option: { value: string }) => {
+    if (columnNamesArr.includes(option.value)) {
+      setColumnNamesArr(
+        columnNamesArr.filter((selected) => selected !== option.value)
+      );
+    } else {
+      setColumnNamesArr([...columnNamesArr, option.value]);
+    }
+  };
+
   return (
     <div className={`min-h-screen`}>
-      <h1
-        className={`md:py-10 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
-          state.theme.theme === "LIGHT"
-            ? "border-b-gray-200"
-            : "border-b-stone-800"
-        }`}
-      >
-        Participants
-      </h1>
       <div className="my-3">
-        <ViewController handleCustomisation={handleCustomisation} />
+        <ViewController
+          handleCustomisation={handleCustomisation}
+          columnNames={[
+            { columnName: "FIRST NAME", field: "First_Name" },
+            { columnName: "LAST NAME", field: "Last_Name" },
+            { columnName: "PHONE", field: "Phone" },
+            { columnName: "DOB", field: "DOB" },
+            { columnName: "GENDER", field: "GENDER" },
+          ]}
+          handleHidables={handleAddItemToColumnNameArr}
+          options={columnNamesArr}
+        />
       </div>
-      {isLoading ? (
-        <>
-          <LoadingSkeleton
-            rows={8}
-            columns={width < 600 ? 3 : 8}
-            theme={state.theme.theme}
-          />
-        </>
-      ) : (
-        <div
-          className={`w-full mx-auto rounded-3xl ${
-            state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
-          } p-4`}
-        >
-          <div className={`overflow-x-auto`}>
-            <table className="w-full">
-              <thead>
-                <tr
-                  className={` ${
-                    state.theme.theme === "LIGHT"
-                      ? "border-b-2 border-gray-400 "
-                      : "border-b-2 border-stone700"
-                  }`}
+
+      <div
+        className={`w-full mx-auto rounded-3xl ${
+          state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+        } p-4`}
+      >
+        <div className={`overflow-x-auto`}>
+          <table className="w-full">
+            <thead>
+              <tr
+                className={` ${
+                  state.theme.theme === "LIGHT"
+                    ? "border-b-2 border-gray-400 "
+                    : "border-b-2 border-stone700"
+                }`}
+              >
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="First_Name"
+                  columnNamesArray={columnNamesArr}
                 >
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
-                    FIRST NAME
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
-                    LAST NAME
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
-                    PHONE
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
-                    DOB
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
-                    GENDER
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {participantsArr.length > 0 ? (
-                  participantsArr.map((item: PariticipantData, index) => (
-                    <tr key={index}>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.firstName}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.lastName}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "normal"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "bigger"
-                            ? "py-3"
-                            : "py-5"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.contactNumber}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.dob}
-                      </td>
-                      <td
-                        className={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.gender}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={10} className="text-center py-10">
-                      No Data To Show
-                    </td>
+                  FIRST NAME
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="Last_Name"
+                  columnNamesArray={columnNamesArr}
+                >
+                  LAST NAME
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="Phone"
+                  columnNamesArray={columnNamesArr}
+                >
+                  PHONE
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="DOB"
+                  columnNamesArray={columnNamesArr}
+                >
+                  DOB
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="GENDER"
+                  columnNamesArray={columnNamesArr}
+                >
+                  GENDER
+                </HidableColumns>
+              </tr>
+            </thead>
+            <tbody>
+              {response.content.length > 0 ? (
+                response.content.map((item: PariticipantData, index) => (
+                  <tr key={index}>
+                    <HidableColumns
+                      ColumnToHide="First_Name"
+                      isColumnHeader={false}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.firstName}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Last_Name"
+                      isColumnHeader={false}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.lastName}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Phone"
+                      isColumnHeader={false}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "normal"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "bigger"
+                          ? "py-3"
+                          : "py-5"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.contactNumber}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="DOB"
+                      isColumnHeader={false}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.dob}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="GENDER"
+                      isColumnHeader={false}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.gender}
+                    </HidableColumns>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={10} className="text-center py-10">
+                    No Data To Show
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
-}
+};
 
 export default Participants;

@@ -1,9 +1,11 @@
+"use client";
 import React from "react";
+import { useGlobalState } from "./State";
 
 interface LoadingSkeletonProps {
   rows: number;
   columns: number;
-  theme: string; // "LIGHT" or "DARK"
+  theme?: string; // "LIGHT" or "DARK"
 }
 
 const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
@@ -11,6 +13,7 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
   columns,
   theme,
 }) => {
+  const { state } = useGlobalState();
   const renderRows = () => {
     return Array.from({ length: rows }, (_, rowIndex) => (
       <div
@@ -36,9 +39,22 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
   return (
     <div
       className={`w-full mx-auto rounded-3xl ${
-        theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+        state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
       } p-4`}
     >
+      <div className="flex justify-between items-center pb-5">
+        <div
+          className={`bg-gray-200 h-10 min-w-40 w-full mr-4 animate-pulse rounded-xl`}
+        ></div>
+        <div className="flex items-center gap-5">
+          <div
+            className={`bg-gray-200 h-10 min-w-40 w-full mr-4 animate-pulse rounded-xl`}
+          ></div>
+          <div
+            className={`bg-gray-200 h-16 min-w-20 mr-4 animate-pulse rounded-xl`}
+          ></div>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <div>{renderRows()}</div>
       </div>

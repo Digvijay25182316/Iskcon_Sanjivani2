@@ -2,28 +2,40 @@
 import React, { useEffect, useState } from "react";
 
 interface HidableProps {
-  columnNamesArray: string[];
-  ColumnToHide: string;
+  columnNamesArray?: string[];
+  stylesClassNames?: string;
+  ColumnToHide?: string;
   children: React.ReactNode;
   isColumnHeader: boolean;
 }
 
-function HidableColumns({
+export function HidableColumns({
   columnNamesArray,
+  stylesClassNames,
   ColumnToHide,
   children,
   isColumnHeader,
 }: HidableProps) {
   const [isHidden, setIsHidden] = useState(false);
   useEffect(() => {
-    const hidable = columnNamesArray.some((item) => item === ColumnToHide);
+    const hidable = ColumnToHide
+      ? columnNamesArray
+        ? columnNamesArray?.includes(ColumnToHide)
+        : false
+      : false;
     setIsHidden(hidable);
   }, [columnNamesArray, ColumnToHide]);
   if (isHidden) {
-    return;
+    return null;
   } else {
-    return <>{isColumnHeader ? <th>{children}</th> : <td>{children}</td>}</>;
+    return (
+      <>
+        {isColumnHeader ? (
+          <th className={stylesClassNames}>{children}</th>
+        ) : (
+          <td className={stylesClassNames}>{children}</td>
+        )}
+      </>
+    );
   }
 }
-
-export default HidableColumns;

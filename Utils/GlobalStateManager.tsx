@@ -37,8 +37,8 @@ function ChildrenGlobalState({ children }: { children: React.ReactNode }) {
     <section
       className={
         state.theme.theme === "DARK"
-          ? "bg-stone-950 text-white min-h-screen flex "
-          : "bg-white text-black min-h-screen flex "
+          ? "bg-stone-950 text-white min-h-screen flex"
+          : "bg-white text-black min-h-screen flex"
       }
     >
       {children}

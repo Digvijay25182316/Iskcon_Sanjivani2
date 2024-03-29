@@ -8,6 +8,7 @@ import VolunteerData from "./VolunteerData";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import ScheduledSessionTable from "./ScheduledSessionsTable";
 import { GetLevels } from "@/actions/GetRequests";
+import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 
 // interface LevelsProps<T> {
 //   response: LevelsData[];
@@ -17,6 +18,7 @@ import { GetLevels } from "@/actions/GetRequests";
 function Levels() {
   const { state, dispatch } = useGlobalState();
   const [levelsArr, setLevelsArr] = useState([]);
+  const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
   const [expandedRow, setExpandedRow] = useState<number>(-1);
@@ -25,6 +27,15 @@ function Levels() {
     { size: 10 }, // a default page size
     { sort: "id" },
   ]);
+  const handleAddItemToColumnNameArr = (option: { value: string }) => {
+    if (columnNamesArr.includes(option.value)) {
+      setColumnNamesArr(
+        columnNamesArr.filter((selected) => selected !== option.value)
+      );
+    } else {
+      setColumnNamesArr([...columnNamesArr, option.value]);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -93,18 +104,22 @@ function Levels() {
     }
   };
   return (
-    <div className={`min-h-screen`}>
-      <h1
-        className={`md:py-10 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
-          state.theme.theme === "LIGHT"
-            ? "border-b-gray-200"
-            : "border-b-stone-800"
-        }`}
-      >
-        Levels
-      </h1>
+    <div className={`min-h-screen px-2`}>
       <div className="my-3">
-        <ViewController handleCustomisation={handleCustomisation} />
+        <ViewController
+          handleCustomisation={handleCustomisation}
+          options={columnNamesArr}
+          handleHidables={handleAddItemToColumnNameArr}
+          columnNames={[
+            { columnName: "COURSE NAME", field: "Course_Name_Level" },
+            { columnName: "PROGRAM NAME", field: "Program_Name_Level" },
+            { columnName: "COORDINATOR", field: "Coordinator_Level" },
+            { columnName: "MENTOR", field: "Mentor_Level" },
+            { columnName: "PREACHER1", field: "Preacher1_Level" },
+            { columnName: "PREACHER2", field: "Preacher2_Level" },
+            { columnName: "STATUS", field: "Status_Level" },
+          ]}
+        />
       </div>
       {isLoading ? (
         <>
@@ -116,12 +131,12 @@ function Levels() {
         </>
       ) : (
         <div
-          className={`w-full mx-auto rounded-3xl ${
+          className={`w-full rounded-3xl ${
             state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
           } p-4`}
         >
           <div className={`overflow-x-auto`}>
-            <table>
+            <table className="w-full">
               <thead>
                 <tr
                   className={` ${
@@ -130,15 +145,25 @@ function Levels() {
                       : "border-b-2 border-stone700"
                   }`}
                 >
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Course_Name_Level"
+                  >
                     <SortableIcon
                       fieldName={"name"}
                       tableHeading={"COURSE NAME"}
                       handleCheck={SortElements}
                       isSorted={queryArr.some((obj) => obj.sort === "name")}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Program_Name_Level"
+                  >
                     <SortableIcon
                       fieldName={"programName"}
                       tableHeading={"PROGRAM NAME"}
@@ -147,8 +172,13 @@ function Levels() {
                         (obj) => obj.sort === "programName"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Coordinator_Level"
+                  >
                     <SortableIcon
                       fieldName={"coordinator"}
                       tableHeading={"COORDINATOR"}
@@ -157,16 +187,26 @@ function Levels() {
                         (obj) => obj.sort === "coordinator"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Mentor_Level"
+                  >
                     <SortableIcon
                       fieldName={"mentor"}
                       tableHeading={"MENTOR"}
                       handleCheck={SortElements}
                       isSorted={queryArr.some((obj) => obj.sort === "mentor")}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Preacher1_Level"
+                  >
                     <SortableIcon
                       fieldName={"preacher1"}
                       tableHeading={"PREACHER1"}
@@ -175,8 +215,13 @@ function Levels() {
                         (obj) => obj.sort === "preacher1"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Preacher2_Level"
+                  >
                     <SortableIcon
                       fieldName={"preacher2"}
                       tableHeading={"PREACHER2"}
@@ -185,24 +230,44 @@ function Levels() {
                         (obj) => obj.sort === "preacher2"
                       )}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                    ColumnToHide="Status_Level"
+                  >
                     <SortableIcon
                       fieldName={"status"}
                       tableHeading={"STATUS"}
                       handleCheck={SortElements}
                       isSorted={queryArr.some((obj) => obj.sort === "status")}
                     />
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide=""
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                  >
                     ATTENDANCE LINK
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide=""
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                  >
                     ACTIVITIES LINK
-                  </th>
-                  <th className=" whitespace-nowrap font-bold px-5 pb-3">
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide=""
+                    isColumnHeader={true}
+                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                    columnNamesArray={columnNamesArr}
+                  >
                     SADHANA LINK
-                  </th>
+                  </HidableColumns>
                 </tr>
               </thead>
               <tbody>
@@ -210,8 +275,11 @@ function Levels() {
                   levelsArr.map((item: LevelsData, index) => (
                     <React.Fragment key={index}>
                       <tr onClick={() => toggleRow(index)}>
-                        <td
-                          className={`text-center ${
+                        <HidableColumns
+                          ColumnToHide="Course_Name_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -226,9 +294,12 @@ function Levels() {
                           }`}
                         >
                           {item.name}
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Program_Name_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -243,9 +314,12 @@ function Levels() {
                           }`}
                         >
                           {item.programName}
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Coordinator_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "normal"
@@ -260,9 +334,12 @@ function Levels() {
                           }`}
                         >
                           <VolunteerData volunteerid={item.coordinator} />
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Mentor_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -277,9 +354,12 @@ function Levels() {
                           }`}
                         >
                           <VolunteerData volunteerid={item.mentor} />
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Preacher1_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -294,9 +374,12 @@ function Levels() {
                           }`}
                         >
                           <VolunteerData volunteerid={item.preacher1} />
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Preacher2_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -311,9 +394,12 @@ function Levels() {
                           }`}
                         >
                           <VolunteerData volunteerid={item.preacher2} />
-                        </td>
-                        <td
-                          className={`text-center ${
+                        </HidableColumns>
+                        <HidableColumns
+                          ColumnToHide="Status_Level"
+                          isColumnHeader={false}
+                          columnNamesArray={columnNamesArr}
+                          stylesClassNames={`text-center ${
                             expandedRow !== index && "border-b"
                           } ${
                             customisationObjs.cellSize === "bigger"
@@ -328,7 +414,7 @@ function Levels() {
                           }`}
                         >
                           {item.status}
-                        </td>
+                        </HidableColumns>
                       </tr>
                       {expandedRow === index && (
                         <tr>

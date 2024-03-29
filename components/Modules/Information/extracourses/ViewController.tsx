@@ -1,3 +1,4 @@
+import TableViewControll from "@/Utils/Icons/TableViewControll";
 import { useGlobalState } from "@/Utils/State";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -16,7 +17,6 @@ const DataTableComponent: React.FC<DataTableComponenProps> = ({
     cellSize: "normal",
   });
   const { state } = useGlobalState();
-  console.log(selected);
 
   function handleCkeck(object: any) {
     setSelected(object);
@@ -51,15 +51,10 @@ const DataTableComponent: React.FC<DataTableComponenProps> = ({
   return (
     <div className="relative" ref={componentRef}>
       <div className="flex justify-end">
-        <button
-          className={`px-4 py-1.5 rounded-xl shadow-lg ${
-            state.theme.theme === "LIGHT"
-              ? "bg-blue-700 text-white font-bold md:text-lg"
-              : "bg-blue-900 text-white font-bold md:text-lg bg-opacity-50"
-          }`}
-          onClick={isOpen ? closeDataTable : openDataTable}
-        >
-          Customize view
+        <button>
+          <TableViewControll
+            handleClick={isOpen ? closeDataTable : openDataTable}
+          />
         </button>
       </div>
       <div

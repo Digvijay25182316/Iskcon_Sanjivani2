@@ -11,15 +11,6 @@ function SettingsAndCustomizations() {
 
   return (
     <div className="min-h-screen">
-      <h1
-        className={`md:py-10 py-5 md:px-10 px-3 font-bold md:text-3xl text-2xl border-b md:min-w-[650px] lg:w-[1090px] ${
-          state.theme.theme === "LIGHT"
-            ? "border-b-gray-100"
-            : "border-b-stone-800"
-        }`}
-      >
-        Settings & Customizations
-      </h1>
       <div className="flex flex-col items-center">
         <div className="w-full">
           <div

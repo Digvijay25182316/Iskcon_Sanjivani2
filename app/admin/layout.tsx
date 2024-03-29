@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import GlobalStateManager from "@/Utils/GlobalStateManager";
 import SidebarMenu from "@/Utils/SidebarMenu";
+import HeaderComponent from "@/Utils/HeaderComponent";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,8 +20,9 @@ export default function RootLayout({
         <SidebarMenu />
       </div>
       <div
-        className={`overflow-y-auto md:w-[80vw] w-[95vw] md:ml-2 md:mx-0 mx-auto`}
+        className={`overflow-y-auto lg:w-[80vw] md:w-[73vw] w-screen lg:ml-2 md:ml-20`}
       >
+        <HeaderComponent />
         {children}
       </div>
     </GlobalStateManager>

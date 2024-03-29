@@ -91,27 +91,53 @@ interface ScheduledSessions {
   modified: string;
 }
 
-interface responseDataFetched {
+interface responseDataFetched<T> {
   response: {
-    content: {
-      content: LevelsData[];
-      pageable: {
-        pageNumber: 0;
-        pageSize: 10;
-        sort: [Object];
-        offset: 0;
-        unpaged: false;
-        paged: true;
-      };
-      totalElements: 8;
-      totalPages: 1;
-      last: true;
-      size: 10;
-      number: 0;
-      sort: { sorted: true; empty: false; unsorted: false };
-      numberOfElements: 8;
-      first: true;
-      empty: false;
+    content: T[];
+    pageable: {
+      pageNumber: 0;
+      pageSize: 10;
+      sort: [Object];
+      offset: 0;
+      unpaged: false;
+      paged: true;
     };
+    totalElements: 8;
+    totalPages: 1;
+    last: true;
+    size: 10;
+    number: 0;
+    sort: { sorted: true; empty: false; unsorted: false };
+    numberOfElements: 8;
+    first: true;
+    empty: false;
   };
+}
+
+interface VolunteerTypes {
+  id: 0;
+  firstName: string;
+  lastName: string;
+  initiatedName: string;
+  waNumber: string;
+  contactNumber: string;
+  email: string;
+  dob: string;
+  gender: string;
+  address: string;
+  serviceInterests: string;
+  currentServices: string;
+  createdBy: string;
+  created: string;
+  modified: string;
+}
+
+interface CourseMasterData {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  createdBy: string;
+  created: string;
+  modified: string0;
 }

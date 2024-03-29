@@ -33,7 +33,7 @@ async function page() {
   // const levels: any = await getLevels();
 
   return (
-    <div>
+    <div className="w-full">
       <Levels />
     </div>
   );

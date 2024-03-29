@@ -8,6 +8,7 @@ import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 function ScheduledSessionTable({ levelId }: { levelId: string }) {
   const { state, dispatch } = useGlobalState();
   const [scheduledSessionsArr, setCoursesArr] = useState([]);
+  const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
 
@@ -21,6 +22,16 @@ function ScheduledSessionTable({ levelId }: { levelId: string }) {
       ...object,
     }));
   }
+
+  const handleAddItemToColumnNameArr = (option: { value: string }) => {
+    if (columnNamesArr.includes(option.value)) {
+      setColumnNamesArr(
+        columnNamesArr.filter((selected) => selected !== option.value)
+      );
+    } else {
+      setColumnNamesArr([...columnNamesArr, option.value]);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -61,7 +72,12 @@ function ScheduledSessionTable({ levelId }: { levelId: string }) {
         Scheduled Sessions
       </h1>
       <div className="my-3">
-        <ViewController handleCustomisation={handleCustomisation} />
+        <ViewController
+          handleCustomisation={handleCustomisation}
+          handleHidables={handleAddItemToColumnNameArr}
+          columnNames={[]}
+          options={columnNamesArr}
+        />
       </div>
       {isLoading ? (
         <>
