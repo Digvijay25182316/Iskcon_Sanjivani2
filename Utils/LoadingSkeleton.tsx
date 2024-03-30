@@ -44,14 +44,14 @@ const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
     >
       <div className="flex justify-between items-center pb-5">
         <div
-          className={`bg-gray-200 h-10 min-w-40 w-full mr-4 animate-pulse rounded-xl`}
+          className={`bg-gray-200 h-10 w-full mr-4 animate-pulse rounded-xl`}
         ></div>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center md:gap-5 gap-3">
           <div
-            className={`bg-gray-200 h-10 min-w-40 w-full mr-4 animate-pulse rounded-xl`}
+            className={`bg-gray-200 h-10 md:min-w-40 w-full mr-4 animate-pulse rounded-xl`}
           ></div>
           <div
-            className={`bg-gray-200 h-16 min-w-20 mr-4 animate-pulse rounded-xl`}
+            className={`bg-gray-200 h-14 min-w-14 mr-4 animate-pulse rounded-xl`}
           ></div>
         </div>
       </div>

@@ -1,18 +1,18 @@
 "use client";
 import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
 import { useGlobalState } from "@/Utils/State";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ViewController from "./ViewController";
-import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import DateFormatter from "@/Utils/DateFormatter";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 
-function ActivityMaster() {
+const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
+  response,
+}) => {
   const { state, dispatch } = useGlobalState();
-  const [ActivitiesArr, setActivitiesArr] = useState([]);
+
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
@@ -57,31 +57,6 @@ function ActivityMaster() {
     }));
   }
 
-  useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/admin/information/levels");
-        if (response.ok) {
-          const responseData = await response.json();
-          setActivitiesArr(responseData.content.content);
-        } else {
-          const errorData = await response.json();
-          dispatch({
-            type: "SHOW_TOAST",
-            payload: { message: errorData.message, type: "ERROR" },
-          });
-        }
-      } catch (error: any) {
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "ERROR", message: error.message },
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [dispatch]);
   return (
     <div className={`min-h-screen`}>
       <div className="my-3 flex items-center justify-between">
@@ -116,178 +91,169 @@ function ActivityMaster() {
           />
         </div>
       </div>
-      {isLoading ? (
-        <>
-          <LoadingSkeleton
-            rows={8}
-            columns={width < 600 ? 3 : 4}
-            theme={state.theme.theme}
-          />
-        </>
-      ) : (
-        <div
-          className={`w-full mx-auto rounded-3xl ${
-            state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
-          } p-4`}
-        >
-          <div className={`overflow-x-auto`}>
-            <table className="w-full">
-              <thead>
-                <tr
-                  className={` ${
-                    state.theme.theme === "LIGHT"
-                      ? "border-b-2 border-gray-400 "
-                      : "border-b-2 border-stone700"
-                  }`}
+
+      <div
+        className={`w-full mx-auto rounded-3xl ${
+          state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+        } p-4`}
+      >
+        <div className={`overflow-x-auto`}>
+          <table className="w-full">
+            <thead>
+              <tr
+                className={` ${
+                  state.theme.theme === "LIGHT"
+                    ? "border-b-2 border-gray-400 "
+                    : "border-b-2 border-stone700"
+                }`}
+              >
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="ACTIVITY_NAME"
                 >
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="ACTIVITY_NAME"
-                  >
-                    <SortableIcon
-                      fieldName={"name"}
-                      tableHeading={"ACTIVITY NAME"}
-                      handleCheck={SortElements}
-                      isSorted={queryArr.some((obj) => obj.sort === "name")}
-                    />
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="ACTIVITY_DESCRIPTION"
-                  >
-                    <SortableIcon
-                      fieldName={"programName"}
-                      tableHeading={"ACTIVITY DESCRIPTION"}
-                      handleCheck={SortElements}
-                      isSorted={queryArr.some(
-                        (obj) => obj.sort === "programName"
-                      )}
-                    />
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="ACTIVITY_CREATEDBY"
-                  >
-                    <SortableIcon
-                      fieldName={"coordinator"}
-                      tableHeading={"CREATED BY"}
-                      handleCheck={SortElements}
-                      isSorted={queryArr.some(
-                        (obj) => obj.sort === "coordinator"
-                      )}
-                    />
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="DATE_OF_CREATION"
-                  >
-                    <SortableIcon
-                      tableHeading={"DATE OF CREATION"}
-                      handleCheck={SortElements}
-                    />
-                  </HidableColumns>
-                </tr>
-              </thead>
-              <tbody>
-                {ActivitiesArr.length > 0 ? (
-                  ActivitiesArr.map((item: ActivityMaster, index) => (
-                    <tr key={index}>
-                      <HidableColumns
-                        ColumnToHide="ACTIVITY_NAME"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.name}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="ACTIVITY_DESCRIPTION"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.description}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="ACTIVITY_CREATEDBY"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "normal"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "bigger"
-                            ? "py-3"
-                            : "py-5"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.createdBy}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="DATE_OF_CREATION"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`whitespace-nowrap text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        <DateFormatter dateString={item.created} />
-                      </HidableColumns>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={10} className="text-center py-10">
-                      No Data To Show
-                    </td>
+                  <SortableIcon
+                    fieldName={"name"}
+                    tableHeading={"ACTIVITY NAME"}
+                    handleCheck={SortElements}
+                    isSorted={queryArr.some((obj) => obj.sort === "name")}
+                  />
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="ACTIVITY_DESCRIPTION"
+                >
+                  <SortableIcon
+                    fieldName={"programName"}
+                    tableHeading={"ACTIVITY DESCRIPTION"}
+                    handleCheck={SortElements}
+                    isSorted={queryArr.some(
+                      (obj) => obj.sort === "programName"
+                    )}
+                  />
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="ACTIVITY_CREATEDBY"
+                >
+                  <SortableIcon
+                    fieldName={"coordinator"}
+                    tableHeading={"CREATED BY"}
+                    handleCheck={SortElements}
+                    isSorted={queryArr.some(
+                      (obj) => obj.sort === "coordinator"
+                    )}
+                  />
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="DATE_OF_CREATION"
+                >
+                  <SortableIcon
+                    tableHeading={"DATE OF CREATION"}
+                    handleCheck={SortElements}
+                  />
+                </HidableColumns>
+              </tr>
+            </thead>
+            <tbody>
+              {response.content.length > 0 ? (
+                response.content.map((item: ActivityMaster, index) => (
+                  <tr key={index}>
+                    <HidableColumns
+                      ColumnToHide="ACTIVITY_NAME"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.name}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="ACTIVITY_DESCRIPTION"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.description}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="ACTIVITY_CREATEDBY"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "normal"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "bigger"
+                          ? "py-3"
+                          : "py-5"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.createdBy}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="DATE_OF_CREATION"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`whitespace-nowrap text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <DateFormatter dateString={item.created} />
+                    </HidableColumns>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={10} className="text-center py-10">
+                    No Data To Show
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
-}
+};
 
 export default ActivityMaster;

@@ -22,7 +22,7 @@ function CourseData({
       try {
         setIsLoading(true);
         const response = await fetch(
-          `/api/admin/information/courses/${coursecode}`
+          `/api/admin/information/sessions/course/${coursecode}`
         );
         if (response.ok) {
           const responseData = await response.json();

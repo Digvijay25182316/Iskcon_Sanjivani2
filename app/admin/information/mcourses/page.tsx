@@ -17,7 +17,6 @@ async function getCourses() {
 
 async function page() {
   const response = await getCourses();
-  console.log(response.content[0]);
   return (
     <div>
       <CoursesMaster response={response} />

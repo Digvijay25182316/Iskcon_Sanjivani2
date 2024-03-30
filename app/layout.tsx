@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import GlobalStateManager from "@/Utils/GlobalStateManager";
+import Toast from "@/Utils/Toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",

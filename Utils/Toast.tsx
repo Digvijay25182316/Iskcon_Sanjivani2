@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import { useGlobalState } from "./State";
-import AsteriskLoading from "@/Utils/SVGS/asteriskLoading.svg";
-import Image from "next/image";
 import LoadingComponent from "./Icons/LoadingComponent";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
@@ -17,14 +15,14 @@ function Toast() {
 
   return (
     <div
-      className={`fixed z-[1000] -top-10 transition-all duration-700 mx-auto lg:left-[35vw] md:left-[30vw] left-[20vw] backdrop-blur-xl border md:w-[400px] w-[250px] rounded-3xl px-4 py-2 text-lg ${
+      className={`fixed z-[10000] -top-10 transition-all duration-700 mx-auto lg:left-[35vw] md:left-[30vw] left-[20vw] backdrop-blur-xl border md:w-[400px] w-[250px] rounded-3xl px-4 py-2 text-lg ${
         state.toast.toast.isVisible
           ? "translate-y-full"
           : " -translate-y-full scale-75"
       } ${
         state.theme.theme === "LIGHT"
-          ? "border-gray-200 shadow-xl shadow-gray-100"
-          : "border-stone-700 shadow-lg shadow-stone-900"
+          ? "border-gray-200 shadow-xl shadow-gray-100 bg-black bg-opacity-20"
+          : "border-stone-700 shadow-lg shadow-stone-900 bg-white bg-opacity-20"
       }`}
     >
       {state.toast.toast.type === "LOADING" ? (

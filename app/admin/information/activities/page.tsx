@@ -2,6 +2,7 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Activities from "@/components/Modules/Information/activities/Activities";
 import { unstable_noStore } from "next/cache";
 import React from "react";
+
 async function getActivities() {
   unstable_noStore();
   const response = await fetch(

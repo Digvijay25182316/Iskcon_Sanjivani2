@@ -1,6 +1,8 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const response = await fetch(`${SERVER_ENDPOINT}/volunteer/`);

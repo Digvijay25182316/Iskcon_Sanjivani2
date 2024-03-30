@@ -141,3 +141,44 @@ interface CourseMasterData {
   created: string;
   modified: string0;
 }
+
+interface ProgramsData {
+  id: string;
+  name: string;
+  preacher: string;
+  coordinator: string;
+  mentor: string;
+  incharge: string;
+  type: string;
+  audienceType: string;
+  location: string;
+}
+
+interface SadhanaTypes {
+  id: string;
+  programId: string;
+  programName: string;
+  participantId: string;
+  participantFirstName: string;
+  participantLastName: string;
+  participantWaNumber: string;
+  participantContactNumber: string;
+  numberOfRounds: string;
+  earlyJapaRoundsBefore8AM: string;
+  earlyJapaRoundsAfter8AM: string;
+  first8RoundsCompletedTime: string;
+  next8RoundsCompletedTime: string;
+  wakeUpTime: string;
+  sleepTime: string;
+  prabhupadaBookReading: string;
+  nonPrabhupadaBookReading: string;
+  prabhupadaClassHearing: string;
+  guruClassHearing: string;
+  otherClassHearing: string;
+  speaker: string;
+  attendedArti: string;
+  mobileInternetUsage: string;
+  sadhanaDate: string;
+  created: string;
+  modified: string6;
+}

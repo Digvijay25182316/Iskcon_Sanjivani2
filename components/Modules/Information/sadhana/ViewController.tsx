@@ -5,11 +5,17 @@ import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect, useRef } from "react";
 
 interface DataTableComponenProps {
+  options: string[];
   handleCustomisation: (object: any) => void;
+  handleHidables: ({ value }: { value: string }) => void;
+  columnNames: { columnName: string; field: string }[];
 }
 
 const DataTableComponent: React.FC<DataTableComponenProps> = ({
+  options,
   handleCustomisation,
+  handleHidables,
+  columnNames,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -63,7 +69,7 @@ const DataTableComponent: React.FC<DataTableComponenProps> = ({
         }`}
       >
         <div
-          className={`m-2 rounded-3xl h-[96vh] border md:w-[30vw] w-[80vw] backdrop-blur-2xl ${
+          className={`m-2 rounded-3xl h-[96vh] border md:w-[30vw] w-[80vw] backdrop-blur-2xl overflow-y-auto custom-scrollbar ${
             state.theme.theme === "LIGHT"
               ? "border-gray-200  shadow-2xl bg-black bg-opacity-10 "
               : "border-stone-800 shadow-2xl shadow-black bg-white bg-opacity-10"
@@ -203,6 +209,42 @@ const DataTableComponent: React.FC<DataTableComponenProps> = ({
                   onChange={() => handleCkeck({ cellSize: "biggest" })}
                 />
               </div>
+            </div>
+          </div>
+          <div>
+            <div>
+              <p className="pt-3 pl-3  font-bold text-lg">Columns Visibility</p>
+              <p className=" text-lg px-3">
+                By Selecting you will be able to hide of unhide columns
+              </p>
+            </div>
+            <div className="py-3">
+              {columnNames?.map(
+                (
+                  option: { columnName: string; field: string },
+                  index: number
+                ) => (
+                  <label
+                    key={index}
+                    className={`flex items-center px-4 py-2 text-lg ${
+                      state.theme.theme === "LIGHT"
+                        ? "hover:bg-white hover:bg-opacity-50"
+                        : "hover:bg-black hover:bg-opacity-50"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 "
+                      value={option.field}
+                      checked={options.includes(option.field)}
+                      onChange={(e) => {
+                        handleHidables(e.target);
+                      }}
+                    />
+                    <span className="ml-2">{option.columnName}</span>
+                  </label>
+                )
+              )}
             </div>
           </div>
         </div>

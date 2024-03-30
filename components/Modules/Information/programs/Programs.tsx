@@ -9,24 +9,32 @@ import VolunteerData from "./VolunteerData";
 import Modal from "@/Utils/Modal";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
+import { POST } from "@/actions/POSTRequests";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { LinksActivator } from "@/Utils/LinksActivator";
 
-const audienceType = ["all", "children", "boys", "girls", "family"];
-
-interface ProgramsData {
-  name: string;
-  preacher: string;
-  coordinator: string;
-  mentor: string;
-  incharge: string;
-  type: string;
-  audienceType: string;
-  location: string;
-}
+const AudienceTypes = [
+  { name: "all", value: "ALL" },
+  { name: "children", value: "CHILDREN" },
+  { name: "boys", value: "BOYS" },
+  { name: "girls", value: "GIRLS" },
+  { name: "family", value: "FAMILY" },
+  { name: "couple", value: "COUPLE" },
+];
+const ProgramType = [
+  { name: "TempleProgram", value: "TEMPLE" },
+  { name: "SocietyProgram", value: "SOCIETY" },
+  { name: "CollegeProgram", value: "COLLEGE" },
+];
 
 const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
   response,
 }) => {
   const { state, dispatch } = useGlobalState();
+  const router = useRouter();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
@@ -84,275 +92,316 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
           />
         </div>
       </div>
-      {isLoading ? (
-        <>
-          <LoadingSkeleton
-            rows={8}
-            columns={width < 600 ? 3 : 8}
-            theme={state.theme.theme}
-          />
-        </>
-      ) : (
-        <div
-          className={`w-full mx-auto rounded-3xl ${
-            state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
-          } p-4`}
-        >
-          <div className={`overflow-x-auto`}>
-            <table className="w-full">
-              <thead>
-                <tr
-                  className={` ${
-                    state.theme.theme === "LIGHT"
-                      ? "border-b-2 border-gray-400 "
-                      : "border-b-2 border-stone700"
-                  }`}
+
+      <div
+        className={`w-full mx-auto rounded-3xl ${
+          state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+        } p-4`}
+      >
+        <div className={`overflow-x-auto`}>
+          <table className="w-full">
+            <thead>
+              <tr
+                className={` ${
+                  state.theme.theme === "LIGHT"
+                    ? "border-b-2 border-gray-400 "
+                    : "border-b-2 border-stone700"
+                }`}
+              >
+                <HidableColumns
+                  ColumnToHide="Program_Name"
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
                 >
-                  <HidableColumns
-                    ColumnToHide="Program_Name"
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                  >
-                    PROGRAM NAME
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Preacher"
-                  >
-                    PREACHER
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Coordinator"
-                  >
-                    COORDINATOR
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Mentor"
-                  >
-                    MENTOR
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Incharge"
-                  >
-                    INCHARGE
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Type"
-                  >
-                    TYPE
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_AudienceType"
-                  >
-                    AUDIENCE TYPE
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                    ColumnToHide="Program_Location"
-                  >
-                    LOCATION
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                  >
-                    ACTIVITIES LINK
-                  </HidableColumns>
-                  <HidableColumns
-                    isColumnHeader={true}
-                    stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
-                    columnNamesArray={columnNamesArr}
-                  >
-                    SADHANA LINK
-                  </HidableColumns>
-                </tr>
-              </thead>
-              <tbody>
-                {response.content.length > 0 ? (
-                  response.content.map((item: ProgramsData, index) => (
-                    <tr key={index}>
-                      <HidableColumns
-                        ColumnToHide="Program_Name"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
+                  PROGRAM NAME
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Preacher"
+                >
+                  PREACHER
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Coordinator"
+                >
+                  COORDINATOR
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Mentor"
+                >
+                  MENTOR
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Incharge"
+                >
+                  INCHARGE
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Type"
+                >
+                  TYPE
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_AudienceType"
+                >
+                  AUDIENCE TYPE
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Program_Location"
+                >
+                  LOCATION
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                >
+                  ACTIVITIES LINK
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                >
+                  SADHANA LINK
+                </HidableColumns>
+              </tr>
+            </thead>
+            <tbody>
+              {response.content.length > 0 ? (
+                response.content.map((item: ProgramsData, index) => (
+                  <tr key={index}>
+                    <HidableColumns
+                      ColumnToHide="Program_Name"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.name}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Preacher"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <VolunteerData volunteerid={item.preacher} />
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Coordinator"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "normal"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "bigger"
+                          ? "py-3"
+                          : "py-5"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <VolunteerData volunteerid={item.coordinator} />
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Mentor"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <VolunteerData volunteerid={item.mentor} />
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Incharge"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <VolunteerData volunteerid={item.incharge} />
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Type"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.type}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_AudienceType"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.audienceType}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Program_Location"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.location}
+                    </HidableColumns>
+                    <HidableColumns
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <Link
+                        href={`${LinksActivator()?.toString()}/admin/information/programs/sadhana/${
+                          item.id
                         }`}
                       >
-                        {item.name}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Preacher"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
+                        link
+                      </Link>
+                    </HidableColumns>
+                    <HidableColumns
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <Link
+                        href={`${LinksActivator()?.toString()}/admin/information/programs/sadhana/${
+                          item.id
                         }`}
                       >
-                        <VolunteerData volunteerid={item.preacher} />
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Coordinator"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "normal"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "bigger"
-                            ? "py-3"
-                            : "py-5"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        <VolunteerData volunteerid={item.coordinator} />
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Mentor"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        <VolunteerData volunteerid={item.mentor} />
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Incharge"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        <VolunteerData volunteerid={item.incharge} />
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Type"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.type}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_AudienceType"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.audienceType}
-                      </HidableColumns>
-                      <HidableColumns
-                        ColumnToHide="Program_Location"
-                        isColumnHeader={false}
-                        columnNamesArray={columnNamesArr}
-                        stylesClassNames={`text-center border-b ${
-                          customisationObjs.cellSize === "bigger"
-                            ? "py-2"
-                            : customisationObjs.cellSize === "biggest"
-                            ? "py-3"
-                            : "py-1"
-                        } ${
-                          state.theme.theme === "LIGHT"
-                            ? "border-b-gray-200"
-                            : "border-b-stone-800"
-                        }`}
-                      >
-                        {item.location}
-                      </HidableColumns>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={10} className="text-center py-10">
-                      No Data To Show
-                    </td>
+                        link
+                      </Link>
+                    </HidableColumns>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={10} className="text-center py-10">
+                    No Data To Show
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
+
       <AddProgram
         isOpen={programCreation}
-        onClose={() => setProgramCreation(false)}
+        onClose={() => {
+          setProgramCreation(false);
+          router.refresh();
+        }}
       />
     </div>
   );
@@ -369,6 +418,11 @@ function AddProgram({
 }) {
   const { state, dispatch } = useGlobalState();
   const [incharge, setInCharge] = useState(0);
+  const [mentor, setMentor] = useState(0);
+  const [coordinator, setCoordinator] = useState(0);
+  const [preacher, setPreacher] = useState(0);
+  const [programType, setProgramtype] = useState("");
+  const [AudienceType, setAudienceType] = useState("");
   const [volunteersArr, setVolunteersArr] = useState([]);
   useEffect(() => {
     (async () => {
@@ -393,6 +447,58 @@ function AddProgram({
     })();
   }, [dispatch]);
 
+  async function handleCreateProgram(e: FormData) {
+    const name = e.get("name")?.valueOf();
+    const description = e.get("description")?.valueOf();
+    const location = e.get("location")?.valueOf();
+    if (
+      !name ||
+      !description ||
+      !location ||
+      preacher === 0 ||
+      incharge === 0 ||
+      mentor === 0 ||
+      coordinator === 0 ||
+      AudienceType === "" ||
+      programType === ""
+    ) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "Fill All The Details" },
+      });
+      return;
+    }
+    const formData: any = {
+      name: name,
+      description: description,
+      incharge: incharge,
+      preacher: preacher,
+      mentor: mentor,
+      coordinator: coordinator,
+      audienceType: AudienceType,
+      programType: programType,
+      location: location,
+    };
+    try {
+      const response = await POST(
+        formData,
+        `${SERVER_ENDPOINT}/program/create`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { message: response.message, type: "SUCCESS" },
+      });
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: {
+          message: error.message || "something unexpected happened",
+          type: "ERROR",
+        },
+      });
+    }
+  }
+
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div
@@ -412,7 +518,7 @@ function AddProgram({
           Create Program
         </h1>
         <div className="lg:w-[40vw] md:w-[60vw] w-[95vw] max-h-[80vh] overflow-y-auto custom-scrollbar px-1">
-          <form action="" className="mt-5 w-full">
+          <form action={handleCreateProgram} className="mt-5 w-full">
             <div className="w-full flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <label
@@ -464,7 +570,7 @@ function AddProgram({
                 <div className="flex flex-col gap-3">
                   <label className="font-semibold text-lg">Coordinator</label>
                   <MenuIconAndDropDown
-                    setSelected={(value) => setInCharge(value)}
+                    setSelected={(value) => setCoordinator(value)}
                     DataArr={volunteersArr}
                     position="down"
                   />
@@ -472,7 +578,7 @@ function AddProgram({
                 <div className="flex flex-col gap-3">
                   <label className="font-semibold text-lg">Preacher</label>
                   <MenuIconAndDropDown
-                    setSelected={(value) => setInCharge(value)}
+                    setSelected={(value) => setPreacher(value)}
                     DataArr={volunteersArr}
                     position="up"
                   />
@@ -480,7 +586,7 @@ function AddProgram({
                 <div className="flex flex-col gap-3">
                   <label className="font-semibold text-lg">Mentor</label>
                   <MenuIconAndDropDown
-                    setSelected={(value) => setInCharge(value)}
+                    setSelected={(value) => setMentor(value)}
                     DataArr={volunteersArr}
                     position="up"
                   />
@@ -488,20 +594,16 @@ function AddProgram({
                 <div className="flex flex-col gap-3">
                   <label className="font-semibold text-lg">Audience Type</label>
                   <MenuOthersDropDown
-                    setSelected={(value) => console.log(value)}
-                    DataArr={audienceType}
+                    setSelected={(value) => setAudienceType(value)}
+                    DataArr={AudienceTypes}
                     position="up"
                   />
                 </div>
                 <div className="flex flex-col gap-3">
                   <label className="font-semibold text-lg">Program Type</label>
                   <MenuOthersDropDown
-                    setSelected={(value) => console.log(value)}
-                    DataArr={[
-                      "Temple program",
-                      "Society Program",
-                      "College Program",
-                    ]}
+                    setSelected={(value) => setProgramtype(value)}
+                    DataArr={ProgramType}
                     position="up"
                   />
                 </div>
@@ -538,16 +640,7 @@ function AddProgram({
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className={`text-blue-600 font-semibold text-xl w-full py-2 rounded-xl ${
-                    state.theme.theme === "LIGHT"
-                      ? "bg-blue-50 "
-                      : "bg-blue-900 bg-opacity-20"
-                  }`}
-                >
-                  Submit
-                </button>
+                <SubmitHandlerButton />
               </div>
             </div>
           </form>
@@ -676,7 +769,7 @@ function MenuIconAndDropDown<T>({
                         ? item.initiatedName
                         : `${item.firstName} ${item.lastName}`
                     );
-                    setSelected(item);
+                    setSelected(item.id);
                     toggleSelection(false);
                   }}
                   className={`px-2 py-1.5 rounded-lg ${
@@ -710,7 +803,7 @@ function MenuOthersDropDown({
   position,
 }: {
   setSelected: (value: string) => void;
-  DataArr: string[];
+  DataArr: { name: string; value: string }[];
   defaultVal?: string;
   position?: string;
 }) {
@@ -811,25 +904,27 @@ function MenuOthersDropDown({
               }`}
               role="none"
             >
-              {DataArr?.map((item: any, index: number) => (
-                <li
-                  key={index}
-                  onClick={() => {
-                    setSelectedOption(item);
-                    setSelected(item);
-                    toggleSelection(false);
-                  }}
-                  className={`px-2 py-1.5 rounded-lg ${
-                    item.name === selectedOption && "bg-blue-300"
-                  } ${
-                    state.theme.theme === "LIGHT"
-                      ? "hover:bg-gray-100 "
-                      : "hover:bg-stone-700"
-                  }`}
-                >
-                  {item}
-                </li>
-              ))}
+              {DataArr?.map(
+                (item: { name: string; value: string }, index: number) => (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setSelectedOption(item.name);
+                      setSelected(item.value);
+                      toggleSelection(false);
+                    }}
+                    className={`px-2 py-1.5 rounded-lg ${
+                      item.name === selectedOption && "bg-blue-300"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "hover:bg-gray-100 "
+                        : "hover:bg-stone-700"
+                    }`}
+                  >
+                    {item.name}
+                  </li>
+                )
+              )}
             </ul>
           ) : (
             <ul>
