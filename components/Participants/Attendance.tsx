@@ -42,7 +42,7 @@ function Attendance() {
                   type="submit"
                   disabled
                 >
-                  Submit
+                  Search
                 </button>
               </div>
             </form>
@@ -81,6 +81,19 @@ function Attendance() {
                     <input type="radio" className="h-5 w-5" />
                     <p>DYS 2</p>
                   </label>
+                </div>
+                <div className="md:p-5 p-3 w-full flex items-center justify-center">
+                  <button
+                    className={`py-2 text-lg rounded-xl my-5 w-full font-bold md:mx-5 ${
+                      state.theme.theme === "LIGHT"
+                        ? "bg-blue-200 text-blue-600"
+                        : "bg-blue-900 bg-opacity-40 text-blue-600"
+                    } `}
+                    type="submit"
+                    disabled
+                  >
+                    Submit
+                  </button>
                 </div>
               </div>
             </div>
