@@ -61,7 +61,11 @@ function Attendance() {
                   </p>
                 </div>
               </div>
-              <div className="w-full flex flex-col items-center bg-white rounded-3xl mt-5">
+              <div
+                className={`w-full flex flex-col items-center ${
+                  state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
+                } rounded-3xl mt-5`}
+              >
                 <div className="font-bold text-xl flex flex-col gap-3 w-full p-5">
                   <div className="flex flex-col  border-b-2">
                     <p className="font-bold">Latest Session</p>
