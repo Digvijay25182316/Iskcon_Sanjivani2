@@ -297,7 +297,6 @@ const CoursesMaster: React.FC<responseDataFetched<Sessions>> = ({
           </table>
         </div>
       </div>
-      response.content
     </div>
   );
 };
