@@ -15,6 +15,13 @@ import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LinksActivator } from "@/Utils/LinksActivator";
+import QrCode from "@/Utils/QrCodeComponent";
+import {
+  DocumentCheckIcon,
+  DocumentIcon,
+  LinkIcon,
+} from "@heroicons/react/16/solid";
+import CopyClipBoard from "@/Utils/CopyToClipBoard";
 
 const AudienceTypes = [
   { name: "all", value: "ALL" },
@@ -351,13 +358,32 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
                           : "border-b-stone-800"
                       }`}
                     >
-                      <Link
-                        href={`${LinksActivator()?.toString()}/admin/information/programs/sadhana/${
-                          item.id
-                        }`}
-                      >
-                        link
-                      </Link>
+                      <div className="flex items-center gap-5">
+                        <Link
+                          href={`${LinksActivator()?.toString()}/participants/activity/${
+                            item.id
+                          }`}
+                          className="text-blue-600 underline flex items-center"
+                        >
+                          <LinkIcon className="h-5 w-5" />
+                          link
+                        </Link>
+                        <QrCode
+                          url={`${LinksActivator()?.toString()}/participants/activity/${
+                            item.id
+                          }`}
+                          Content="something"
+                        />
+                        <CopyClipBoard
+                          url={`${LinksActivator()?.toString()}/participants/activity/${
+                            item.id
+                          }`}
+                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
+                          whenCopied={
+                            <DocumentIcon className="h-5 w-6 text-green" />
+                          }
+                        />
+                      </div>
                     </HidableColumns>
                     <HidableColumns
                       isColumnHeader={false}
@@ -374,13 +400,32 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
                           : "border-b-stone-800"
                       }`}
                     >
-                      <Link
-                        href={`${LinksActivator()?.toString()}/admin/information/programs/sadhana/${
-                          item.id
-                        }`}
-                      >
-                        link
-                      </Link>
+                      <div className="flex items-center gap-5">
+                        <Link
+                          href={`${LinksActivator()?.toString()}/participants/activity/${
+                            item.id
+                          }`}
+                          className="text-blue-600 underline flex items-center"
+                        >
+                          <LinkIcon className="h-5 w-5" />
+                          link
+                        </Link>
+                        <QrCode
+                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                            item.id
+                          }`}
+                          Content="something"
+                        />
+                        <CopyClipBoard
+                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                            item.id
+                          }`}
+                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
+                          whenCopied={
+                            <DocumentIcon className="h-5 w-6 text-green" />
+                          }
+                        />
+                      </div>
                     </HidableColumns>
                   </tr>
                 ))

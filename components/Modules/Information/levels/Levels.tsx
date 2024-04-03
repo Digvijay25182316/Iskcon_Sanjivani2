@@ -10,10 +10,19 @@ import ScheduledSessionTable from "./ScheduledSessionsTable";
 import { GetLevels } from "@/actions/GetRequests";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import {
+  ChevronDownIcon,
+  DocumentCheckIcon,
+  DocumentIcon,
+  LinkIcon,
+} from "@heroicons/react/16/solid";
 import Modal from "@/Utils/Modal";
 import { POST } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import { LinksActivator } from "@/Utils/LinksActivator";
+import CopyClipBoard from "@/Utils/CopyToClipBoard";
+import QrCode from "@/Utils/QrCodeComponent";
+import Link from "next/link";
 
 const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
   const [levelCreation, setLevelCreation] = useState(false);
@@ -383,6 +392,141 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                       >
                         {item.status}
                       </HidableColumns>
+                      <HidableColumns
+                        isColumnHeader={false}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-5">
+                          <Link
+                            href={`${LinksActivator()?.toString()}/participants/attendance/${
+                              item.id
+                            }`}
+                            className="text-blue-600 underline flex items-center"
+                          >
+                            <LinkIcon className="h-5 w-5" />
+                            link
+                          </Link>
+                          <QrCode
+                            url={`${LinksActivator()?.toString()}/participants/attendance/${
+                              item.id
+                            }`}
+                            Content="something"
+                          />
+                          <CopyClipBoard
+                            url={`${LinksActivator()?.toString()}/participants/attendance/${
+                              item.id
+                            }`}
+                            NotCopied={
+                              <DocumentCheckIcon className="h-5 w-6 " />
+                            }
+                            whenCopied={
+                              <DocumentIcon className="h-5 w-6 text-green" />
+                            }
+                          />
+                        </div>
+                      </HidableColumns>
+                      <HidableColumns
+                        isColumnHeader={false}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-5">
+                          <Link
+                            href={`${LinksActivator()?.toString()}/participants/activity/${
+                              item.id
+                            }`}
+                            className="text-blue-600 underline flex items-center"
+                          >
+                            <LinkIcon className="h-5 w-5" />
+                            link
+                          </Link>
+                          <QrCode
+                            url={`${LinksActivator()?.toString()}/participants/activity/${
+                              item.id
+                            }`}
+                            Content="something"
+                          />
+                          <CopyClipBoard
+                            url={`${LinksActivator()?.toString()}/participants/activity/${
+                              item.id
+                            }`}
+                            NotCopied={
+                              <DocumentCheckIcon className="h-5 w-6 " />
+                            }
+                            whenCopied={
+                              <DocumentIcon className="h-5 w-6 text-green" />
+                            }
+                          />
+                        </div>
+                      </HidableColumns>
+                      <HidableColumns
+                        isColumnHeader={false}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        <div className="flex items-center gap-5">
+                          <Link
+                            href={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            className="text-blue-600 underline flex items-center"
+                          >
+                            <LinkIcon className="h-5 w-5" />
+                            link
+                          </Link>
+                          <QrCode
+                            url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            Content="something"
+                          />
+                          <CopyClipBoard
+                            url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            NotCopied={
+                              <DocumentCheckIcon className="h-5 w-6 " />
+                            }
+                            whenCopied={
+                              <DocumentIcon className="h-5 w-6 text-green" />
+                            }
+                          />
+                        </div>
+                      </HidableColumns>
                     </tr>
                     {expandedRow === index && (
                       <tr>
@@ -524,7 +668,7 @@ function AddLevel({
         type: "SHOW_TOAST",
         payload: { type: "SUCCESS", message: response.message },
       });
-    } catch (error:any) {
+    } catch (error: any) {
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: error.message },

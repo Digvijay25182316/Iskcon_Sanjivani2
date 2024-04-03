@@ -61,12 +61,10 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${SERVER_ENDPOINT}/participant/phone/${phoneNumber}`
-      );
+      const response = await fetch(`/api/participants/phone/${phoneNumber}`);
       if (response.ok) {
         const responseData = await response.json();
-        setParticipantData(responseData);
+        setParticipantData(responseData.content);
       } else if (response.status === 404) {
         console.log(
           "participant with the phone number does not exists  please register"
