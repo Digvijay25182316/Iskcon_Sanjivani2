@@ -1,5 +1,6 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Attendance from "@/components/Participants/Attendance";
+import Rsvp from "@/components/Participants/Rsvp";
 import React from "react";
 
 async function getScheduledSessions(levelId: string) {
@@ -31,7 +32,7 @@ async function page({ params }: { params: { levelid: string } }) {
 
   return (
     <div>
-      <Attendance response={response} level={responseLevel} />
+      <Rsvp response={response} level={responseLevel} />
     </div>
   );
 }

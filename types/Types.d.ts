@@ -113,6 +113,28 @@ interface responseDataFetched<T> {
     empty: false;
   };
 }
+// interface responseDataFetched<T> {
+//   response: {
+//     content: T[];
+//     pageable: {
+//       pageNumber: 0;
+//       pageSize: 10;
+//       sort: [Object];
+//       offset: 0;
+//       unpaged: false;
+//       paged: true;
+//     };
+//     totalElements: 8;
+//     totalPages: 1;
+//     last: true;
+//     size: 10;
+//     number: 0;
+//     sort: { sorted: true; empty: false; unsorted: false };
+//     numberOfElements: 8;
+//     first: true;
+//     empty: false;
+//   };
+// }
 
 interface VolunteerTypes {
   id: 0;
@@ -181,4 +203,12 @@ interface SadhanaTypes {
   sadhanaDate: string;
   created: string;
   modified: string6;
+}
+
+interface PariticipantData {
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  dob: string;
+  gender: string;
 }

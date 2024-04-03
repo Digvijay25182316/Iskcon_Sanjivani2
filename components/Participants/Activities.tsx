@@ -16,7 +16,10 @@ import React, {
   useState,
 } from "react";
 
-function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
+function Activities({
+  response,
+  activity,
+}: responseDataFetched<ProgramsData> | any) {
   const { state, dispatch } = useGlobalState();
   const { push } = useRouter();
   const [ParticipantData, setParticipantData] = useState<
@@ -27,9 +30,9 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
   const [LatestSession, setLatestSession] = useState<ScheduledSessions | any>(
     {}
   );
-  const [recordAttended, setRecordAttended] = useState<ScheduledSessions | any>(
-    {}
-  );
+  const [selectedActivity, setSelectedActivity] = useState<
+    ScheduledSessions | any
+  >({});
   const [PreviousSessions, setPreviousSessions] = useState<
     ScheduledSessions[] | any[]
   >([]);
@@ -41,19 +44,6 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
       setPhoneNumber(phoneNumber);
     }
   }, []);
-
-  useEffect(() => {
-    const future: ScheduledSessions[] = [];
-    response?.content?.forEach((session: ScheduledSessions, index: number) => {
-      if (new Date(session.startTime) <= new Date()) {
-        future.push(session);
-      }
-    });
-    setLatestSession(future[0]);
-    const previous = future.splice(1);
-    setPreviousSessions(previous);
-    console.log(previous);
-  }, [response]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -100,10 +90,10 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
 
   async function handleAttedance(e: FormData) {
     const formData: any = {
-      scheduledSessionId: recordAttended.id,
+      scheduledSessionId: selectedActivity.id,
       participantId: ParticipantData.id,
-      levelId: Number(level.id),
-      programId: level.programId,
+      //   levelId: Number(level.id),
+      //   programId: level.programId,
     };
     await POST(formData, `${SERVER_ENDPOINT}/attendance/mark`);
   }
@@ -113,20 +103,18 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
       <div className="md:h-full">
         <div className="md:ml-20 flex flex-col gap-3 mx-5">
           <h1 className="md:mt-20 mt-10 font-bold md:text-5xl text-4xl">
-            Attendance
+            Activities
           </h1>
-          <h4>
-            Looks like you have not marked your attendance yet, please do so
-          </h4>
+          <h4>You have to select service that you are interested in</h4>
           <div className="relative font-semibold">
             <div
               className={`absolute top-0 border flex items-center gap-2 px-4 py-1.5 rounded-full text-lg ${
                 state.theme.theme === "LIGHT"
-                  ? "border-stone-300"
-                  : "border-stone-700"
+                  ? "border-stone-300 bg-white"
+                  : "border-stone-700 bg-stone-950"
               }`}
             >
-              <p>Program :</p> {level?.programName}
+              <p>Program :</p> {response?.name}
             </div>
           </div>
         </div>
@@ -134,7 +122,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
           <div>
             <Image
               src={
-                "https://res.cloudinary.com/dko1ffxgt/image/upload/v1712050777/6274-removebg-preview_mt6ysl.png"
+                "https://res.cloudinary.com/dko1ffxgt/image/upload/v1712122185/old-lady-chanting-mantra-on-rudraksh-mala_ed1t6e.png"
               }
               alt="attendance"
               height={200}
@@ -154,17 +142,6 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
               : "bg-stone-900 bg-opacity-40"
           }`}
         >
-          <div className="relative font-semibold">
-            <div
-              className={`absolute bottom-0 mb-2 border flex items-center gap-2 px-4 py-1.5 rounded-full text-lg ${
-                state.theme.theme === "LIGHT"
-                  ? "border-stone-300"
-                  : "border-stone-700"
-              }`}
-            >
-              <p>Course :</p> {level?.name}
-            </div>
-          </div>
           <form className="w-full" onSubmit={handleSubmit}>
             <div className="flex flex-col w-full gap-5">
               <div className="flex flex-col w-full gap-3">
@@ -233,64 +210,51 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
           >
             <div>
               <div className={`text-xl font-bold mx-4`}>
-                <p>Latest session</p>
+                <p>Select Service</p>
                 <p className="font-normal text-sm">
-                  select from latest session
+                  Select some services that you are interested in
                 </p>
               </div>
-              <label className="flex items-center gap-5 mx-4 py-2 font-bold">
-                <input
-                  type="radio"
-                  name="sessionAttendence"
-                  checked={LatestSession.id === recordAttended?.id}
-                  onChange={(e) => {
-                    setRecordAttended(LatestSession);
-                  }}
-                  disabled={Object.keys(ParticipantData).length === 0}
-                  className="h-6 w-6"
-                />
-                <p className="text-lg">{LatestSession?.name}</p>
-              </label>
-            </div>
-            <div className="flex items-center gap-5 px-5">
-              <p
-                className={`w-[50%] border ${
-                  state.theme.theme === "LIGHT"
-                    ? "border-gray-400"
-                    : "border-stone-700"
-                }`}
-              ></p>
-              <p
-                className={`font-bold ${
-                  state.theme.theme === "LIGHT"
-                    ? "text-gray-600"
-                    : "text-stone-600"
-                }`}
-              >
-                OR
-              </p>
-              <p
-                className={`w-[50%] border ${
-                  state.theme.theme === "LIGHT"
-                    ? "border-gray-400"
-                    : "border-stone-700"
-                }`}
-              ></p>
-            </div>
-            <div>
-              <div className={`text-xl font-bold mx-4`}>
-                <p>Previous sessions</p>
-                <p className="font-normal text-sm">
-                  select from previous sessions
-                </p>
-              </div>
-              <div className="my-5 mx-2">
+              <div className="mt-5 mx-2">
                 <MenuOthersDropDown
-                  DataArr={PreviousSessions}
+                  DataArr={activity.content}
                   setSelected={(value: ScheduledSessions) =>
-                    setRecordAttended(value)
+                    setSelectedActivity(value)
                   }
                   position="up"
+                />
+              </div>
+              <div className="flex flex-col gap-3 p-3">
+                <label
+                  htmlFor="Service_description"
+                  className=" text-xl font-bold"
+                >
+                  Service Description
+                </label>
+                <textarea
+                  className={`border focus:ring-4 transition-all duration-500 outline-none rounded-xl text-lg px-4 py-2 ${
+                    state.theme.theme === "LIGHT"
+                      ? "focus:ring-blue-100 focus:border-blue-600"
+                      : "focus:ring-blue-950 focus:border-blue-600"
+                  }`}
+                  name="description"
+                  id="Service_description"
+                  placeholder="write some description"
+                />
+              </div>
+              <div className="flex flex-col gap-3 px-3 w-max mb-5">
+                <label htmlFor="Service_Date" className=" text-xl font-bold">
+                  Activity Date
+                </label>
+                <input
+                  type="date"
+                  className={`border focus:ring-4 transition-all duration-500 outline-none rounded-xl text-lg px-4 py-2 ${
+                    state.theme.theme === "LIGHT"
+                      ? "focus:ring-blue-100 focus:border-blue-600"
+                      : "focus:ring-blue-950 focus:border-blue-600"
+                  }`}
+                  name="activityDate"
+                  id="Service_Date"
                 />
               </div>
             </div>
@@ -302,7 +266,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
   );
 }
 
-export default Attendance;
+export default Activities;
 
 function MenuOthersDropDown({
   setSelected,
