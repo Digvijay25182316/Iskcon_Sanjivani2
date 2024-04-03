@@ -402,7 +402,7 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
                     >
                       <div className="flex items-center gap-5">
                         <Link
-                          href={`${LinksActivator()?.toString()}/participants/activity/${
+                          href={`${LinksActivator()?.toString()}/participants/sadhana/${
                             item.id
                           }`}
                           className="text-blue-600 underline flex items-center"
