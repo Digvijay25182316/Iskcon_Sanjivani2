@@ -6,7 +6,6 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const participantid = searchParams.get("participant");
     const scheduledSessionId = searchParams.get("session");
-    console.log(participantid, scheduledSessionId);
     const response = await fetch(
       `${SERVER_ENDPOINT}/rsvp/find/?participantId=${participantid}&scheduledSessionId=${scheduledSessionId}`
     );

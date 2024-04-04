@@ -87,10 +87,19 @@ function Activities({
   };
 
   async function handleAttedance(e: FormData) {
+    const startDate = e.get("activityDate")?.toString();
+    if (!startDate) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "please select the activity date" },
+      });
+      return;
+    }
     const formData: any = {
-      scheduledSessionId: selectedActivity.id,
+      activityId: selectedActivity.id,
       participantId: ParticipantData.id,
       programId: response.id,
+      activityDate: startDate && new Date(startDate).toISOString(),
     };
     try {
       const response = await POST(
@@ -191,6 +200,7 @@ function Activities({
                       setPhoneNumber(e.target.value)
                     }
                     maxLength={10}
+                    placeholder="9090909090"
                   />
                   <button
                     type="button"

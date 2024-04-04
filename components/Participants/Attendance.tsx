@@ -191,11 +191,15 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
                   } py-1 px-1 text-lg rounded w-full transition-all duration-500 flex items-center ${
                     state.theme.theme === "LIGHT"
                       ? `bg-white ${
-                          focusMobile ? "ring-blue-100 border-blue-600" : ""
-                        } border-gray-400`
+                          focusMobile
+                            ? "ring-blue-100 border-blue-600"
+                            : "border-gray-400"
+                        } `
                       : `bg-stone-950  ${
-                          focusMobile ? "border-blue-700 ring-blue-950" : ""
-                        } border-stone-700`
+                          focusMobile
+                            ? "border-blue-700 ring-blue-950"
+                            : " border-stone-700"
+                        }`
                   }`}
                 >
                   <input
@@ -211,6 +215,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
                       setPhoneNumber(e.target.value)
                     }
                     maxLength={10}
+                    placeholder="9090909090"
                   />
                   <button
                     type="button"

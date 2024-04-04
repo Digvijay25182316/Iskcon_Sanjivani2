@@ -15,7 +15,7 @@ function Toast() {
 
   return (
     <div
-      className={`fixed z-[10000] -top-10 transition-all duration-700 mx-auto lg:left-[35vw] md:left-[30vw] left-[20vw] backdrop-blur-xl border md:w-[400px] w-[250px] rounded-3xl px-4 py-2 text-lg ${
+      className={`fixed z-[10000] -top-10 transition-all duration-700 mx-auto lg:left-[35vw] md:left-[30vw] left-[5vw] backdrop-blur-xl border md:w-[400px] w-[90vw] rounded-3xl px-4 py-2 text-lg ${
         state.toast.toast.isVisible
           ? "translate-y-full"
           : " -translate-y-full scale-75"

@@ -2,33 +2,22 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import LoadingComponent from "@/Utils/Icons/LoadingComponent";
 import { useGlobalState } from "@/Utils/State";
-import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
 import { POST } from "@/actions/POSTRequests";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
   const { state, dispatch } = useGlobalState();
   const { push } = useRouter();
-  const [rsvpResponse, setRsvpResponse] = useState({});
+  const [rsvpResponse, setRsvpResponse] = useState(false);
   const [ParticipantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
   const [focusMobile, setFocusMobile] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [LatestSession, setLatestSession] = useState<ScheduledSessions | any>(
-    {}
-  );
-  const [recordAttended, setRecordAttended] = useState<ScheduledSessions | any>(
     {}
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +90,9 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
           );
           if (response.ok) {
             const responseData = await response.json();
-            console.log(responseData.content);
+            setRsvpResponse(
+              responseData?.content?.rsvp === "YES" ? true : false
+            );
           } else {
             if (response.status === 404) {
               console.log(response.statusText);
@@ -121,14 +112,17 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
     }
   }, [dispatch, LatestSession, ParticipantData]);
 
-  async function handleRsvp(e: FormData) {
+  async function handleRsvp(answer: string) {
+    // setIsLoading(true);
     const formData: any = {
-      scheduledSessionId: recordAttended.id,
+      scheduledSessionId: LatestSession.id,
       participantId: ParticipantData.id,
       levelId: Number(level.id),
       programId: level.programId,
-      // rsvp: confirmed ? "YES" : "NO",
+      scheduledSessionName: LatestSession.name,
+      rsvp: answer,
     };
+
     try {
       const response = await POST(formData, `${SERVER_ENDPOINT}/rsvp/mark`);
       dispatch({
@@ -136,10 +130,17 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
         payload: { type: "SUCCESS", message: response.message },
       });
     } catch (error: any) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: error.message },
-      });
+      if (error.message === "This Entry Already exists") {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: {
+            type: "SUCCESS",
+            message: "Successfully noted your response",
+          },
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -195,7 +196,7 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                   : "border-stone-700"
               }`}
             >
-              <p>Course :</p> {level?.name}
+              <p className="w-max">Course :</p> {level?.name}
             </div>
           </div>
           <form className="w-full" onSubmit={handleSubmit}>
@@ -212,11 +213,15 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                   } py-1 px-1 text-lg rounded w-full transition-all duration-500 flex items-center ${
                     state.theme.theme === "LIGHT"
                       ? `bg-white ${
-                          focusMobile ? "ring-blue-100 border-blue-600" : ""
-                        } border-gray-400`
+                          focusMobile
+                            ? "ring-blue-100 border-blue-600"
+                            : "border-gray-400"
+                        } `
                       : `bg-stone-950  ${
-                          focusMobile ? "border-blue-700 ring-blue-950" : ""
-                        } border-stone-700`
+                          focusMobile
+                            ? "border-blue-700 ring-blue-950"
+                            : " border-stone-700"
+                        }`
                   }`}
                 >
                   <input
@@ -232,6 +237,7 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                       setPhoneNumber(e.target.value)
                     }
                     maxLength={10}
+                    placeholder="9090909090"
                   />
                   <button
                     type="button"
@@ -257,7 +263,7 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
             ) : null}
           </div>
           <form
-            action={handleRsvp}
+            onSubmit={(e) => e.preventDefault()}
             className={`transition-all duration-700 ${
               Object.keys(ParticipantData).length > 0
                 ? "scale-100"
@@ -276,27 +282,68 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                   state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
                 }`}
               >
-                Session :<p className="mx-5">{LatestSession.name}</p>
+                <p className=" whitespace-nowrap">Session :</p>
+                <p className="mx-5">{LatestSession.name}</p>
               </div>
               <div className="flex items-center gap-5">
-                <button
-                  className={`w-full rounded-lg text-xl py-2 ${
-                    state.theme.theme === "LIGHT"
-                      ? "bg-red-100 text-red-600"
-                      : "bg-red-950 text-red-600"
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button
-                  className={`w-full rounded-lg text-xl py-2 ${
-                    state.theme.theme === "LIGHT"
-                      ? "bg-blue-100 text-blue-600"
-                      : "bg-blue-950 text-blue-600"
-                  }`}
-                >
-                  Confirm
-                </button>
+                {rsvpResponse ? (
+                  <>
+                    {isLoading ? (
+                      <LoadingComponent />
+                    ) : (
+                      <button
+                        onClick={() => handleRsvp("NO")}
+                        className={`w-full rounded-lg text-xl py-2 ${
+                          state.theme.theme === "LIGHT"
+                            ? "bg-red-100 text-red-600"
+                            : "bg-red-950 text-red-600 bg-opacity-35"
+                        }`}
+                        disabled={isLoading}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div
+                    className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
+                      state.theme.theme === "LIGHT"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-red-950 text-red-600 bg-opacity-35"
+                    }`}
+                  >
+                    <XMarkIcon className="h-8 w-8" />
+                  </div>
+                )}
+                {rsvpResponse ? (
+                  <div
+                    className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
+                      state.theme.theme === "LIGHT"
+                        ? "bg-blue-100 text-blue-600"
+                        : "bg-blue-950 text-blue-600 bg-opacity-25"
+                    }`}
+                  >
+                    <CheckIcon className="h-8 w-8" />
+                  </div>
+                ) : (
+                  <>
+                    {isLoading ? (
+                      <LoadingComponent />
+                    ) : (
+                      <button
+                        onClick={() => handleRsvp("YES")}
+                        className={`w-full rounded-lg text-xl py-2 ${
+                          state.theme.theme === "LIGHT"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-blue-950 text-blue-600 bg-opacity-25"
+                        }`}
+                        disabled={isLoading}
+                      >
+                        Confirm
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </form>
