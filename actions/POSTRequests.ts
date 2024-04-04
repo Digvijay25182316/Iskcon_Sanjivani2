@@ -17,8 +17,7 @@ export async function POST(formData: FormData, url: string) {
         throw new Error("This Entry Already exists");
       }
       const errorData = await response.json();
-      console.log(errorData);
-      throw new Error(errorData.message || errorData.statusText);
+      throw new Error(errorData.message || errorData.title);
     }
   } catch (error: any) {
     throw new Error(error.message || "Unexpected exception occured");

@@ -11,9 +11,9 @@ import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 const Activities: React.FC<responseDataFetched<ActivityData>> = ({
   response,
 }) => {
-  const { state, dispatch } = useGlobalState();
+  const { state } = useGlobalState();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const { width } = useWindowDimensions();
+
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
     { size: 10 }, // a default page size

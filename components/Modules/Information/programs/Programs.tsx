@@ -1,10 +1,8 @@
 "use client";
 import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
-import LoadingComponent from "@/Utils/Icons/LoadingComponent";
 import { useGlobalState } from "@/Utils/State";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ViewController from "./ViewController";
-import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 import VolunteerData from "./VolunteerData";
 import Modal from "@/Utils/Modal";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -12,11 +10,13 @@ import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 import { POST } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { LinksActivator } from "@/Utils/LinksActivator";
 import QrCode from "@/Utils/QrCodeComponent";
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   DocumentCheckIcon,
   DocumentIcon,
   LinkIcon,
@@ -42,8 +42,9 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
 }) => {
   const { state, dispatch } = useGlobalState();
   const router = useRouter();
+
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+
   const { width } = useWindowDimensions();
   const [programCreation, setProgramCreation] = useState(false);
 
@@ -68,7 +69,7 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
     }
   };
   return (
-    <div className={`min-h-screen`}>
+    <div>
       <div className="my-3 flex items-center justify-between">
         <div></div>
         <div className="flex items-center gap-5">
@@ -196,251 +197,242 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
               </tr>
             </thead>
             <tbody>
-              {response.content.length > 0 ? (
-                response.content.map((item: ProgramsData, index) => (
-                  <tr key={index}>
-                    <HidableColumns
-                      ColumnToHide="Program_Name"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      {item.name}
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Preacher"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <VolunteerData volunteerid={item.preacher} />
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Coordinator"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "normal"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "bigger"
-                          ? "py-3"
-                          : "py-5"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <VolunteerData volunteerid={item.coordinator} />
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Mentor"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <VolunteerData volunteerid={item.mentor} />
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Incharge"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <VolunteerData volunteerid={item.incharge} />
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Type"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      {item.type}
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_AudienceType"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      {item.audienceType}
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Program_Location"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      {item.location}
-                    </HidableColumns>
-                    <HidableColumns
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <div className="flex items-center gap-5">
-                        <Link
-                          href={`${LinksActivator()?.toString()}/participants/activity/${
-                            item.id
-                          }`}
-                          className="text-blue-600 underline flex items-center"
-                        >
-                          <LinkIcon className="h-5 w-5" />
-                          link
-                        </Link>
-                        <QrCode
-                          url={`${LinksActivator()?.toString()}/participants/activity/${
-                            item.id
-                          }`}
-                          Content="something"
-                        />
-                        <CopyClipBoard
-                          url={`${LinksActivator()?.toString()}/participants/activity/${
-                            item.id
-                          }`}
-                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
-                          whenCopied={
-                            <DocumentIcon className="h-5 w-6 text-green" />
-                          }
-                        />
-                      </div>
-                    </HidableColumns>
-                    <HidableColumns
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      <div className="flex items-center gap-5">
-                        <Link
-                          href={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          className="text-blue-600 underline flex items-center"
-                        >
-                          <LinkIcon className="h-5 w-5" />
-                          link
-                        </Link>
-                        <QrCode
-                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          Content="something"
-                        />
-                        <CopyClipBoard
-                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
-                          whenCopied={
-                            <DocumentIcon className="h-5 w-6 text-green" />
-                          }
-                        />
-                      </div>
-                    </HidableColumns>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={10} className="text-center py-10">
-                    No Data To Show
-                  </td>
+              {response.content.map((item: ProgramsData, index) => (
+                <tr key={index}>
+                  <HidableColumns
+                    ColumnToHide="Program_Name"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    {item.name}
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Preacher"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <VolunteerData volunteerid={item.preacher} />
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Coordinator"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "normal"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "bigger"
+                        ? "py-3"
+                        : "py-5"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <VolunteerData volunteerid={item.coordinator} />
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Mentor"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <VolunteerData volunteerid={item.mentor} />
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Incharge"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <VolunteerData volunteerid={item.incharge} />
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Type"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    {item.type}
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_AudienceType"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    {item.audienceType}
+                  </HidableColumns>
+                  <HidableColumns
+                    ColumnToHide="Program_Location"
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    {item.location}
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-5">
+                      <Link
+                        href={`${LinksActivator()?.toString()}/participants/activity/${
+                          item.id
+                        }`}
+                        className="text-blue-600 underline flex items-center"
+                      >
+                        <LinkIcon className="h-5 w-5" />
+                        link
+                      </Link>
+                      <QrCode
+                        url={`${LinksActivator()?.toString()}/participants/activity/${
+                          item.id
+                        }`}
+                        Content="something"
+                      />
+                      <CopyClipBoard
+                        url={`${LinksActivator()?.toString()}/participants/activity/${
+                          item.id
+                        }`}
+                        NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
+                        whenCopied={
+                          <DocumentIcon className="h-5 w-6 text-green" />
+                        }
+                      />
+                    </div>
+                  </HidableColumns>
+                  <HidableColumns
+                    isColumnHeader={false}
+                    columnNamesArray={columnNamesArr}
+                    stylesClassNames={`text-center border-b ${
+                      customisationObjs.cellSize === "bigger"
+                        ? "py-2"
+                        : customisationObjs.cellSize === "biggest"
+                        ? "py-3"
+                        : "py-1"
+                    } ${
+                      state.theme.theme === "LIGHT"
+                        ? "border-b-gray-200"
+                        : "border-b-stone-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-5">
+                      <Link
+                        href={`${LinksActivator()?.toString()}/participants/sadhana/${
+                          item.id
+                        }`}
+                        className="text-blue-600 underline flex items-center"
+                      >
+                        <LinkIcon className="h-5 w-5" />
+                        link
+                      </Link>
+                      <QrCode
+                        url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                          item.id
+                        }`}
+                        Content="something"
+                      />
+                      <CopyClipBoard
+                        url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                          item.id
+                        }`}
+                        NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
+                        whenCopied={
+                          <DocumentIcon className="h-5 w-6 text-green" />
+                        }
+                      />
+                    </div>
+                  </HidableColumns>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-
       <AddProgram
         isOpen={programCreation}
         onClose={() => {

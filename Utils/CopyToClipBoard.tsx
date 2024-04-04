@@ -36,9 +36,13 @@ function CopyClipBoard({
   return (
     <div>
       {!isclipBoard ? (
-        <button onClick={() => addToClipBoard(url)}>{whenCopied}</button>
+        <button onClick={() => addToClipBoard(url)} className="text-blue-600">
+          {whenCopied}
+        </button>
       ) : (
-        <button disabled>{NotCopied}</button>
+        <button disabled className="text-emerald-600">
+          {NotCopied}
+        </button>
       )}
     </div>
   );

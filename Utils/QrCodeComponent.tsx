@@ -2,11 +2,14 @@ import { CheckCircleIcon, QrCodeIcon } from "@heroicons/react/24/solid";
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import exportAsImage from "./ExportAsImage";
 import QRCode, { QRCodeProps } from "react-qr-code";
+import Modal from "./Modal";
+import { useGlobalState } from "./State";
 
 function QrCode({ url, Content }: { url: string; Content: string }) {
   const [QrCodeOpen, setQrOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { state } = useGlobalState();
 
   const qrCodeRef = useRef<any>();
   const downloadQRCode = async () => {
@@ -33,8 +36,12 @@ function QrCode({ url, Content }: { url: string; Content: string }) {
       <button onClick={() => setQrOpen(true)}>
         <QrCodeIcon className="h-5 w-5 text-blue-700" />
       </button>
-      <QrCodeModal isOpen={QrCodeOpen} onClose={() => setQrOpen(false)}>
-        <div className={`${isLoading ? "opacity-50" : ""}`}>
+      <Modal isOpen={QrCodeOpen} onClose={() => setQrOpen(false)}>
+        <div
+          className={`p-5 rounded-3xl ${
+            state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-900"
+          }`}
+        >
           <div ref={qrCodeRef}>
             <QRCode
               size={256}
@@ -45,9 +52,11 @@ function QrCode({ url, Content }: { url: string; Content: string }) {
           </div>
           <div className="flex items-center pt-5 justify-center gap-5">
             <button
-              className={`${
-                success ? "bg-green-300" : "px-4 py-1 text-blue-700 bg-blue-300"
-              } text-lg rounded-lg min-w-[100px] flex items-center justify-center`}
+              className={`w-full ${
+                success
+                  ? "bg-green-300"
+                  : "px-4 py-2 text-blue-700 bg-blue-100 "
+              } text-xl rounded-lg min-w-[100px] flex items-center justify-center`}
               onClick={downloadQRCode}
               disabled={isLoading}
             >
@@ -74,45 +83,21 @@ function QrCode({ url, Content }: { url: string; Content: string }) {
                 )
               ) : (
                 <div>
-                  <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                  <CheckCircleIcon className="h-10 w-10 text-green-600" />
                 </div>
               )}
             </button>
             <button
-              className="px-2 py-1 bg-red-100 text-red-700 text-lg rounded-lg"
+              className="px-2 py-2 bg-red-100 text-red-700 text-xl rounded-lg w-full"
               onClick={() => setQrOpen(false)}
             >
               Close
             </button>
           </div>
         </div>
-      </QrCodeModal>
+      </Modal>
     </div>
   );
 }
 
 export default QrCode;
-
-function QrCodeModal({
-  isOpen,
-  onClose,
-  children,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  if (isOpen) {
-    return (
-      <>
-        <div
-          className="fixed top-0 left-0 right-0 bottom-0 z-[1000] backdrop-brightness-50 cursor-pointer flex items-center justify-center"
-          onClick={onClose}
-        ></div>
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] bg-white p-5 rounded-2xl">
-          {children}
-        </div>
-      </>
-    );
-  }
-}

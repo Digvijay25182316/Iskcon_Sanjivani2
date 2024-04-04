@@ -18,12 +18,8 @@ interface PariticipantData {
 const CoursesMaster: React.FC<responseDataFetched<Sessions>> = ({
   response,
 }) => {
-  const { state, dispatch } = useGlobalState();
-
+  const { state } = useGlobalState();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { width } = useWindowDimensions();
-
   const [customisationObjs, setCustomisationObjs] = useState({
     cellSize: "normal",
   });
@@ -45,7 +41,7 @@ const CoursesMaster: React.FC<responseDataFetched<Sessions>> = ({
   };
 
   return (
-    <div className={`min-h-screen`}>
+    <div className={``}>
       <div className="my-3">
         <ViewController
           handleCustomisation={handleCustomisation}

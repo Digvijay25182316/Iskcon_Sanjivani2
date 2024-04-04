@@ -90,8 +90,7 @@ function Activities({
     const formData: any = {
       scheduledSessionId: selectedActivity.id,
       participantId: ParticipantData.id,
-      //   levelId: Number(level.id),
-      //   programId: level.programId,
+      programId: response.id,
     };
     await POST(formData, `${SERVER_ENDPOINT}/attendance/mark`);
   }
@@ -154,11 +153,15 @@ function Activities({
                   } py-1 px-1 text-lg rounded w-full transition-all duration-500 flex items-center ${
                     state.theme.theme === "LIGHT"
                       ? `bg-white ${
-                          focusMobile ? "ring-blue-100 border-blue-600" : ""
-                        } border-gray-400`
+                          focusMobile
+                            ? "ring-blue-100 border-blue-600"
+                            : "border-gray-400"
+                        } `
                       : `bg-stone-950  ${
-                          focusMobile ? "border-blue-700 ring-blue-950" : ""
-                        } border-stone-700`
+                          focusMobile
+                            ? "border-blue-700 ring-blue-950"
+                            : "border-stone-700"
+                        } `
                   }`}
                 >
                   <input

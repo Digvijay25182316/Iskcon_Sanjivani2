@@ -19,7 +19,7 @@ export function NOR({ label }: { label: string }) {
         placeholder="Number Of Rounds "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -43,7 +43,7 @@ export function EJRB8A({ label }: { label: string }) {
         placeholder="Early Japa rounds before 8 AM "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -67,7 +67,7 @@ export function AJRA8A({ label }: { label: string }) {
         placeholder="Early Japa rounds after 8 AM "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -91,7 +91,7 @@ export function F8RCT({ label }: { label: string }) {
         placeholder="First 8 rounds completed time "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -115,7 +115,7 @@ export function N8RCT({ label }: { label: string }) {
         placeholder="Next 8 rounds completed time"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -139,7 +139,7 @@ export function WUT({ label }: { label: string }) {
         placeholder="Wake up time"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -163,7 +163,7 @@ export function ST({ label }: { label: string }) {
         placeholder="Sleep time"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -187,7 +187,7 @@ export function PBR({ label }: { label: string }) {
         placeholder="Prabhupada Book Reading "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -211,7 +211,7 @@ export function BNR({ label }: { label: string }) {
         placeholder="Non Prabhupada Book Reading name"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -235,7 +235,7 @@ export function PCH({ label }: { label: string }) {
         placeholder="Prabhupada Class Hearing "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -259,7 +259,7 @@ export function GCH({ label }: { label: string }) {
         placeholder="Guru Class Hearing "
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -283,7 +283,7 @@ export function CH({ label }: { label: string }) {
         placeholder="Other Class Hearing"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -306,7 +306,7 @@ export function S({ label }: { label: string }) {
         placeholder="Other Speaker name that you hearing to"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -324,8 +324,6 @@ export function AA({
   const { state } = useGlobalState();
   const [selectionOpen, setSelectionOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
-  const pathname = usePathname();
-  const { programId } = useParams();
   const menuRef = useRef<any>();
 
   // Attach click outside listener
@@ -353,7 +351,7 @@ export function AA({
           type="button"
           className={`rounded-xl px-4 py-2 text-lg border flex items-center justify-between font-semibold w-full transition-all duration-500 ${
             state.theme.theme === "LIGHT"
-              ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+              ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
               : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800 "
           }`}
           id="options-menu"
@@ -431,7 +429,7 @@ export function MIU({ label }: { label: string }) {
         placeholder="handleChange/Internet-Usage"
         className={`rounded-xl px-4 py-2.5 text-lg border transition-all duration-500 ${
           state.theme.theme === "LIGHT"
-            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+            ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white border-gray-400"
             : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
         }`}
         required
@@ -465,14 +463,14 @@ export const FormListItems = [
   {
     id: 4,
     type: "First 8 rounds completed time ",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "F8RCT",
     databaseField: "first8RoundsCompletedTime",
   },
   {
     id: 5,
     type: "Next 8 rounds completed time ",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "N8RCT",
     databaseField: "next8RoundsCompletedTime",
   },
@@ -507,21 +505,21 @@ export const FormListItems = [
   {
     id: 10,
     type: "Prabhupada Class Hearing ",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "PCH",
     databaseField: "prabhupadaClassHearing",
   },
   {
     id: 11,
     type: "Guru Class Hearing ",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "GCH",
     databaseField: "guruClassHearing",
   },
   {
     id: 12,
     type: "Class Hearing ",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "CH",
     databaseField: "otherClassHearing",
   },
@@ -542,7 +540,7 @@ export const FormListItems = [
   {
     id: 15,
     type: "Mobile/Internet-Usage",
-    valueType: "Time",
+    valueType: "Number",
     functionName: "MIU",
     databaseField: "mobileInternetUsage",
   },

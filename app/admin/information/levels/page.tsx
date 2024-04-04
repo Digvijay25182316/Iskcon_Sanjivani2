@@ -2,10 +2,11 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Levels from "@/components/Modules/Information/levels/Levels";
 import { unstable_noStore } from "next/cache";
 import React from "react";
+import PageNavigation from "@/Utils/Pagination";
 
-async function getLevel() {
+async function getLevel(queryString: string) {
   unstable_noStore();
-  const response = await fetch(`${SERVER_ENDPOINT}/level/`);
+  const response = await fetch(`${SERVER_ENDPOINT}/level/?${queryString}`);
   if (response.ok) {
     const responseData = await response.json();
     return responseData;
@@ -15,12 +16,24 @@ async function getLevel() {
   }
 }
 
-async function page() {
-  const response = await getLevel();
+async function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  const queryString = new URLSearchParams(searchParams).toString();
+  const response = await getLevel(queryString);
 
   return (
     <div className="w-full">
-      <Levels response={response} />
+      {response.content.length > 0 ? (
+        <Levels response={response} />
+      ) : (
+        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
+          No Data To Show
+        </div>
+      )}
+      <PageNavigation totalElements={response.totalElements} />
     </div>
   );
 }

@@ -2,10 +2,11 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Volunteers from "@/components/Modules/Information/volunteers/Volunteers";
 import { unstable_noStore } from "next/cache";
 import React from "react";
+import PageNavigation from "@/Utils/Pagination";
 
-async function getVolunteers() {
+async function getVolunteers(queryString: string) {
   unstable_noStore();
-  const response = await fetch(`${SERVER_ENDPOINT}/volunteer/`);
+  const response = await fetch(`${SERVER_ENDPOINT}/volunteer/?${queryString}`);
   if (response.ok) {
     const responseData = await response.json();
     return responseData;
@@ -15,11 +16,23 @@ async function getVolunteers() {
   }
 }
 
-async function page() {
-  const response = await getVolunteers();
+async function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  const queryString = new URLSearchParams(searchParams).toString();
+  const response = await getVolunteers(queryString);
   return (
     <div>
-      <Volunteers response={response} />
+      {response.content.length > 0 ? (
+        <Volunteers response={response} />
+      ) : (
+        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
+          No Data To Show
+        </div>
+      )}
+      {response && <PageNavigation totalElements={response.totalElements} />}
     </div>
   );
 }

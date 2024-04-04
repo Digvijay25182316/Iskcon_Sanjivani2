@@ -2,10 +2,11 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import CoursesMaster from "@/components/Modules/Information/mcourses/MasterCourses";
 import { unstable_noStore } from "next/cache";
 import React from "react";
+import PageNavigation from "@/Utils/Pagination";
 
-async function getCourses() {
+async function getCourses(queryString: string) {
   unstable_noStore();
-  const response = await fetch(`${SERVER_ENDPOINT}/session/`);
+  const response = await fetch(`${SERVER_ENDPOINT}/session/?${queryString}`);
   if (response.ok) {
     const responseData = await response.json();
     return responseData;
@@ -15,11 +16,23 @@ async function getCourses() {
   }
 }
 
-async function page() {
-  const response = await getCourses();
+async function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  const queryString = new URLSearchParams(searchParams).toString();
+  const response = await getCourses(queryString);
   return (
     <div>
-      <CoursesMaster response={response} />
+      {response.content.length > 0 ? (
+        <CoursesMaster response={response} />
+      ) : (
+        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
+          No Data To Show
+        </div>
+      )}
+      <PageNavigation totalElements={response.totalElements} />
     </div>
   );
 }

@@ -2,11 +2,14 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Participants from "@/components/Modules/Information/participants/Participants";
 import { unstable_noStore } from "next/cache";
 import React from "react";
+import PageNavigation from "@/Utils/Pagination";
 
-async function getParticipant() {
+async function getParticipant(queryString: string) {
   unstable_noStore();
 
-  const response = await fetch(`${SERVER_ENDPOINT}/participant/`);
+  const response = await fetch(
+    `${SERVER_ENDPOINT}/participant/?${queryString}`
+  );
   if (response.ok) {
     const responseData = await response.json();
     return responseData;
@@ -16,11 +19,23 @@ async function getParticipant() {
   }
 }
 
-async function page() {
-  const response = await getParticipant();
+async function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) {
+  const queryString = new URLSearchParams(searchParams).toString();
+  const response = await getParticipant(queryString);
   return (
     <div>
-      <Participants response={response} />
+      {response.content.length > 0 ? (
+        <Participants response={response} />
+      ) : (
+        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
+          No Data To Show
+        </div>
+      )}
+      <PageNavigation totalElements={response.totalElements} />
     </div>
   );
 }
