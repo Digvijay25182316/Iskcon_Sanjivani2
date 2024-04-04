@@ -92,7 +92,21 @@ function Activities({
       participantId: ParticipantData.id,
       programId: response.id,
     };
-    await POST(formData, `${SERVER_ENDPOINT}/attendance/mark`);
+    try {
+      const response = await POST(
+        formData,
+        `${SERVER_ENDPOINT}/participant-activity/register`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
   }
 
   return (

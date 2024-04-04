@@ -1,4 +1,5 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import NotExistsResource from "@/Utils/NotExistsResource";
 import Attendance from "@/components/Participants/Attendance";
 import React from "react";
 
@@ -10,6 +11,9 @@ async function getScheduledSessions(levelId: string) {
     const responseData = await response.json();
     return responseData;
   } else {
+    if (response.status === 404) {
+      return null;
+    }
     const errorData = await response.json();
     throw new Error(errorData.message || errorData.statusText);
   }
@@ -20,14 +24,23 @@ async function getLevel(levelId: string) {
     const responseData = await response.json();
     return responseData;
   } else {
+    if (response.status === 404) {
+      return null;
+    }
     const errorData = await response.json();
     throw new Error(errorData.message || errorData.statusText);
   }
 }
 
 async function page({ params }: { params: { levelid: string } }) {
-  const response = await getScheduledSessions(params.levelid);
   const responseLevel = await getLevel(params.levelid);
+  const response = await getScheduledSessions(params.levelid);
+  if (!response) {
+    return <NotExistsResource message="No Scheduled sessions for this level" />;
+  }
+  if (!responseLevel) {
+    return <NotExistsResource message="This level doesn't exist" />;
+  }
 
   return (
     <div>

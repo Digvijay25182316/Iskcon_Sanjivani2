@@ -1,4 +1,5 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import NotExistsResource from "@/Utils/NotExistsResource";
 import Activities from "@/components/Participants/Activities";
 import Attendance from "@/components/Participants/Attendance";
 import Rsvp from "@/components/Participants/Rsvp";
@@ -28,6 +29,10 @@ async function getProgram(programId: string) {
 async function page({ params }: { params: { programid: string } }) {
   const response = await getProgram(params.programid);
   const responseActivity = await getActivities();
+
+  if (!response) {
+    return <NotExistsResource message="This program might not exists" />;
+  }
 
   return (
     <div>

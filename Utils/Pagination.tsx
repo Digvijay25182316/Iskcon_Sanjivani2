@@ -13,11 +13,15 @@ function Pagination({ totalElements }: { totalElements: number }) {
   const [VisibleElements, setVisibleElement] = useState<number>(10);
 
   useEffect(() => {
-    const page = searchParams.get("page")
-      ? Number(searchParams.get("page"))
-      : 0;
+    const searchParamsUrl = Object.fromEntries(
+      new URLSearchParams(searchParams)
+    );
+
+    const page = searchParamsUrl.page ? Number(searchParamsUrl.page) : 0;
+    const pageNumber = currentPage + 1;
+    setVisibleElement(pageNumber * 10);
     setCurrentPage(page);
-  }, [searchParams]);
+  }, [searchParams, currentPage]);
 
   return (
     <div className="flex items-center justify-between gap-5 p-5">
@@ -33,10 +37,10 @@ function Pagination({ totalElements }: { totalElements: number }) {
           onClick={() => setVisibleElement((prev) => prev - 10)}
         >
           <p
-            className={`bg-white rounded-full border p-2 ${
+            className={`${
               state.theme.theme === "LIGHT"
-                ? "bg-gray-50 border-gray-400"
-                : "bg-stone-950 border-stone-700"
+                ? "bg-blue-100 rounded-full p-2 text-blue-600"
+                : "bg-blue-950 rounded-full p-2 bg-opacity-40 text-blue-600"
             }`}
           >
             <ChevronLeftIcon className="h-8 w-8" />
@@ -44,10 +48,10 @@ function Pagination({ totalElements }: { totalElements: number }) {
         </Link>
       ) : (
         <p
-          className={`bg-white rounded-full border p-2 ${
+          className={`${
             state.theme.theme === "LIGHT"
-              ? "bg-gray-50 border-gray-200 text-gray-400"
-              : "bg-stone-950 border-stone-800 text-stone-700"
+              ? "bg-stone-100 rounded-full text-stone-400 p-2"
+              : "bg-stone-900 rounded-full text-stone-600 p-2"
           }`}
         >
           <ChevronLeftIcon className="h-8 w-8" />
@@ -62,10 +66,10 @@ function Pagination({ totalElements }: { totalElements: number }) {
       } of ${totalElements}`}</p>
       {VisibleElements > totalElements ? (
         <p
-          className={`bg-white rounded-full border p-2 ${
-            state.theme.theme
-              ? "bg-gray-50 border-gray-200 text-gray-400"
-              : "bg-stone-950 border-stone-800 text-stone-700"
+          className={`${
+            state.theme.theme === "LIGHT"
+              ? "bg-stone-100 rounded-full text-stone-400 p-2"
+              : "bg-stone-900 rounded-full text-stone-600 p-2"
           }`}
         >
           <ChevronRightIcon className="h-8 w-8" />
@@ -82,10 +86,10 @@ function Pagination({ totalElements }: { totalElements: number }) {
           onClick={() => setVisibleElement((prev) => prev + 10)}
         >
           <p
-            className={`bg-white rounded-full border p-2 ${
-              state.theme.theme
-                ? "bg-gray-50 border-gray-400"
-                : "bg-stone-950 border-stone-700"
+            className={`${
+              state.theme.theme === "LIGHT"
+                ? "bg-blue-100 rounded-full p-2 text-blue-600"
+                : "bg-blue-950 rounded-full p-2 bg-opacity-40 text-blue-600"
             }`}
           >
             <ChevronRightIcon className="h-8 w-8" />

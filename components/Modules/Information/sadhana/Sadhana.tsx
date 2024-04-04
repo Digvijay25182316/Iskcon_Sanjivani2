@@ -30,7 +30,7 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
     }
   };
   return (
-    <div className="min-h-screen">
+    <div className="px-2">
       <div className="flex items-center justify-between md:my-5 my-3">
         <div></div>
         <div className="flex items-center gap-5">

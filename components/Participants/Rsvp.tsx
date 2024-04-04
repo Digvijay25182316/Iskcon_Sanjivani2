@@ -19,6 +19,7 @@ import React, {
 function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
   const { state, dispatch } = useGlobalState();
   const { push } = useRouter();
+  const [rsvpResponse, setRsvpResponse] = useState({});
   const [ParticipantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
@@ -91,14 +92,55 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
     }
   };
 
-  async function handleAttedance(e: FormData) {
+  useEffect(() => {
+    if (ParticipantData?.id && Object.keys(LatestSession).length > 0) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/participants/rsvp?participant=${ParticipantData.id}&session=${LatestSession.id}`
+          );
+          if (response.ok) {
+            const responseData = await response.json();
+            console.log(responseData.content);
+          } else {
+            if (response.status === 404) {
+              console.log(response.statusText);
+            }
+            const errorData = await response.json();
+            console.log(errorData);
+          }
+        } catch (error: any) {
+          dispatch({
+            type: "SHOW_TOAST",
+            payload: { type: "ERROR", message: error.message },
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [dispatch, LatestSession, ParticipantData]);
+
+  async function handleRsvp(e: FormData) {
     const formData: any = {
       scheduledSessionId: recordAttended.id,
       participantId: ParticipantData.id,
       levelId: Number(level.id),
       programId: level.programId,
+      // rsvp: confirmed ? "YES" : "NO",
     };
-    await POST(formData, `${SERVER_ENDPOINT}/attendance/mark`);
+    try {
+      const response = await POST(formData, `${SERVER_ENDPOINT}/rsvp/mark`);
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
   }
 
   return (
@@ -215,7 +257,7 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
             ) : null}
           </div>
           <form
-            action={handleAttedance}
+            action={handleRsvp}
             className={`transition-all duration-700 ${
               Object.keys(ParticipantData).length > 0
                 ? "scale-100"

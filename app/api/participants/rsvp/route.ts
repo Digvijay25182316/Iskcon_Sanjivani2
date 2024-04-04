@@ -1,13 +1,14 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { phone: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
+    const searchParams = req.nextUrl.searchParams;
+    const participantid = searchParams.get("participant");
+    const scheduledSessionId = searchParams.get("session");
+    console.log(participantid, scheduledSessionId);
     const response = await fetch(
-      `${SERVER_ENDPOINT}/participant/phone/${params.phone}`
+      `${SERVER_ENDPOINT}/rsvp/find/?participantId=${participantid}&scheduledSessionId=${scheduledSessionId}`
     );
     if (response.ok) {
       const responseData = await response.json();

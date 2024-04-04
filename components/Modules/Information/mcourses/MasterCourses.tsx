@@ -41,7 +41,7 @@ const CoursesMaster: React.FC<responseDataFetched<Sessions>> = ({
   };
 
   return (
-    <div className={``}>
+    <div className={`px-2`}>
       <div className="my-3">
         <ViewController
           handleCustomisation={handleCustomisation}

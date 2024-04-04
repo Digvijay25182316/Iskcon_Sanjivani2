@@ -58,7 +58,7 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
   }
 
   return (
-    <div className={`min-h-screen`}>
+    <div className={`px-2`}>
       <div className="my-3 flex items-center justify-between">
         <div></div>
         <div className="flex items-center gap-5">

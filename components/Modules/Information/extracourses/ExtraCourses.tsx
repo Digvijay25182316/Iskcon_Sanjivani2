@@ -4,7 +4,7 @@ import React from "react";
 
 function Extracourses() {
   const { state } = useGlobalState();
-  return <div className="min-h-screen"></div>;
+  return <div className=""></div>;
 }
 
 export default Extracourses;

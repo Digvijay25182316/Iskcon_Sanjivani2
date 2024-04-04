@@ -57,7 +57,7 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
     }));
   }
   return (
-    <div className={`min-h-screen`}>
+    <div className={`px-2`}>
       <div className="my-3">
         <ViewController
           handleCustomisation={handleCustomisation}

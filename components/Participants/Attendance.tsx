@@ -103,7 +103,21 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
       levelId: Number(level.id),
       programId: level.programId,
     };
-    await POST(formData, `${SERVER_ENDPOINT}/attendance/mark`);
+    try {
+      const response = await POST(
+        formData,
+        `${SERVER_ENDPOINT}/attendance/mark`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
   }
 
   return (

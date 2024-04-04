@@ -59,46 +59,63 @@ function SidebarMenu() {
           options={[
             {
               title: "Programs",
+              LinkrouteName:
+                "/admin/information/programs?sort=id&page=0&size=10",
               routeName: "/admin/information/programs",
               icon: <CalendarDaysIcon />,
             },
             {
               title: "Courses Master",
+              LinkrouteName:
+                "/admin/information/mcourses?sort=id&page=0&size=10",
               routeName: "/admin/information/mcourses",
               icon: <AcademicCapIcon />,
             },
             {
               title: "Activities",
+              LinkrouteName:
+                "/admin/information/activities?sort=id&page=0&size=10",
               routeName: "/admin/information/activities",
               icon: <PresentationChartBarIcon />,
             },
             {
               title: "Activity Master",
+              LinkrouteName:
+                "/admin/information/mactivities?sort=id&page=0&size=10",
               routeName: "/admin/information/mactivities",
               icon: <QueueListIcon />,
             },
             {
               title: "Course Levels",
+              LinkrouteName: "/admin/information/levels?sort=id&page=0&size=10",
               routeName: "/admin/information/levels",
               icon: <ArrowTrendingUpIcon />,
             },
             {
               title: "Volunteers",
+              LinkrouteName:
+                "/admin/information/volunteers?sort=id&page=0&size=10",
               routeName: "/admin/information/volunteers",
               icon: <UserIcon />,
             },
             {
               title: "Participants",
+              LinkrouteName:
+                "/admin/information/participants?sort=id&page=0&size=10",
               routeName: "/admin/information/participants",
               icon: <UserGroupIcon />,
             },
             {
               title: "Sadhana",
+              LinkrouteName:
+                "/admin/information/sadhana?sort=id&page=0&size=10",
               routeName: "/admin/information/sadhana",
               icon: <SparklesIcon />,
             },
             {
               title: "Extra Courses",
+              LinkrouteName:
+                "/admin/information/extracourses?sort=id&page=0&size=10",
               routeName: "/admin/information/extracourses",
               icon: <RectangleGroupIcon />,
             },
@@ -142,6 +159,7 @@ interface Options {
   title: string;
   routeName: string;
   icon: React.ReactNode;
+  LinkrouteName: string;
 }
 
 function ToggleMenuOptions({ options, title, buttonStyles }: MenuProps) {
@@ -183,10 +201,10 @@ function ToggleMenuOptions({ options, title, buttonStyles }: MenuProps) {
         } overflow-hidden`}
       >
         {options.map((item, key) => (
-          <Link href={`${item.routeName}`} key={key}>
+          <Link href={`${item.LinkrouteName}`} key={key}>
             <div
               className={`${buttonStyles} pl-6 flex items-center gap-3 font-semibold ${
-                pathname === item.routeName
+                pathname.startsWith(item.routeName)
                   ? `${
                       state.theme.theme === "LIGHT"
                         ? "bg-blue-50 text-blue-700"

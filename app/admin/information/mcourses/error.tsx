@@ -18,26 +18,23 @@ export default function Error({
       }`}
     >
       <div className="flex flex-col items-center gap-5">
-        {error.message ? (
-          <div className="flex flex-col items-center font-bold gap-5 text-red-600">
-            <h2>{error.message}</h2>
-          </div>
-        ) : (
-          <h2>Something went wrong!</h2>
-        )}
-        <button
-          className={`text-red-600 px-5 py-2 rounded-xl ${
-            state.theme.theme === "LIGHT"
-              ? "bg-red-50"
-              : "bg-red-950 bg-opacity-25"
-          }`}
-          onClick={
-            // Attempt to recover by trying to re-render the segment
-            () => reset()
-          }
-        >
-          TRY AGAIN
-        </button>
+        <h2 className="font-bold">Something went wrong!</h2>
+
+        <div className="flex flex-col items-center">
+          <button
+            className={`text-blue-600 px-5 py-2 rounded-xl font-bold ${
+              state.theme.theme === "LIGHT"
+                ? "bg-blue-50"
+                : "bg-blue-950 bg-opacity-25"
+            }`}
+            onClick={
+              // Attempt to recover by trying to re-render the segment
+              () => reset()
+            }
+          >
+            Try again
+          </button>
+        </div>
       </div>
     </div>
   );
