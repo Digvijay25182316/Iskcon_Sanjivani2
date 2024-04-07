@@ -11,6 +11,7 @@ export async function POST(formData: FormData, url: string) {
     });
     if (response.ok) {
       const responseData = await response.json();
+
       return { message: responseData.message };
     } else {
       if (response.status === 409) {

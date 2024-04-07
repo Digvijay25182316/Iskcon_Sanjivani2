@@ -5,12 +5,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { levelid: string } }
+  { params }: { params: { coursesid: string } }
 ) {
   try {
-    const response = await fetch(
-      `${SERVER_ENDPOINT}/session/scheduled/level/${params.levelid}`
-    );
+    const response = await fetch(`${SERVER_ENDPOINT}/course/`);
     if (response.ok) {
       const responseData = await response.json();
       return NextResponse.json(

@@ -30,6 +30,7 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const { width } = useWindowDimensions();
   const [expandedRow, setExpandedRow] = useState<number>(-1);
+  const [selectedLevel, setSelectedLevel] = useState<LevelsData | any>({});
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
     { size: 10 }, // a default page size
@@ -251,7 +252,12 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
               {response.content.length > 0 ? (
                 response.content.map((item: LevelsData, index) => (
                   <React.Fragment key={index}>
-                    <tr onClick={() => toggleRow(index)}>
+                    <tr
+                      onClick={() => {
+                        toggleRow(index);
+                        setSelectedLevel(item);
+                      }}
+                    >
                       <HidableColumns
                         ColumnToHide="Course_Name_Level"
                         isColumnHeader={false}
@@ -538,7 +544,10 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                                 : "bg-stone-950 "
                             }`}
                           >
-                            <ScheduledSessionTable levelId={item.id} />
+                            <ScheduledSessionTable
+                              levelId={item.id}
+                              levelData={selectedLevel}
+                            />
                           </div>
                         </td>
                       </tr>

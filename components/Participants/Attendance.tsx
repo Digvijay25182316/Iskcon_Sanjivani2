@@ -74,7 +74,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
         console.log(
           "participant with the phone number does not exists  please register"
         );
-        push("/registeration");
+        push("/participants/registeration");
         localStorage.setItem("PHONE", phoneNumber);
       } else {
         const errorData = await response.json();

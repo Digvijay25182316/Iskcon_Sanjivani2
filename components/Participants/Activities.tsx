@@ -21,15 +21,12 @@ function Activities({
   activity,
 }: responseDataFetched<ProgramsData> | any) {
   const { state, dispatch } = useGlobalState();
-  const { push } = useRouter();
+  const router = useRouter();
   const [ParticipantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
   const [focusMobile, setFocusMobile] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [LatestSession, setLatestSession] = useState<ScheduledSessions | any>(
-    {}
-  );
   const [selectedActivity, setSelectedActivity] = useState<
     ScheduledSessions | any
   >({});
@@ -57,16 +54,18 @@ function Activities({
     setIsLoading(true);
     try {
       const response = await fetch(`/api/participants/phone/${phoneNumber}`);
+      console.log(response);
       if (response.ok) {
         const responseData = await response.json();
         setParticipantData(responseData.content);
-      } else if (response.status === 404) {
-        console.log(
-          "participant with the phone number does not exists  please register"
-        );
-        push("/registeration");
-        localStorage.setItem("PHONE", phoneNumber);
       } else {
+        if (response.status === 404) {
+          console.log(
+            "participant with the phone number does not exists  please register"
+          );
+          router.push("/participants/registeration");
+          localStorage.setItem("PHONE", phoneNumber);
+        }
         const errorData = await response.json();
         dispatch({
           type: "SHOW_TOAST",
@@ -119,7 +118,7 @@ function Activities({
   }
 
   return (
-    <div className="flex lg:flex-row flex-col h-full items-center ">
+    <div className="flex lg:flex-row flex-col min-h-screen items-center ">
       <div className="md:h-full">
         <div className="md:ml-20 flex flex-col gap-3 mx-5">
           <h1 className="md:mt-20 mt-10 font-bold md:text-5xl text-4xl">

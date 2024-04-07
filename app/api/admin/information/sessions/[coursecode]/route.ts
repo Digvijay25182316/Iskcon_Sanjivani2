@@ -1,15 +1,13 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(
   req: NextRequest,
-  { params }: { params: { levelid: string } }
+  { params }: { params: { coursecode: string } }
 ) {
   try {
     const response = await fetch(
-      `${SERVER_ENDPOINT}/session/scheduled/level/${params.levelid}`
+      `${SERVER_ENDPOINT}/session/course/${params.coursecode}`
     );
     if (response.ok) {
       const responseData = await response.json();

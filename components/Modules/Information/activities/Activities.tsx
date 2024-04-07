@@ -1,12 +1,11 @@
 "use client";
-import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
 import { useGlobalState } from "@/Utils/State";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ViewController from "./ViewController";
-import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import DateFormatter from "@/Utils/DateFormatter";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
+import FilterComponent from "./FilterComponent";
 
 const Activities: React.FC<responseDataFetched<ActivityData>> = ({
   response,
@@ -58,7 +57,8 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
   }
   return (
     <div className={`px-2`}>
-      <div className="my-3">
+      <div className="my-3 flex justify-end items-center gap-5">
+        <FilterComponent />
         <ViewController
           handleCustomisation={handleCustomisation}
           handleHidables={handleAddItemToColumnNameArr}
