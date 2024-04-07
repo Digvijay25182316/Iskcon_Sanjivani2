@@ -31,6 +31,45 @@ interface ActivityData {
   activityDate: string;
 }
 
+interface LevelToDisplay {
+  id: number;
+  number: number;
+  name: string;
+  displayName: string;
+  description: string;
+  programName: string;
+  programId: number;
+  preacher1: number;
+  preacher2: number;
+  mentor: number;
+  coordinator: number;
+  status: string;
+  attendanceUrl: string;
+  posterUrl: string;
+  acceptingNewParticipants: boolean;
+  sessionDay:
+    | "SUNDAY"
+    | "MONDAY"
+    | "TUESDAY"
+    | "WEDNESDAY"
+    | "THURSDAY"
+    | "FRIDAY"
+    | "SATURDAY";
+  sessionTime: {
+    hour: number;
+    minute: number;
+    second: number;
+    nano: number;
+  };
+  expectedStartDate: string | null;
+  actualStartDate: string | null;
+  expectedEndDate: string | null;
+  actualEndDate: string | null;
+  createdBy: string;
+  created: string;
+  modified: string;
+}
+
 interface LevelsData {
   id: string;
   number: string;
