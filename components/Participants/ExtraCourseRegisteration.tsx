@@ -29,7 +29,7 @@ function ExtraCourseRegisteration({
             : "bg-stone-900 bg-opacity-30"
         }`}
       >
-        <form className="md:w-[500px]">
+        <form className="md:w-[500px] w-[90vw]">
           <div>
             <div className="flex flex-col gap-5 w-full">
               <div className="flex flex-col gap-3">
