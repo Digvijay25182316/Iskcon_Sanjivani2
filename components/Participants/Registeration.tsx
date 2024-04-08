@@ -13,6 +13,16 @@ function Registeration() {
     setStep((prev) => prev - 1);
   }
 
+  async function handleSubmit(e: FormData) {
+    const firstName = e.get("firstName")?.toString();
+    const lastName = e.get("lastName")?.toString();
+    const contactNumber = e.get("contactNumber")?.toString();
+    const waNumber = e.get("waNumber")?.toString();
+    if (firstName || lastName || contactNumber || waNumber) {
+      console.log(firstName, lastName, contactNumber, waNumber);
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen w-screen justify-center items-center">
       <div className="py-10">
