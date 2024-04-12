@@ -55,12 +55,7 @@ interface LevelToDisplay {
     | "THURSDAY"
     | "FRIDAY"
     | "SATURDAY";
-  sessionTime: {
-    hour: number;
-    minute: number;
-    second: number;
-    nano: number;
-  };
+  sessionTime: number[];
   expectedStartDate: string | null;
   actualStartDate: string | null;
   expectedEndDate: string | null;
@@ -82,6 +77,7 @@ interface LevelsData {
   mentor: string;
   coordinator: string;
   status: string;
+  acceptingNewParticipants: boolean;
   attendanceUrl: string;
   expectedStartDate: string;
   actualStartDate: string;
@@ -161,7 +157,7 @@ interface VolunteerTypes {
   waNumber: string;
   contactNumber: string;
   email: string;
-  dob: string;
+  age: number;
   gender: string;
   address: string;
   serviceInterests: string;
@@ -228,4 +224,28 @@ interface PariticipantData {
   contactNumber: string;
   dob: string;
   gender: string;
+}
+
+interface extraCoursesTypes {
+  id: number;
+  programId: number;
+  programName: string;
+  programLocation: string;
+  programType: string;
+  audienceType: string;
+  levelId: number;
+  levelNumber: number;
+  levelName: string;
+  levelDisplayName: string;
+  levelStatus: string;
+  levelSessionDay: string;
+  levelSessionTime: number[];
+  participantId: 0;
+  participantFirstName: string;
+  participantLastName: string;
+  participantWaNumber: string;
+  participantContactNumber: string;
+  participantEmail: string;
+  created: string;
+  modified: string;
 }

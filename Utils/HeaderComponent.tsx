@@ -33,7 +33,7 @@ function HeaderComponent() {
       <HeadlessMenu />
       <div>
         <div
-          className={`md:py-10 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
+          className={`md:py-6 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
             state.theme.theme === "LIGHT"
               ? "border-b-gray-200"
               : "border-b-stone-800"

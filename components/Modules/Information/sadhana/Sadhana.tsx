@@ -4,6 +4,9 @@ import { useGlobalState } from "@/Utils/State";
 import React, { useState } from "react";
 import ViewController from "./ViewController";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
+import SortableIcon from "@/Utils/Icons/SortableIcon";
+import Filter from "./Filter";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
   const { state, dispatch } = useGlobalState();
@@ -13,6 +16,10 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
   const [customisationObjs, setCustomisationObjs] = useState({
     cellSize: "normal",
   });
+  const searchParams = useSearchParams();
+  const urlSearchParams = Object.fromEntries(new URLSearchParams(searchParams));
+  const [isSpecialNativeQuery, setIsSpecialNativeQuery] = useState(false);
+  const pathname = usePathname();
 
   function handleCustomisation(object: any) {
     setCustomisationObjs((prevState) => ({
@@ -112,7 +119,19 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="Program_Name"
                 >
-                  PROGRAM NAME
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery ? "program_name" : "programName"
+                      }
+                      tableHeading={"PROGRAM NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "program_name" ||
+                        urlSearchParams.sort === "programName"
+                      }
+                    />
+                    <Filter category="programName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -120,7 +139,21 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="Participant_First_Name"
                 >
-                  PARTICIPANT FIRST NAME
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery
+                          ? "participant_first_name"
+                          : "participantFirstName"
+                      }
+                      tableHeading={"PARTICIPANT FIRST NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "participant_first_name" ||
+                        urlSearchParams.sort === "participantFirstName"
+                      }
+                    />
+                    <Filter category="participantFirstName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -128,7 +161,21 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="Participant_Last_Name"
                 >
-                  PARTICIPANT LAST NAME
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery
+                          ? "participant_last_name"
+                          : "participantLastName"
+                      }
+                      tableHeading={"PARTICIPANT LAST NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "participant_last_name" ||
+                        urlSearchParams.sort === "participantLastName"
+                      }
+                    />
+                    <Filter category="participantLastName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -136,7 +183,21 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="participant_Contact_Number"
                 >
-                  PARTICIPANT CONTACT NUMBER
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery
+                          ? "participant_contact_number"
+                          : "participantContactNumber"
+                      }
+                      tableHeading={"PARTICIPANT CONTACT NUMBER"}
+                      isSorted={
+                        urlSearchParams.sort === "participant_contact_number" ||
+                        urlSearchParams.sort === "participantContactNumber"
+                      }
+                    />
+                    <Filter category="participantContactNumber" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -248,7 +309,17 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="Sadhana_Date"
                 >
-                  SADHANA DATE
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={isSpecialNativeQuery ? "date" : "date"}
+                      tableHeading={"SADHANA DATE"}
+                      isSorted={
+                        urlSearchParams.sort === "date" ||
+                        urlSearchParams.sort === "date"
+                      }
+                    />
+                    <Filter category="date" />
+                  </div>
                 </HidableColumns>
               </tr>
             </thead>

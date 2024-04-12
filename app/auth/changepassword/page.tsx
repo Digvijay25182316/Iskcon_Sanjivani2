@@ -1,10 +1,10 @@
-import SignIn from "@/components/auth/SignIn";
+import ChangePassword from "@/components/auth/ChangePassword";
 import React from "react";
 
 function page() {
   return (
     <div className="w-full">
-      <SignIn />
+      <ChangePassword />
     </div>
   );
 }

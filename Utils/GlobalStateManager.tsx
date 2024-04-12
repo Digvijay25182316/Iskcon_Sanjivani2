@@ -2,9 +2,6 @@
 import React, { useEffect } from "react";
 import { GlobalStateProvider, useGlobalState } from "./State";
 import Toast from "./Toast";
-import SidebarMenu from "./SidebarMenu";
-import useWindowDimensions from "./Hooks/WindowDimentions";
-
 function GlobalStateManager({ children }: { children: React.ReactNode }) {
   return (
     <GlobalStateProvider>
@@ -20,7 +17,7 @@ export default GlobalStateManager;
 
 function ChildrenGlobalState({ children }: { children: React.ReactNode }) {
   const { state, dispatch } = useGlobalState();
-  const { width } = useWindowDimensions();
+
   useEffect(() => {
     const prefersDarkMode =
       window.matchMedia &&

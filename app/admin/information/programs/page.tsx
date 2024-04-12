@@ -13,7 +13,7 @@ async function getProgram(queryString: string) {
     return responseData;
   } else {
     const errorData = await response.json();
-    throw new Error(errorData.message || errorData.statusText);
+    return { error: errorData.message || errorData.statusText };
   }
 }
 
@@ -26,13 +26,7 @@ async function page({
   const response = await getProgram(queryString);
   return (
     <div className="w-full">
-      {response.content.length > 0 ? (
-        <Programs response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
+      <Programs response={response} />
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

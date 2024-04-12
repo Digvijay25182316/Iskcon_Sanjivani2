@@ -116,7 +116,6 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
                   <SortableIcon
                     fieldName={"name"}
                     tableHeading={"ACTIVITY NAME"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "name")}
                   />
                 </HidableColumns>
@@ -129,7 +128,6 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
                   <SortableIcon
                     fieldName={"programName"}
                     tableHeading={"ACTIVITY DESCRIPTION"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some(
                       (obj) => obj.sort === "programName"
                     )}
@@ -144,7 +142,6 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
                   <SortableIcon
                     fieldName={"coordinator"}
                     tableHeading={"CREATED BY"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some(
                       (obj) => obj.sort === "coordinator"
                     )}
@@ -158,7 +155,7 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
                 >
                   <SortableIcon
                     tableHeading={"DATE OF CREATION"}
-                    handleCheck={SortElements}
+                    isSorted={queryArr.some((obj) => obj.sort === "created")}
                   />
                 </HidableColumns>
               </tr>

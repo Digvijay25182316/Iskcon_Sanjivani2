@@ -10,13 +10,11 @@ import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 import { POST } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LinksActivator } from "@/Utils/LinksActivator";
 import QrCode from "@/Utils/QrCodeComponent";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   DocumentCheckIcon,
   DocumentIcon,
   LinkIcon,
@@ -40,14 +38,10 @@ const ProgramType = [
 const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
   response,
 }) => {
-  const { state, dispatch } = useGlobalState();
+  const { state } = useGlobalState();
   const router = useRouter();
-
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-
-  const { width } = useWindowDimensions();
   const [programCreation, setProgramCreation] = useState(false);
-
   const [customisationObjs, setCustomisationObjs] = useState({
     cellSize: "normal",
   });

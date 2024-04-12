@@ -3,6 +3,7 @@ import Activities from "@/components/Modules/Information/activities/Activities";
 import { unstable_noStore } from "next/cache";
 import React from "react";
 import PageNavigation from "@/Utils/Pagination";
+import ClearFilter from "@/components/ClearFilter";
 
 async function getActivities(queryString: string) {
   unstable_noStore();
@@ -27,14 +28,8 @@ async function page({
   const response = await getActivities(queryString);
   return (
     <div>
-      {response.content.length > 0 ? (
-        <Activities response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
-      {response && <PageNavigation totalElements={response.totalElements} />}
+      <Activities response={response} />
+      <PageNavigation totalElements={response.totalElements} />
     </div>
   );
 }

@@ -26,13 +26,7 @@ async function page({
 
   return (
     <div className="w-full">
-      {response.content.length > 0 ? (
-        <Levels response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
+      <Levels response={response} />
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

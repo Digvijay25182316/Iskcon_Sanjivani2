@@ -1,11 +1,20 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest, res: NextResponse) {
+  const cookiesValue = cookies().get("ROLE")?.value;
+  const auth = "digvijays.edake2002@gmail.com:Prabhupada@108";
+  const headers = new Headers();
+  headers.append("Authorization", `${auth}`);
+
   try {
-    const response = await fetch(`${SERVER_ENDPOINT}/volunteer/`);
+    const response = await fetch(`${SERVER_ENDPOINT}/volunteer/`, {
+      method: "GET",
+      headers: headers,
+    });
     if (response.ok) {
       const responseData = await response.json();
       return NextResponse.json({ content: responseData }, { status: 200 });

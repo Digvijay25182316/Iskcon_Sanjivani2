@@ -5,20 +5,20 @@ import ViewController from "./ViewController";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import DateFormatter from "@/Utils/DateFormatter";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
-import FilterComponent from "./FilterComponent";
+import { usePathname, useSearchParams } from "next/navigation";
+import Filter from "./Filter";
+import Link from "next/link";
+import FilterIcon from "@/Utils/Icons/FilterIcon";
 
 const Activities: React.FC<responseDataFetched<ActivityData>> = ({
   response,
 }) => {
   const { state } = useGlobalState();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-
-  const [queryArr, setQueryArr] = useState([
-    { page: 0 },
-    { size: 10 }, // a default page size
-    { sort: "id" },
-  ]);
-
+  const searchParams = useSearchParams();
+  const urlSearchParams = Object.fromEntries(new URLSearchParams(searchParams));
+  const [isSpecialNativeQuery, setIsSpecialNativeQuery] = useState(false);
+  const pathname = usePathname();
   const handleAddItemToColumnNameArr = (option: { value: string }) => {
     if (columnNamesArr.includes(option.value)) {
       setColumnNamesArr(
@@ -27,22 +27,6 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
     } else {
       setColumnNamesArr([...columnNamesArr, option.value]);
     }
-  };
-
-  //Function to sort
-  const SortElements = (sortBy: any) => {
-    setQueryArr((prev) => {
-      const sortIndex = prev.findIndex((item) => item.hasOwnProperty("sort"));
-      if (sortIndex !== -1) {
-        const updatedQueryArr = [...prev];
-        updatedQueryArr[sortIndex] = {
-          ...updatedQueryArr[sortIndex],
-          sort: sortBy,
-        };
-        return updatedQueryArr;
-      }
-      return prev;
-    });
   };
 
   const [customisationObjs, setCustomisationObjs] = useState({
@@ -58,7 +42,17 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
   return (
     <div className={`px-2`}>
       <div className="my-3 flex justify-end items-center gap-5">
-        <FilterComponent />
+        <Link href={`${pathname}?sort=id&page=0&size=10`}>
+          <button
+            className={`flex items-center px-4 py-2 rounded-xl font-semibold text-lg text-blue-600 ${
+              state.theme.theme === "LIGHT"
+                ? "bg-blue-100"
+                : "bg-blue-950 bg-opacity-30"
+            }`}
+          >
+            Clear Filter <FilterIcon />
+          </button>
+        </Link>
         <ViewController
           handleCustomisation={handleCustomisation}
           handleHidables={handleAddItemToColumnNameArr}
@@ -112,20 +106,19 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Program_Name_Activity"
                 >
-                  <SortableIcon
-                    fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
-                        ? "program_name"
-                        : "programName"
-                    }
-                    tableHeading={"PROGRAM NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "program_name" ||
-                        obj.sort === "programName"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery ? "program_name" : "programName"
+                      }
+                      tableHeading={"PROGRAM NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "program_name" ||
+                        urlSearchParams.sort === "programName"
+                      }
+                    />
+                    <Filter category="programName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -133,19 +126,19 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Level_Name_Activity"
                 >
-                  <SortableIcon
-                    fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
-                        ? "level_name"
-                        : "levelName"
-                    }
-                    tableHeading={"LEVEL NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "level_name" || obj.sort === "levelName"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery ? "level_name" : "levelName"
+                      }
+                      tableHeading={"LEVEL NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "level_name" ||
+                        urlSearchParams.sort === "levelName"
+                      }
+                    />
+                    <Filter category="levelName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -153,20 +146,20 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Scheduled_Session_Name_Activity"
                 >
-                  <SortableIcon
-                    fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
-                        ? "scheduled_session_name"
-                        : "scheduledSessionName"
-                    }
-                    tableHeading={"SESSION NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "scheduled_session_name" ||
-                        obj.sort === "schduledSessionName"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery
+                          ? "scheduled_session_name"
+                          : "scheduledSessionName"
+                      }
+                      tableHeading={"SESSION NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "scheduledSessionName" ||
+                        urlSearchParams.sort === "scheduled_session_name"
+                      }
+                    />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -174,20 +167,20 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Scheduled_Activity_Name_Activity"
                 >
-                  <SortableIcon
-                    fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
-                        ? "activity_name"
-                        : "activityName"
-                    }
-                    tableHeading={"ACTIVITY NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "activity_name" ||
-                        obj.sort === "activityName"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery ? "activity_name" : "activityName"
+                      }
+                      tableHeading={"ACTIVITY NAME"}
+                      isSorted={
+                        urlSearchParams.sort === "activity_name" ||
+                        urlSearchParams.sort === "activityName"
+                      }
+                    />
+
+                    <Filter category="activityName" />
+                  </div>
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
@@ -195,16 +188,21 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Participant_Contact_Number_Activity"
                 >
-                  <SortableIcon
-                    fieldName={"contactNumber"}
-                    tableHeading={"CONTACT NUMBER"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "contact_number" ||
-                        obj.sort === "contactNumber"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery
+                          ? "participant_contact_number"
+                          : "participantContactNumber"
+                      }
+                      tableHeading={"CONTACT NUMBER"}
+                      isSorted={
+                        urlSearchParams.sort === "participant_contact_number" ||
+                        urlSearchParams.sort === "participantContactNumber"
+                      }
+                    />
+                    <Filter category="participantContactNumber" />
+                  </div>
                 </HidableColumns>
 
                 <HidableColumns
@@ -215,17 +213,15 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                 >
                   <SortableIcon
                     fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
+                      isSpecialNativeQuery
                         ? "participant_first_name"
                         : "participantFirstName"
                     }
                     tableHeading={"FIRST NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "participant_first_name" ||
-                        obj.sort === "participantFirstName"
-                    )}
+                    isSorted={
+                      urlSearchParams.sort === "participant_first_name" ||
+                      urlSearchParams.sort === "participantFirstName"
+                    }
                   />
                 </HidableColumns>
                 <HidableColumns
@@ -236,17 +232,15 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                 >
                   <SortableIcon
                     fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
+                      isSpecialNativeQuery
                         ? "participant_last_name"
                         : "participantLastName"
                     }
                     tableHeading={"LAST NAME"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "participant_last_name" ||
-                        obj.sort === "participantLastName"
-                    )}
+                    isSorted={
+                      urlSearchParams.sort === "participant_last_name" ||
+                      urlSearchParams.sort === "participantLastName"
+                    }
                   />
                 </HidableColumns>
                 <HidableColumns
@@ -255,20 +249,19 @@ const Activities: React.FC<responseDataFetched<ActivityData>> = ({
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   ColumnToHide="Participant_Date_Activity"
                 >
-                  <SortableIcon
-                    fieldName={
-                      queryArr.some((obj) => obj.sort !== "id")
-                        ? "date"
-                        : "date"
-                    }
-                    tableHeading={"DATE"}
-                    handleCheck={SortElements}
-                    isSorted={queryArr.some(
-                      (obj) =>
-                        obj.sort === "activity_date" ||
-                        obj.sort === "activityDate"
-                    )}
-                  />
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={
+                        isSpecialNativeQuery ? "activity_date" : "activityDate"
+                      }
+                      tableHeading={"DATE"}
+                      isSorted={
+                        urlSearchParams.sort === "activityDate" ||
+                        urlSearchParams.sort === "activity_date"
+                      }
+                    />
+                    <Filter category="activityDate" />
+                  </div>
                 </HidableColumns>
               </tr>
             </thead>

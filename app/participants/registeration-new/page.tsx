@@ -1,168 +1,25 @@
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import ExtraCourseRegisteration from "@/components/Participants/ExtraCourseRegisteration";
 import React from "react";
 
-function page() {
-  const dataArray: LevelToDisplay[] = [
-    {
-      id: 1,
-      number: 1,
-      name: "Session 1",
-      displayName: "Introduction to Programming",
-      description: "An introductory session to programming concepts",
-      programName: "Programming Basics",
-      programId: 123,
-      preacher1: 456,
-      preacher2: 789,
-      mentor: 101,
-      coordinator: 202,
-      status: "Scheduled",
-      attendanceUrl: "https://example.com/attendance/session1",
-      posterUrl: "https://example.com/poster/session1",
-      acceptingNewParticipants: true,
-      sessionDay: "MONDAY",
-      sessionTime: {
-        hour: 10,
-        minute: 30,
-        second: 0,
-        nano: 0,
-      },
-      expectedStartDate: "2024-04-07T10:30:00.000Z",
-      actualStartDate: null,
-      expectedEndDate: "2024-04-07T12:00:00.000Z",
-      actualEndDate: null,
-      createdBy: "John Doe",
-      created: "2024-04-07T08:09:18.295Z",
-      modified: "2024-04-07T08:09:18.295Z",
-    },
-    {
-      id: 2,
-      number: 2,
-      name: "Session 2",
-      displayName: "Intermediate Coding Workshop",
-      description: "A workshop focusing on intermediate coding techniques",
-      programName: "Coding Workshop",
-      programId: 124,
-      preacher1: 457,
-      preacher2: 790,
-      mentor: 102,
-      coordinator: 203,
-      status: "Scheduled",
-      attendanceUrl: "https://example.com/attendance/session2",
-      posterUrl: "https://example.com/poster/session2",
-      acceptingNewParticipants: true,
-      sessionDay: "WEDNESDAY",
-      sessionTime: {
-        hour: 14,
-        minute: 0,
-        second: 0,
-        nano: 0,
-      },
-      expectedStartDate: "2024-04-09T14:00:00.000Z",
-      actualStartDate: null,
-      expectedEndDate: "2024-04-09T16:00:00.000Z",
-      actualEndDate: null,
-      createdBy: "Jane Smith",
-      created: "2024-04-07T08:09:18.295Z",
-      modified: "2024-04-07T08:09:18.295Z",
-    },
-    {
-      id: 3,
-      number: 3,
-      name: "Session 3",
-      displayName: "Advanced Algorithms Seminar",
-      description: "A seminar covering advanced algorithms and data structures",
-      programName: "Algorithms Seminar",
-      programId: 125,
-      preacher1: 458,
-      preacher2: 791,
-      mentor: 103,
-      coordinator: 204,
-      status: "Scheduled",
-      attendanceUrl: "https://example.com/attendance/session3",
-      posterUrl: "https://example.com/poster/session3",
-      acceptingNewParticipants: true,
-      sessionDay: "FRIDAY",
-      sessionTime: {
-        hour: 18,
-        minute: 0,
-        second: 0,
-        nano: 0,
-      },
-      expectedStartDate: "2024-04-11T18:00:00.000Z",
-      actualStartDate: null,
-      expectedEndDate: "2024-04-11T20:00:00.000Z",
-      actualEndDate: null,
-      createdBy: "Michael Johnson",
-      created: "2024-04-07T08:09:18.295Z",
-      modified: "2024-04-07T08:09:18.295Z",
-    },
-    {
-      id: 4,
-      number: 4,
-      name: "Session 4",
-      displayName: "Web Development Crash Course",
-      description: "A crash course on web development technologies",
-      programName: "Web Development Bootcamp",
-      programId: 126,
-      preacher1: 459,
-      preacher2: 792,
-      mentor: 104,
-      coordinator: 205,
-      status: "Scheduled",
-      attendanceUrl: "https://example.com/attendance/session4",
-      posterUrl: "https://example.com/poster/session4",
-      acceptingNewParticipants: true,
-      sessionDay: "TUESDAY",
-      sessionTime: {
-        hour: 9,
-        minute: 0,
-        second: 0,
-        nano: 0,
-      },
-      expectedStartDate: "2024-04-08T09:00:00.000Z",
-      actualStartDate: null,
-      expectedEndDate: "2024-04-08T12:00:00.000Z",
-      actualEndDate: null,
-      createdBy: "Emily Brown",
-      created: "2024-04-07T08:09:18.295Z",
-      modified: "2024-04-07T08:09:18.295Z",
-    },
-    {
-      id: 5,
-      number: 5,
-      name: "Session 5",
-      displayName: "Data Science Workshop",
-      description: "A workshop focusing on data science techniques and tools",
-      programName: "Data Science Bootcamp",
-      programId: 127,
-      preacher1: 460,
-      preacher2: 793,
-      mentor: 105,
-      coordinator: 206,
-      status: "Scheduled",
-      attendanceUrl: "https://example.com/attendance/session5",
-      posterUrl: "https://example.com/poster/session5",
-      acceptingNewParticipants: true,
-      sessionDay: "THURSDAY",
-      sessionTime: {
-        hour: 15,
-        minute: 30,
-        second: 0,
-        nano: 0,
-      },
-      expectedStartDate: "2024-04-10T15:30:00.000Z",
-      actualStartDate: null,
-      expectedEndDate: "2024-04-10T17:30:00.000Z",
-      actualEndDate: null,
-      createdBy: "David Wilson",
-      created: "2024-04-07T08:09:18.295Z",
-      modified: "2024-04-07T08:09:18.295Z",
-    },
-  ];
+async function getLevelArr() {
+  const response = await fetch(
+    `${SERVER_ENDPOINT}/level/new-participant-levels`
+  );
+  if (response.ok) {
+    const responseData = await response.json();
+    return responseData;
+  } else {
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+  }
+}
 
+async function page() {
+  const dataArray = await getLevelArr();
   return (
     <div>
-      <ExtraCourseRegisteration levelDataArr={dataArray} />
+      <ExtraCourseRegisteration response={dataArray} />
     </div>
   );
 }

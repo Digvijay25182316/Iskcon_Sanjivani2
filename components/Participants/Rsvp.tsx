@@ -12,6 +12,9 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
   const { state, dispatch } = useGlobalState();
   const { push } = useRouter();
   const [rsvpResponse, setRsvpResponse] = useState(false);
+  const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
+    {}
+  );
   const [ParticipantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
@@ -43,6 +46,12 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (phoneNumber === "") {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "Enter your phone Number" },
+      });
+      return;
+    } else if (phoneNumber.length < 10) {
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: "Enter your phone Number" },
@@ -144,6 +153,30 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
     }
   }
 
+  const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isNaN(Number(e.target.value))) {
+      if (e.target.value.length > 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+        return;
+      } else if (e.target.value.length < 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+      }
+    } else {
+      setErrorr({
+        type: "phoneNumber",
+        message: "invalid type of phonenumber",
+      });
+      return;
+    }
+    setPhoneNumber(e.target.value);
+  };
+
   return (
     <div className="flex lg:flex-row flex-col h-full items-center ">
       <div className="md:h-full">
@@ -233,9 +266,7 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                         ? "bg-white"
                         : "bg-stone-950"
                     }`}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setPhoneNumber(e.target.value)
-                    }
+                    onChange={handleChangePhoneNumber}
                     maxLength={10}
                     placeholder="9090909090"
                   />
@@ -251,6 +282,10 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                     {isLoading ? <LoadingComponent /> : "Search"}
                   </button>
                 </div>
+
+                {Errorr.type === "phoneNumber" ? (
+                  <p className="text-red-400">{Errorr.message}</p>
+                ) : null}
               </div>
             </div>
           </form>

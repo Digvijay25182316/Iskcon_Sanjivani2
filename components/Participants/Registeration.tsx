@@ -1,11 +1,100 @@
 "use client";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import LoadingComponent from "@/Utils/Icons/LoadingComponent";
 import { useGlobalState } from "@/Utils/State";
+import { POST } from "@/actions/POSTRequests";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useFormStatus } from "react-dom";
 
 function Registeration() {
-  const { state } = useGlobalState();
+  const { state, dispatch } = useGlobalState();
   const [step, setStep] = useState(1);
+  const router = useRouter();
+  const [formState, setFormState] = useState<any>({
+    firstName: "",
+    lastName: "",
+    waNumber: "",
+    age: 0,
+    gender: "MALE",
+    contactNumber: "",
+    email: "",
+    address: "",
+    city: "",
+    maritalStatus: "Non Married",
+    education: "",
+    occupation: "",
+    reference: "",
+    notes: "",
+    numberOfChildren: 0,
+    interestedTopics: [],
+  });
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const phoneNumber = localStorage.getItem("phoneNumber");
+    if (phoneNumber) {
+      setFormState((prev: any) => ({
+        ...prev, // Spread the previous state
+        contactNumber: phoneNumber, // Update the contactNumber field
+        waNumber: phoneNumber, // Update the waNumber field
+      }));
+    }
+  }, []);
+
+  const validateStep = () => {
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "waNumber",
+      "age",
+      "contactNumber",
+      "gender",
+    ];
+    const stepErrors: any = {};
+
+    requiredFields.forEach((field: any) => {
+      if (!formState[field]) {
+        stepErrors[field] = "This field is required";
+      }
+    });
+
+    setErrors(stepErrors);
+
+    return Object.keys(stepErrors).length === 0; // Return true if no errors
+  };
+
+  const handleChange = (name: string, value: string) => {
+    if (name === "contactNumber" && value.length !== 10) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "Contact number must be 10 digits",
+      }));
+    } else if (name === "waNumber" && value.length !== 10) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "whatsapp number must be 10 digits",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: undefined,
+      }));
+    }
+    setFormState((prevFormState: any) => ({
+      ...prevFormState,
+      [name]: value,
+    }));
+  };
+
   function nextHandler() {
     setStep((prev) => prev + 1);
   }
@@ -14,12 +103,88 @@ function Registeration() {
   }
 
   async function handleSubmit(e: FormData) {
+    if (step === 3) {
+      validateStep();
+      const formData: any = {
+        firstName: formState.firstName,
+        lastName: formState.lastName,
+        waNumber: formState.waNumber,
+        contactNumber: formState.contactNumber,
+        gender: formState.gender,
+        education: formState.education,
+        email: formState.email,
+        city: formState.city,
+        address: formState.address,
+        maritalStatus: formState.maritalStatus,
+        notes: formState.notes,
+        numberOfChildren: formState.numberOfChildren,
+        occupation: formState.occupation,
+        reference: formState.reference,
+        age: formState.age,
+      };
+
+      try {
+        const response = await POST(
+          formData,
+          `${SERVER_ENDPOINT}/participant/create`
+        );
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: response.message },
+        });
+        router.back();
+      } catch (error: any) {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "ERROR", message: error.message },
+        });
+      }
+      return;
+    }
     const firstName = e.get("firstName")?.toString();
     const lastName = e.get("lastName")?.toString();
     const contactNumber = e.get("contactNumber")?.toString();
     const waNumber = e.get("waNumber")?.toString();
-    if (firstName || lastName || contactNumber || waNumber) {
-      console.log(firstName, lastName, contactNumber, waNumber);
+    const gender = e.get("gender")?.toString();
+    const age = e.get("age")?.toString();
+    validateStep();
+    if (
+      !firstName ||
+      !lastName ||
+      !contactNumber ||
+      !waNumber ||
+      !age ||
+      !gender
+    ) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "please enter the details" },
+      });
+      return;
+    }
+    const formData: any = {
+      firstName,
+      lastName,
+      contactNumber,
+      waNumber,
+      gender,
+      age,
+    };
+    try {
+      const response = await POST(
+        formData,
+        `${SERVER_ENDPOINT}/participant/create`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+      router.back();
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
     }
   }
 
@@ -87,14 +252,28 @@ function Registeration() {
             : "bg-stone-900 bg-opacity-30"
         }`}
       >
-        <form className="md:w-[500px]">
+        <form action={handleSubmit} className="md:w-[500px]">
           <>
             {step === 1 ? (
-              <FirstStep nextStep={nextHandler} />
+              <FirstStep
+                nextStep={nextHandler}
+                changeHandler={handleChange}
+                changedValue={formState}
+                error={errors}
+              />
             ) : step === 2 ? (
-              <SecondStep nextStep={nextHandler} prevStep={prevHandler} />
+              <SecondStep
+                nextStep={nextHandler}
+                prevStep={prevHandler}
+                changeHandler={handleChange}
+                changedValue={formState}
+              />
             ) : (
-              <ThirdStep prevStep={prevHandler} />
+              <ThirdStep
+                prevStep={prevHandler}
+                changeHandler={handleChange}
+                changedValue={formState}
+              />
             )}
           </>
         </form>
@@ -105,8 +284,22 @@ function Registeration() {
 
 export default Registeration;
 
-const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
+const FirstStep = ({
+  nextStep,
+  changeHandler,
+  changedValue,
+  error,
+}: {
+  nextStep: () => void;
+  changeHandler: (name: string, value: string) => void;
+  changedValue: any;
+  error: any;
+}) => {
   const { state } = useGlobalState();
+  const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
+    {}
+  );
+
   return (
     <>
       <div className="flex flex-col gap-5 w-full">
@@ -118,14 +311,19 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
             <input
               type="text"
               name="firstName"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.firstName}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="firstName"
               placeholder="John"
             />
+            {error.firstName && (
+              <p className="text-red-500 text-sm mt-1">{error.firstName}</p>
+            )}
           </div>
           <div className="flex flex-col gap-3 w-full">
             <label htmlFor="lastName" className="font-bold text-lg">
@@ -134,14 +332,19 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
             <input
               type="text"
               name="lastName"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.lastName}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="lastName"
               placeholder="Doe"
             />
+            {error.lastName && (
+              <p className="text-red-500 text-sm mt-1">{error.lastName}</p>
+            )}
           </div>
         </div>
         <div className="flex md:flex-row flex-col gap-5 w-full">
@@ -152,14 +355,35 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
             <input
               type="tel"
               name="waNumber"
+              onChange={(e) => {
+                if (isNaN(Number(e.target.value))) {
+                  setErrorr({
+                    type: "waNumber",
+                    message: "invalid type of whatsappNumber",
+                  });
+                  return;
+                }
+                setErrorr({
+                  type: "",
+                  message: "",
+                });
+                changeHandler(e.target.name, e.target.value);
+              }}
+              value={changedValue.waNumber}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="waNumber"
               placeholder="7379565771"
             />
+            {error.waNumber && (
+              <p className="text-red-500 text-sm mt-1">{error.waNumber}</p>
+            )}
+            {Errorr.type === "waNumber" && (
+              <p className="text-red-500 text-sm mt-1">{Errorr.message}</p>
+            )}
           </div>
           <div className="flex flex-col gap-3 w-full">
             <label htmlFor="contactNumber" className="font-bold text-lg">
@@ -168,14 +392,35 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
             <input
               type="tel"
               name="contactNumber"
+              onChange={(e) => {
+                if (isNaN(Number(e.target.value))) {
+                  setErrorr({
+                    type: "contactNumber",
+                    message: "invalid type of contactNumber",
+                  });
+                  return;
+                }
+                setErrorr({
+                  type: "",
+                  message: "",
+                });
+                changeHandler(e.target.name, e.target.value);
+              }}
+              value={changedValue.contactNumber}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="contactNumber"
               placeholder="7379565779"
             />
+            {error.contactNumber && (
+              <p className="text-red-500 text-sm mt-1">{error.contactNumber}</p>
+            )}
+            {Errorr.type === "contactNumber" && (
+              <p className="text-red-500 text-sm mt-1">{Errorr.message}</p>
+            )}
           </div>
         </div>
         <div className="flex md:flex-row flex-col gap-5 w-full">
@@ -183,45 +428,36 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
             <label htmlFor="gender" className="font-bold text-lg">
               Gender
             </label>
-            <input
-              type="text"
-              name="gender"
-              className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
-                state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
-              }`}
-              id="gender"
-              placeholder="male/female"
+            <MenuToggleComponent
+              DataArr={["MALE", "FEMALE"]}
+              setSelected={(value: string) => changeHandler("gender", value)}
             />
           </div>
           <div className="flex flex-col gap-3 w-full">
-            <label htmlFor="dob" className="font-bold text-lg">
-              Date Of Birth
+            <label htmlFor="age" className="font-bold text-lg">
+              Age
             </label>
             <input
-              type="date"
-              name="dob"
+              type="number"
+              name="age"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.age}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
-              id="dob"
+              id="age"
+              placeholder="enter your age"
             />
+            {error.age && (
+              <p className="text-red-500 text-sm mt-1">{error.age}</p>
+            )}
           </div>
         </div>
       </div>
       <div className="flex flex-col items-center gap-5 mt-14 w-full">
-        <button
-          className={`max-w-[300px] w-full py-2 text-xl font-bold rounded-xl ${
-            state.theme.theme === "LIGHT"
-              ? "bg-black text-white"
-              : "text-black bg-white"
-          }`}
-        >
-          Submit
-        </button>
+        <SubmitHandlerButton />
         <div className="flex items-center gap-5">
           <p
             className={`border ${
@@ -264,9 +500,13 @@ const FirstStep = ({ nextStep }: { nextStep: () => void }) => {
 function SecondStep({
   nextStep,
   prevStep,
+  changeHandler,
+  changedValue,
 }: {
   nextStep: () => void;
   prevStep: () => void;
+  changeHandler: (name: string, value: string) => void;
+  changedValue: any;
 }) {
   const { state } = useGlobalState();
   return (
@@ -280,10 +520,12 @@ function SecondStep({
             <input
               type="email"
               name="email"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.email}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="email"
               placeholder="johndoe@gmail.com"
@@ -298,10 +540,12 @@ function SecondStep({
             <input
               type="text"
               name="education"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.education}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="education"
               placeholder="Graduate"
@@ -314,10 +558,12 @@ function SecondStep({
             <input
               type="text"
               name="occupation"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.occupation}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="occupation"
               placeholder="Doctor"
@@ -327,31 +573,28 @@ function SecondStep({
             <label htmlFor="maritalStatus" className="font-bold text-lg">
               Marital Status
             </label>
-            <input
-              type="text"
-              name="maritalStatus"
-              className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
-                state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
-              }`}
-              id="maritalStatus"
-              placeholder="married/unmarried"
+            <MenuToggleComponent
+              DataArr={["UNMARRIED", "MARRIED"]}
+              setSelected={(value: string) =>
+                changeHandler("maritalStatus", value)
+              }
             />
           </div>
         </div>
         <div className="flex md:flex-row flex-col gap-5 w-full">
           <div className="flex flex-col gap-3 w-full">
             <label htmlFor="address" className="font-bold text-lg">
-              Address
+              location
             </label>
             <input
               type="text"
               name="address"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.address}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="address"
               placeholder="Iskon NVCC"
@@ -364,10 +607,12 @@ function SecondStep({
             <input
               type="text"
               name="city"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.city}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="city"
               placeholder="Pune"
@@ -406,7 +651,15 @@ function SecondStep({
   );
 }
 
-const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
+const ThirdStep = ({
+  prevStep,
+  changeHandler,
+  changedValue,
+}: {
+  prevStep: () => void;
+  changeHandler: (name: string, value: string) => void;
+  changedValue: any;
+}) => {
   const { state } = useGlobalState();
   return (
     <>
@@ -419,10 +672,12 @@ const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
             <input
               type="text"
               name="reference"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.reference}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="reference"
               placeholder="friends/collegue/etc."
@@ -435,10 +690,12 @@ const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
             <input
               type="number"
               name="numberOfChildren"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.numberOfChildren}
               className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
                 state.theme.theme === "LIGHT"
-                  ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                  : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
               }`}
               id="numberOfChildren"
               placeholder="0"
@@ -452,10 +709,12 @@ const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
           <input
             type="text"
             name="notes"
+            onChange={(e) => changeHandler(e.target.name, e.target.value)}
+            value={changedValue.notes}
             className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
               state.theme.theme === "LIGHT"
-                ? "border-gray-300 focus:ring-blue-100 focus:border-blue-600"
-                : "border-stone-900 focus-ring-blue-950 focus:border-blue-600 bg-stone-950"
+                ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
             }`}
             id="notes"
             placeholder="write something"
@@ -463,15 +722,7 @@ const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
         </div>
       </div>
       <div className="flex flex-col items-center gap-5 mt-14 w-full">
-        <button
-          className={`max-w-[300px] w-full py-2 text-xl font-bold rounded-xl ${
-            state.theme.theme === "LIGHT"
-              ? "bg-black text-white"
-              : "text-black bg-white"
-          }`}
-        >
-          Submit
-        </button>
+        <SubmitHandlerButton />
         <div className="flex items-center gap-5">
           <p
             className={`border ${
@@ -506,3 +757,160 @@ const ThirdStep = ({ prevStep }: { prevStep: () => void }) => {
     </>
   );
 };
+
+function SubmitHandlerButton() {
+  const { state } = useGlobalState();
+  const { pending } = useFormStatus();
+  return (
+    <>
+      {pending ? (
+        <div
+          className={`text-blue-600 font-semibold text-xl w-full py-2 rounded-xl flex justify-center`}
+        >
+          <LoadingComponent />
+        </div>
+      ) : (
+        <button
+          type="submit"
+          className={`max-w-[300px] w-full py-2 text-xl font-bold rounded-xl ${
+            state.theme.theme === "LIGHT"
+              ? "bg-black text-white"
+              : "text-black bg-white"
+          }`}
+          disabled={pending}
+        >
+          Submit
+        </button>
+      )}
+    </>
+  );
+}
+
+function MenuToggleComponent({
+  setSelected,
+  DataArr,
+  position,
+}: {
+  setSelected: (value: string) => void;
+  DataArr: string[];
+  position?: string;
+}) {
+  const [isSelectionOpen, toggleSelection] = useState(false);
+  const { state } = useGlobalState();
+  const menuRef: any = useRef();
+  const [selectedOption, setSelectedOption] = useState("");
+  const [modalStyle, setModalStyle] = useState({
+    transform: "scale(0.95)",
+    opacity: 0,
+  });
+
+  const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (isSelectionOpen) {
+      // Open modal animation
+      setTimeout(() => {
+        setModalStyle({
+          transform: "scale(1)",
+          opacity: 1,
+        });
+      }, 50); // Delay the transition slightly for better visual effect
+    } else {
+      // Close modal animation
+      setModalStyle({
+        transform: "scale(0.95)",
+        opacity: 0,
+      });
+      setTimeout(() => {
+        setIsClosing(false);
+      }, 3000); // Adjust this duration according to your transition duration
+    }
+  }, [isSelectionOpen]);
+
+  const closeModal = useCallback(() => {
+    setIsClosing(true);
+    toggleSelection(false);
+  }, [toggleSelection]);
+
+  // Attach click outside listener
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        closeModal();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [toggleSelection, closeModal]);
+  return (
+    <div className="relative inline-block text-left w-full" ref={menuRef}>
+      <button
+        type="button"
+        className={`flex items-center justify-between border px-2 py-3 rounded-xl gap-5 w-full focus:ring-4 outline-none focus:border font-semibold ${
+          state.theme.theme === "LIGHT"
+            ? "border-gray-300 bg-white focus:ring-blue-100 focus:border-blue-600"
+            : "border-stone-700 bg-stone-950 focus:ring-blue-950 focus:border-blue-600"
+        }`}
+        id="options-menu"
+        aria-haspopup="true"
+        aria-expanded="true"
+        onClick={() => toggleSelection(!isSelectionOpen)}
+      >
+        {selectedOption === "" ? "Select" : selectedOption}
+        <ChevronDownIcon className="h-4 w-4" />
+      </button>
+      {isSelectionOpen && (
+        <div
+          className={`origin-top-left absolute font-semibold text-lg z-[10000] ${
+            position === "up" ? "bottom-0 mb-12" : "mt-2 right-0"
+          } w-full rounded-lg shadow-lg ${
+            state.theme.theme === "LIGHT"
+              ? "bg-white border-gray-300"
+              : "bg-stone-900 border border-stone-700"
+          } ring-1 ring-black ring-opacity-5 focus:outline-none py-2 px-1`}
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="options-menu"
+          style={{
+            ...modalStyle,
+            transition: "transform 0.2s ease-out, opacity 0.2s ease-out",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {DataArr?.length > 0 ? (
+            <ul
+              className={`flex flex-col gap-3 overflow-y-auto h-full custom-scrollbar`}
+              role="none"
+            >
+              {DataArr?.map((item: string, index: number) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setSelectedOption(item);
+                    setSelected(item);
+                    toggleSelection(false);
+                  }}
+                  className={`px-2 py-1.5 rounded-lg ${
+                    item === selectedOption && "bg-blue-300"
+                  } ${
+                    state.theme.theme === "LIGHT"
+                      ? "hover:bg-gray-100 "
+                      : "hover:bg-stone-700"
+                  }`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul>
+              <p>No data to show</p>
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

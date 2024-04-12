@@ -6,6 +6,10 @@ interface AuthenticationState {
   isAuthenticated: boolean;
 }
 
+interface AccessControllRoleState {
+  role: "ROLE_ADMIN" | "ROLE_USER";
+}
+
 interface ThemeState {
   theme: "LIGHT" | "DARK";
 }
@@ -25,6 +29,9 @@ const initialAuthenticationState: AuthenticationState = {
 const initialThemeState: ThemeState = {
   theme: "LIGHT",
 };
+const initialAccessControlRole: AccessControllRoleState = {
+  role: "ROLE_USER",
+};
 
 const toastInitialState: ToastState = {
   toast: {
@@ -36,6 +43,7 @@ const toastInitialState: ToastState = {
 
 // Define action types
 type AuthenticationAction = { type: "LOGIN" } | { type: "LOGOUT" };
+type AccessControllRoleAction = { type: "ADMIN" } | { type: "USER" };
 type ThemeAction = { type: "DARK" } | { type: "LIGHT" };
 type ToastAction =
   | {
@@ -54,6 +62,19 @@ const authenticationReducer = (
       return { ...state, isAuthenticated: true };
     case "LOGOUT":
       return { ...state, isAuthenticated: false };
+    default:
+      return state;
+  }
+};
+const roleAccessControllReducer = (
+  state: AccessControllRoleState,
+  action: AccessControllRoleAction
+): AccessControllRoleState => {
+  switch (action.type) {
+    case "ADMIN":
+      return { ...state, role: "ROLE_ADMIN" };
+    case "USER":
+      return { ...state, role: "ROLE_USER" };
     default:
       return state;
   }
@@ -100,6 +121,7 @@ const rootReducer = combineReducers({
   authentication: authenticationReducer,
   theme: themeReducer,
   toast: ToastReducer,
+  role: roleAccessControllReducer,
 });
 
 // Create context
@@ -108,6 +130,7 @@ interface ContextType {
     authentication: AuthenticationState;
     theme: ThemeState;
     toast: ToastState;
+    role: AccessControllRoleState;
   };
   dispatch: React.Dispatch<any>;
 }
@@ -124,6 +147,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProviderProps) => {
     authentication: initialAuthenticationState,
     theme: initialThemeState,
     toast: toastInitialState,
+    role: initialAccessControlRole,
   });
 
   return (

@@ -25,13 +25,7 @@ async function page({
   const response = await getCourses(queryString);
   return (
     <div>
-      {response.content.length > 0 ? (
-        <CoursesMaster response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
+      <CoursesMaster response={response} />
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

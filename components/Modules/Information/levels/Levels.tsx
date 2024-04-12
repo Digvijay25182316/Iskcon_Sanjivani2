@@ -1,5 +1,4 @@
 "use client";
-import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
 import { useGlobalState } from "@/Utils/State";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ViewController from "./ViewController";
@@ -15,13 +14,13 @@ import {
   LinkIcon,
 } from "@heroicons/react/16/solid";
 import Modal from "@/Utils/Modal";
-import { POST } from "@/actions/POSTRequests";
+import { POST, POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { LinksActivator } from "@/Utils/LinksActivator";
 import CopyClipBoard from "@/Utils/CopyToClipBoard";
 import QrCode from "@/Utils/QrCodeComponent";
 import Link from "next/link";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
   const [levelCreation, setLevelCreation] = useState(false);
@@ -134,7 +133,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"name"}
                     tableHeading={"COURSE NAME"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "name")}
                   />
                 </HidableColumns>
@@ -147,7 +145,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"programName"}
                     tableHeading={"PROGRAM NAME"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some(
                       (obj) => obj.sort === "programName"
                     )}
@@ -162,7 +159,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"coordinator"}
                     tableHeading={"COORDINATOR"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some(
                       (obj) => obj.sort === "coordinator"
                     )}
@@ -177,7 +173,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"mentor"}
                     tableHeading={"MENTOR"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "mentor")}
                   />
                 </HidableColumns>
@@ -190,7 +185,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"preacher1"}
                     tableHeading={"PREACHER1"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "preacher1")}
                   />
                 </HidableColumns>
@@ -203,7 +197,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"preacher2"}
                     tableHeading={"PREACHER2"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "preacher2")}
                   />
                 </HidableColumns>
@@ -216,7 +209,6 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   <SortableIcon
                     fieldName={"status"}
                     tableHeading={"STATUS"}
-                    handleCheck={SortElements}
                     isSorted={queryArr.some((obj) => obj.sort === "status")}
                   />
                 </HidableColumns>
@@ -243,6 +235,14 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                   columnNamesArray={columnNamesArr}
                 >
                   RSVP LINK
+                </HidableColumns>
+                <HidableColumns
+                  ColumnToHide=""
+                  isColumnHeader={true}
+                  stylesClassNames="font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                >
+                  GENERAL REGISTER
                 </HidableColumns>
               </tr>
             </thead>
@@ -531,6 +531,55 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                           />
                         </div>
                       </HidableColumns>
+                      <HidableColumns
+                        isColumnHeader={false}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        {item?.acceptingNewParticipants ? (
+                          <div className="flex items-center gap-5 mx-5">
+                            <Link
+                              href={`${LinksActivator()?.toString()}/participants/registeration-new/${
+                                item.id
+                              }`}
+                              className="text-blue-600 underline flex items-center"
+                            >
+                              <LinkIcon className="h-5 w-5" />
+                              link
+                            </Link>
+                            <QrCode
+                              url={`${LinksActivator()?.toString()}/participants/registeration-new/${
+                                item.id
+                              }`}
+                              Content="something"
+                            />
+                            <CopyClipBoard
+                              url={`${LinksActivator()?.toString()}/participants/registeration-new/${
+                                item.id
+                              }`}
+                              NotCopied={
+                                <DocumentCheckIcon className="h-5 w-6 " />
+                              }
+                              whenCopied={
+                                <DocumentIcon className="h-5 w-6 text-green" />
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div>Null</div>
+                        )}
+                      </HidableColumns>
                     </tr>
                     {expandedRow === index && (
                       <tr>
@@ -590,10 +639,15 @@ function AddLevel({
   const [coordinator, setCoordinator] = useState(0);
   const [programArr, setProgramArr] = useState([]);
   const [volunteersArr, setVolunteersArr] = useState([]);
+  const [sessionDay, setSessionDay] = useState("");
+  const [acceptingNewParticipants, setAcceptingNewParticipants] =
+    useState(false);
   const [selectedProgram, setSelectedProgram] = useState<ProgramsData | any>(
     {}
   );
   const [selectSessionDay, setSelectSessionsDay] = useState("");
+  const [isOpenForGenericRegisteration, setIsOpenForGenericRegisteration] =
+    useState(false);
   useEffect(() => {
     (async () => {
       try {
@@ -644,6 +698,8 @@ function AddLevel({
     const description = e.get("description")?.toString();
     const expectedStartDate = e.get("expectedStartDate")?.toString();
     const expectedEndDate = e.get("expectedEndDate")?.toString();
+    const displayName = e.get("displayName")?.toString();
+    const sessionTime = e.get("sessionTime")?.toString();
     if (!name || !description || !expectedEndDate || !expectedStartDate) {
       dispatch({
         type: "SHOW_TOAST",
@@ -651,6 +707,7 @@ function AddLevel({
       });
       return;
     }
+
     const formData: any = {
       name,
       description,
@@ -663,6 +720,10 @@ function AddLevel({
         expectedEndDate !== ""
           ? new Date(expectedEndDate).toISOString()
           : expectedEndDate,
+      displayName,
+      sessionDay,
+      acceptingNewParticipants,
+      sessionTime: `${sessionTime}:00.000000`,
       preacher1,
       preacher2,
       mentor,
@@ -670,8 +731,12 @@ function AddLevel({
       programId: selectedProgram.id,
       number: courseLevelLength + 1,
     };
+    console.log(formData);
     try {
-      const response = await POST(formData, `${SERVER_ENDPOINT}/level/create`);
+      const response = await POSTADMIN(
+        formData,
+        `${SERVER_ENDPOINT}/level/create`
+      );
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "SUCCESS", message: response.message },
@@ -849,31 +914,75 @@ function AddLevel({
                   />
                 </div>
               </div>
-              <div className="flex flex-col gap-2 mt-3">
-                <label className="font-semibold text-lg">
-                  click if the course is general
-                </label>
-                <div
-                  className={`border border-dashed flex items-center rounded-lg ${
-                    state.theme.theme === "LIGHT"
-                      ? "border-black"
-                      : "border-white"
-                  }`}
-                >
-                  <p className="text-lg w-full text-center">
-                    Is Course General
-                  </p>
-                  <p
-                    className={` p-3 rounded-r-lg ${
-                      state.theme.theme === "LIGHT"
-                        ? "bg-stone-900 text-white"
-                        : "bg-white text-black"
-                    }`}
+              <div className="grid grid-cols-1 gap-5">
+                <div>
+                  <label className="font-semibold text-lg">sessionDay</label>
+                  <SessionsDays
+                    DataArr={[
+                      "MONDAY",
+                      "TUESDAY",
+                      "WEDNESDAY",
+                      "THURSDAY",
+                      "FRIDAY",
+                      "SATURDAY",
+                      "SUNDAY",
+                    ]}
+                    setSelected={(value: string) => setSessionDay(value)}
+                  />
+                </div>
+                <div>
+                  <label className="font-semibold text-lg">
+                    Accepting New Participants
+                  </label>
+                  <SessionsDays
+                    DataArr={["YES", "NO"]}
+                    setSelected={(value: string) =>
+                      setAcceptingNewParticipants(
+                        value === "YES" ? true : false
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="displayName"
+                    className="font-semibold text-lg"
                   >
-                    <PlusIcon className="h-5 w-5" />
-                  </p>
+                    Display name
+                  </label>
+                  <input
+                    type="text"
+                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                      state.theme.theme === "LIGHT"
+                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                    }`}
+                    id="displayName"
+                    name="displayName"
+                    placeholder="Enter the display name"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="sessionTime"
+                    className="font-semibold text-lg"
+                  >
+                    Session Time
+                  </label>
+                  <input
+                    type="time"
+                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                      state.theme.theme === "LIGHT"
+                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                    }`}
+                    id="sessionTime"
+                    name="sessionTime"
+                  />
                 </div>
               </div>
+
               <div className="flex items-center justify-between md:gap-5 gap-3 mt-5">
                 <button
                   type="button"
@@ -1288,9 +1397,9 @@ function SessionsDays({
           {DataArr?.length > 0 ? (
             <ul
               className={`flex flex-col gap-3 overflow-y-auto ${
-                DataArr.length > 10
-                  ? "md:h-[40vh] h-[60vh]"
-                  : "h-[40vh] custom-scrollbar"
+                DataArr.length > 6
+                  ? "md:h-[40vh] h-[60vh] custom-scrollbar"
+                  : "h-[20vh] custom-scrollbar"
               }`}
               role="none"
             >

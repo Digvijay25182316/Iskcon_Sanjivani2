@@ -57,6 +57,9 @@ function SadhanaForm({
 }: responseDataFetched<ProgramsData> | any) {
   const { state, dispatch } = useGlobalState();
   const { push } = useRouter();
+  const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
+    {}
+  );
   const [ParticipantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
@@ -100,6 +103,12 @@ function SadhanaForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (phoneNumber === "") {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "Enter your phone Number" },
+      });
+      return;
+    } else if (phoneNumber.length < 10) {
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: "Enter your phone Number" },
@@ -159,32 +168,55 @@ function SadhanaForm({
       }
     });
     setFormData(formDataObject);
-    console.log(formDataObject);
     handleShare(formDataObject);
     setSubmittedSuccess(true);
-    // try {
-    //   const response = await POST(
-    //     formDataObject,
-    //     `${SERVER_ENDPOINT}/participant-sadhana/record`
-    //   );
-    //   dispatch({
-    //     type: "SHOW_TOAST",
-    //     payload: { message: response.message, type: "SUCCESS" },
-    //   });
+    try {
+      const response = await POST(
+        formDataObject,
+        `${SERVER_ENDPOINT}/participant-sadhana/record`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { message: response.message, type: "SUCCESS" },
+      });
 
-    //   handleShare(formDataObject);
-    //   setFormData(formDataObject);
-    //   setSubmittedSuccess(true);
-    // } catch (error: any) {
-    //   dispatch({
-    //     type: "SHOW_TOAST",
-    //     payload: {
-    //       message: error.message || "something unexpected happened",
-    //       type: "ERROR",
-    //     },
-    //   });
-    // }
+      handleShare(formDataObject);
+      setFormData(formDataObject);
+      setSubmittedSuccess(true);
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: {
+          message: error.message || "something unexpected happened",
+          type: "ERROR",
+        },
+      });
+    }
   }
+
+  const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isNaN(Number(e.target.value))) {
+      if (e.target.value.length > 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+        return;
+      } else if (e.target.value.length < 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+      }
+    } else {
+      setErrorr({
+        type: "phoneNumber",
+        message: "invalid type of phonenumber",
+      });
+      return;
+    }
+    setPhoneNumber(e.target.value);
+  };
 
   return (
     <div className="flex lg:flex-row flex-col min-h-full items-center ">
@@ -264,9 +296,7 @@ function SadhanaForm({
                         ? "bg-white"
                         : "bg-stone-950"
                     }`}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setPhoneNumber(e.target.value)
-                    }
+                    onChange={handleChangePhoneNumber}
                     maxLength={10}
                   />
                   <button

@@ -7,6 +7,8 @@ import DateFormatter from "@/Utils/DateFormatter";
 import Modal from "@/Utils/Modal";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
+import { POSTADMIN } from "@/actions/POSTRequests";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
 
 interface PariticipantData {
   firstName: string;
@@ -167,7 +169,7 @@ const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
             </thead>
             <tbody>
               {response.content.length > 0 ? (
-                response.content.map((item: PariticipantData, index) => (
+                response.content.map((item: VolunteerTypes, index) => (
                   <tr key={index}>
                     <HidableColumns
                       ColumnToHide="First_Name_Volunteer"
@@ -256,7 +258,11 @@ const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
                           : "border-b-stone-800"
                       }`}
                     >
-                      <DateFormatter dateString={item.dob} />
+                      {item.age ? (
+                        item.age
+                      ) : (
+                        <i className="text-gray-500">null</i>
+                      )}
                     </HidableColumns>
                     <HidableColumns
                       ColumnToHide="Gender_Volunteer"
@@ -375,6 +381,50 @@ function CreateVolunteer({
     })();
   }, [dispatch]);
 
+  const handleVolunteerCreation = async (e: FormData) => {
+    const firstName = e.get("firstName")?.toString();
+    const lastName = e.get("lastName")?.toString();
+    const initiatedName = e.get("initiatedName")?.toString();
+    const contactNumber = e.get("contactNumber")?.toString();
+    const waNumber = e.get("waNumber")?.toString();
+    const age = e.get("age")?.toString();
+    const email = e.get("email")?.toString();
+    const password = e.get("password")?.toString();
+    const gender = e.get("gender")?.toString();
+    const address = e.get("address")?.toString();
+    const serviceInterests = e.get("serviceInterests")?.toString();
+    const currentServices = e.get("currentServices")?.toString();
+    const formData: any = {
+      firstName,
+      lastName,
+      initiatedName,
+      contactNumber,
+      waNumber,
+      age,
+      email,
+      password,
+      gender,
+      address,
+      serviceInterests,
+      currentServices,
+    };
+    try {
+      const response = await POSTADMIN(
+        formData,
+        `${SERVER_ENDPOINT}/volunteer/create`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { message: response.message, type: "SUCCESS" },
+      });
+    } catch (error:any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { message: error.message, type: "ERROR" },
+      });
+    }
+  };
+
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div
@@ -394,7 +444,7 @@ function CreateVolunteer({
           Create Volunteer
         </h1>
         <div className="lg:w-[40vw] md:w-[60vw] w-[95vw] max-h-[80vh] overflow-y-auto custom-scrollbar px-1">
-          <form action="" className="mt-5 w-full">
+          <form action={handleVolunteerCreation} className="mt-5 w-full">
             <div className="w-full flex flex-col gap-3">
               <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                 <div className="flex flex-col gap-2">
@@ -455,7 +505,6 @@ function CreateVolunteer({
                       ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
                       : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
                   }`}
-                  required
                   id="Initiated_Name"
                   placeholder="Govindnath Das"
                 />
@@ -523,6 +572,27 @@ function CreateVolunteer({
                   required
                   id="Email"
                   placeholder="xyz@example.com"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label
+                  className="font-semibold text-lg"
+                  htmlFor="Password"
+                  id="password"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                    state.theme.theme === "LIGHT"
+                      ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                      : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                  }`}
+                  required
+                  id="Password"
+                  placeholder="***********"
                 />
               </div>
               <div className="grid md:grid-cols-2 grid-cols-1 gap-5">

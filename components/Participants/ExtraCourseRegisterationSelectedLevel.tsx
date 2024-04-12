@@ -15,9 +15,9 @@ import React, {
 } from "react";
 import { useFormStatus } from "react-dom";
 
-const ExtraCourseRegisteration: React.FC<
-  responseDataFetched<LevelToDisplay>
-> = ({ response }) => {
+const ExtraCourseRegisterationSelectedLevel: React.FC<{
+  response: LevelToDisplay;
+}> = ({ response }) => {
   const { state, dispatch } = useGlobalState();
   const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +75,7 @@ const ExtraCourseRegisteration: React.FC<
   async function handleSubmitGeneralRegisteration(e: FormData) {
     const formData: any = {
       participantId: participantData.id,
-      levelId: selectedLevel.id,
+      levelId: response.id,
     };
     try {
       const response = await POST(
@@ -123,8 +123,9 @@ const ExtraCourseRegisteration: React.FC<
     <div className="flex flex-col min-h-screen w-screen items-center">
       <div className="py-10 mx-5">
         <h1 className="text-4xl font-bold">Registeration</h1>
-        <h4 className="text-lg">
-          Select a program from below that you are interested in
+        <h4 className="text-lg md:w-[400px]">
+          By clicking on submit button you&apos;ll confirm that you are
+          interested in this program
         </h4>
       </div>
       <div
@@ -199,175 +200,46 @@ const ExtraCourseRegisteration: React.FC<
           </div>
           <div className="flex flex-col gap-3">
             <label className="font-bold text-xl ">Select Programs</label>
-            <MenuOthersDropDown
-              DataArr={response.content}
-              setSelected={(value: any) => setSelectedLevel(value)}
-            />
+            <div
+              className={`px-2 py-1.5 rounded-lg flex items-center gap-2 text-lg font-semibold`}
+            >
+              <p
+                className={`border-r pr-1 ${
+                  state.theme.theme === "LIGHT"
+                    ? "border-r-gray-300"
+                    : "border-r-stone-700"
+                }`}
+              >
+                {response.displayName}
+              </p>
+              {response.sessionTime ? (
+                <p
+                  className={`border-r pr-1 ${
+                    state.theme.theme === "LIGHT"
+                      ? "border-r-gray-300"
+                      : "border-r-stone-700"
+                  }`}
+                >
+                  {formatTime(response.sessionTime)}
+                </p>
+              ) : (
+                <></>
+              )}
+              <p>{response.sessionDay}</p>
+            </div>
           </div>
-          <div className="mt-10 flex justify-center">
-            <SubmitHandlerButton />
-          </div>
+          {Object.keys(participantData).length > 0 && (
+            <div className="mt-10 flex justify-center">
+              <SubmitHandlerButton />
+            </div>
+          )}
         </form>
       </div>
     </div>
   );
 };
 
-export default ExtraCourseRegisteration;
-
-function MenuOthersDropDown({
-  setSelected,
-  DataArr,
-}: {
-  setSelected: (value: LevelToDisplay) => void;
-  DataArr: LevelToDisplay[];
-}) {
-  const [isSelectionOpen, toggleSelection] = useState(false);
-  const { state } = useGlobalState();
-  const menuRef: any = useRef();
-  const [selectedOption, setSelectedOption] = useState("");
-  const [modalStyle, setModalStyle] = useState({
-    transform: "scale(0.95)",
-    opacity: 0,
-  });
-
-  const [isClosing, setIsClosing] = useState(false);
-
-  useEffect(() => {
-    if (isSelectionOpen) {
-      // Open modal animation
-      setTimeout(() => {
-        setModalStyle({
-          transform: "scale(1)",
-          opacity: 1,
-        });
-      }, 50); // Delay the transition slightly for better visual effect
-    } else {
-      // Close modal animation
-      setModalStyle({
-        transform: "scale(0.95)",
-        opacity: 0,
-      });
-      setTimeout(() => {
-        setIsClosing(false);
-      }, 3000); // Adjust this duration according to your transition duration
-    }
-  }, [isSelectionOpen]);
-
-  const closeModal = useCallback(() => {
-    setIsClosing(true);
-    toggleSelection(false);
-  }, [toggleSelection]);
-
-  // Attach click outside listener
-  useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        closeModal();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [toggleSelection, closeModal]);
-  return (
-    <div
-      className="relative inline-block text-left w-full text-xl"
-      ref={menuRef}
-    >
-      <button
-        type="button"
-        className={`flex items-center justify-between border px-2 py-2.5 rounded-xl gap-5 w-full focus:ring-4 outline-none focus:border font-semibold text-xl ${
-          state.theme.theme === "LIGHT"
-            ? "border-gray-300 bg-white focus:ring-blue-100 focus:border-blue-600"
-            : "border-stone-700 bg-stone-950 focus:ring-blue-950 focus:border-blue-600"
-        }`}
-        id="options-menu"
-        aria-haspopup="true"
-        aria-expanded="true"
-        onClick={() => toggleSelection(!isSelectionOpen)}
-      >
-        {selectedOption === "" ? "Select" : selectedOption}
-        <ChevronDownIcon className="h-4 w-4" />
-      </button>
-      {isSelectionOpen && (
-        <div
-          className={`origin-top-left absolute font-semibold text-lg z-[2500] w-full rounded-lg shadow-lg mb-14 bottom-0 ${
-            state.theme.theme === "LIGHT"
-              ? "bg-white border-gray-300"
-              : "bg-stone-900 border border-stone-700"
-          } ring-1 ring-black ring-opacity-5 focus:outline-none py-1 px-1`}
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="options-menu"
-          style={{
-            ...modalStyle,
-            transition: "transform 0.2s ease-out, opacity 0.2s ease-out",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {DataArr?.length > 0 ? (
-            <div
-              className={`flex flex-col gap-3 overflow-y-auto ${
-                DataArr.length > 10
-                  ? "md:h-[40vh] h-[60vh]"
-                  : "h-[40vh] custom-scrollbar"
-              }`}
-              role="none"
-            >
-              {DataArr?.map((item: LevelToDisplay, index: number) => (
-                <div
-                  key={index}
-                  onClick={() => {
-                    setSelectedOption(item.name);
-                    setSelected(item);
-                    toggleSelection(false);
-                  }}
-                  className={`px-2 py-1.5 rounded-lg flex items-center gap-2 ${
-                    item.name === selectedOption && "bg-blue-300"
-                  } ${
-                    state.theme.theme === "LIGHT"
-                      ? "hover:bg-gray-100 "
-                      : "hover:bg-stone-700"
-                  }`}
-                >
-                  <p
-                    className={`border-r pr-1 ${
-                      state.theme.theme === "LIGHT"
-                        ? "border-r-gray-300"
-                        : "border-r-stone-700"
-                    }`}
-                  >
-                    {item.displayName}
-                  </p>
-                  {item.sessionTime ? (
-                    <p
-                      className={`border-r pr-1 ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-r-gray-300"
-                          : "border-r-stone-700"
-                      }`}
-                    >
-                      {formatTime(item.sessionTime)}
-                    </p>
-                  ) : (
-                    <></>
-                  )}
-                  <p>{item.sessionDay}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <ul>
-              <p>No data to show</p>
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+export default ExtraCourseRegisterationSelectedLevel;
 
 function formatTime(timeObject: number[]) {
   // Extract hours, minutes, and seconds from the time object

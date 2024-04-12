@@ -13,12 +13,24 @@ export default function Error({
 
   return (
     <div
-      className={`flex items-center justify-center w-full md:text-3xl text-2xl h-full min-h-[60vh] ${
+      className={`flex items-center justify-center w-full text-lg h-full min-h-[60vh] ${
         state.theme.theme === "LIGHT" ? "bg-white" : "bg-sone-950"
       }`}
     >
       <div className="flex flex-col items-center gap-5">
-        <h2 className="font-bold">Something went wrong!</h2>
+        <h2>
+          {error.message === "fetch failed" ? (
+            <div className="text-center">
+              <p className="font-bold text-2xl">Failed to load data</p>
+              <p>Please refresh the page or click below</p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="font-bold text-2xl">Failed to load data</p>
+              <p>Please check your internet connection and try again</p>
+            </div>
+          )}
+        </h2>
 
         <div className="flex flex-col items-center">
           <button

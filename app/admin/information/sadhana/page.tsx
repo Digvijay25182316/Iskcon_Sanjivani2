@@ -2,8 +2,10 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import Sadhana from "@/components/Modules/Information/sadhana/Sadhana";
 import React from "react";
 import PageNavigation from "@/Utils/Pagination";
+import { unstable_noStore } from "next/cache";
 
 async function getSadhana(queryString: string) {
+  unstable_noStore();
   const response = await fetch(
     `${SERVER_ENDPOINT}/participant-sadhana/filter/?${queryString}`
   );
@@ -25,13 +27,7 @@ async function page({
   const response = await getSadhana(queryString);
   return (
     <div>
-      {response.content.length > 0 ? (
-        <Sadhana response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
+      <Sadhana response={response} />
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

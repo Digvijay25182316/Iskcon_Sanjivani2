@@ -24,10 +24,16 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
   >({});
   const [focusMobile, setFocusMobile] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [selectedActivity, setSelectedActivity] = useState<
+    ScheduledSessions | any
+  >({});
   const [LatestSession, setLatestSession] = useState<ScheduledSessions | any>(
     {}
   );
   const [recordAttended, setRecordAttended] = useState<ScheduledSessions | any>(
+    {}
+  );
+  const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
     {}
   );
   const [PreviousSessions, setPreviousSessions] = useState<
@@ -58,6 +64,12 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (phoneNumber === "") {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "Enter your phone Number" },
+      });
+      return;
+    } else if (phoneNumber.length < 10) {
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: "Enter your phone Number" },
@@ -119,6 +131,30 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
       });
     }
   }
+
+  const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!isNaN(Number(e.target.value))) {
+      if (e.target.value.length > 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+        return;
+      } else if (e.target.value.length < 10) {
+        setErrorr({
+          type: "phoneNumber",
+          message: "phone Number can only contain 10 digits",
+        });
+      }
+    } else {
+      setErrorr({
+        type: "phoneNumber",
+        message: "invalid type of phonenumber",
+      });
+      return;
+    }
+    setPhoneNumber(e.target.value);
+  };
 
   return (
     <div className="flex lg:flex-row flex-col h-full items-center ">
@@ -211,9 +247,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
                         ? "bg-white"
                         : "bg-stone-950"
                     }`}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setPhoneNumber(e.target.value)
-                    }
+                    onChange={handleChangePhoneNumber}
                     maxLength={10}
                     placeholder="9090909090"
                   />
