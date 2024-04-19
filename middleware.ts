@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const url = req.url;
+  const newURL = new URL("/auth/signin", url);
+
   if (!req.cookies.has("AUTHRES")) {
-    return NextResponse.redirect("http://localhost:3000/auth/signin");
+    return NextResponse.redirect(newURL.href);
   }
 
   return NextResponse.next();
