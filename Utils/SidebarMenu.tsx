@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGlobalState } from "./State";
 import useWindowDimensions from "./Hooks/WindowDimentions";
 import Link from "next/link";
@@ -19,12 +19,34 @@ import {
   Squares2X2Icon,
   RectangleGroupIcon,
 } from "@heroicons/react/24/outline";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LOGOUT } from "@/actions/POSTRequests";
 
-function SidebarMenu() {
-  const { state } = useGlobalState();
+function SidebarMenu({ authres }: any) {
+  const router = useRouter();
+  const { state, dispatch } = useGlobalState();
   const { width } = useWindowDimensions();
   const pathname = usePathname();
+  const handleLogout = async () => {
+    try {
+      const response = await LOGOUT();
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+      router.push("/auth/signin");
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
+  };
+  useEffect(() => {
+    if (typeof authres === "undefined") {
+      router.push("/auth/signin");
+    }
+  }, [authres, router]);
   return (
     <div
       className={`hidden md:block fixed w-[240px] z-[1000] ${
@@ -140,6 +162,25 @@ function SidebarMenu() {
             }`}
           >
             <Cog6ToothIcon className="h-6 w-6" /> Settings
+          </div>
+        </Link>
+        <Link href={"/auth/signin"} onClick={handleLogout}>
+          <div
+            className={`flex items-center gap-3 py-2 my-2 px-1.5 rounded-2xl font-semibold justify-center ${
+              pathname.startsWith("/admin/customizations")
+                ? `${
+                    state.theme.theme === "LIGHT"
+                      ? "bg-blue-50 text-blue-700"
+                      : "bg-blue-950 text-blue-300 bg-opacity-40"
+                  }`
+                : `${
+                    state.theme.theme === "LIGHT"
+                      ? "hover:bg-blue-50 text-black"
+                      : "hover:bg-blue-950 text-stone-300"
+                  }`
+            }`}
+          >
+            Logout
           </div>
         </Link>
       </div>

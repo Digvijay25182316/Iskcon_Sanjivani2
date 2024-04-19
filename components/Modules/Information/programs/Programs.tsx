@@ -394,31 +394,49 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
                         : "border-b-stone-800"
                     }`}
                   >
-                    <div className="flex items-center gap-5">
-                      <Link
-                        href={`${LinksActivator()?.toString()}/participants/sadhana/${
-                          item.id
-                        }`}
-                        className="text-blue-600 underline flex items-center"
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="flex items-center gap-5"
+                        aria-disabled={true}
                       >
-                        <LinkIcon className="h-5 w-5" />
-                        link
+                        <Link
+                          href={`${LinksActivator()?.toString()}/participants/sadhana/${
+                            item.id
+                          }`}
+                          className="text-blue-600 underline flex items-center"
+                        >
+                          <LinkIcon className="h-5 w-5" />
+                          link
+                        </Link>
+                        <QrCode
+                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                            item.id
+                          }`}
+                          Content="something"
+                        />
+                        <CopyClipBoard
+                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                            item.id
+                          }`}
+                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
+                          whenCopied={
+                            <DocumentIcon className="h-5 w-6 text-green" />
+                          }
+                        />
+                      </div>
+                      <Link
+                        href={`/admin/information/programs/sadhana/${item.id}`}
+                      >
+                        <button
+                          className={`px-2 py-1.5 ${
+                            state.theme.theme === "LIGHT"
+                              ? "bg-blue-50 text-blue-600"
+                              : "bg-blue-950 text-blue-300"
+                          }`}
+                        >
+                          Configure
+                        </button>
                       </Link>
-                      <QrCode
-                        url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                          item.id
-                        }`}
-                        Content="something"
-                      />
-                      <CopyClipBoard
-                        url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                          item.id
-                        }`}
-                        NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
-                        whenCopied={
-                          <DocumentIcon className="h-5 w-6 text-green" />
-                        }
-                      />
                     </div>
                   </HidableColumns>
                 </tr>

@@ -19,7 +19,6 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
   response: LevelToDisplay;
 }> = ({ response }) => {
   const { state, dispatch } = useGlobalState();
-  const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
     {}
@@ -30,6 +29,13 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
   const [participantData, setParticipantData] = useState<
     PariticipantData | any
   >({});
+
+  useEffect(() => {
+    const phoneNumber = localStorage.getItem("PHONE");
+    if (phoneNumber) {
+      setPhoneNumber(phoneNumber);
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -46,13 +52,14 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
       if (response.ok) {
         const responseData = await response.json();
         setParticipantData(responseData.content);
-      } else if (response.status === 404) {
-        console.log(
-          "participant with the phone number does not exists  please register"
-        );
-        push("/participants/registeration");
-        localStorage.setItem("PHONE", phoneNumber);
       } else {
+        if (response.status === 404) {
+          console.log(
+            "participant with the phone number does not exists  please register"
+          );
+          push("/participants/registeration");
+          localStorage.setItem("PHONE", phoneNumber);
+        }
         const errorData = await response.json();
         dispatch({
           type: "SHOW_TOAST",
@@ -127,6 +134,17 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
           By clicking on submit button you&apos;ll confirm that you are
           interested in this program
         </h4>
+      </div>
+      <div className="relative font-semibold">
+        <div
+          className={`bottom-0 mb-2 border flex items-center gap-2 px-4 py-1.5 rounded-full text-lg ${
+            state.theme.theme === "LIGHT"
+              ? "border-stone-300"
+              : "border-stone-700"
+          }`}
+        >
+          <p>Program :</p> {response?.programName}
+        </div>
       </div>
       <div
         className={`md:p-5 rounded-[40px] p-4  mx-3 mb-6 ${

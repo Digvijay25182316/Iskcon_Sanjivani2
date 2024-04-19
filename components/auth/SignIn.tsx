@@ -2,11 +2,13 @@
 import LoadingComponent from "@/Utils/Icons/LoadingComponent";
 import { useGlobalState } from "@/Utils/State";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useFormStatus } from "react-dom";
 
 function SignIn() {
   const { state, dispatch } = useGlobalState();
+  const router = useRouter();
   async function handleAuthenticate(e: FormData) {
     const email = e.get("email")?.toString();
     const password = e.get("password")?.toString();
@@ -41,6 +43,7 @@ function SignIn() {
           type: "SHOW_TOAST",
           payload: { type: "SUCCESS", message: responseData.message },
         });
+        router.push("/admin/information/programs");
       } else {
         const errorData = await response.json();
         dispatch({

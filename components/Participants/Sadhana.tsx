@@ -74,7 +74,7 @@ function SadhanaForm({
 
   const handleShare = (text: any) => {
     // Encode the message for URL
-    let message = `*!!Sadhana Submitted* \n Name: ${ParticipantData.firstName}${ParticipantData.lastName}\n`;
+    let message = `*!!Sadhana Submitted* \n \n *${ParticipantData.firstName}${ParticipantData.lastName}* \n \n`;
     for (const key in text) {
       if (
         Object.hasOwnProperty.call(text, key) &&
@@ -86,13 +86,13 @@ function SadhanaForm({
     }
     setSadhanaFormData(message);
   };
-
   useEffect(() => {
-    const phoneNumber = localStorage.getItem("phoneNumber");
+    const phoneNumber = localStorage.getItem("PHONE");
     if (phoneNumber) {
       setPhoneNumber(phoneNumber);
     }
   }, []);
+
   useEffect(() => {
     const filteredArrForChecked = FormListItems.filter(
       (item) => sadhanaForm[item.databaseField] === true
@@ -121,13 +121,14 @@ function SadhanaForm({
       if (response.ok) {
         const responseData = await response.json();
         setParticipantData(responseData.content);
-      } else if (response.status === 404) {
-        console.log(
-          "participant with the phone number does not exists  please register"
-        );
-        push("/participants/registeration");
-        localStorage.setItem("PHONE", phoneNumber);
       } else {
+        if (response.status === 404) {
+          console.log(
+            "participant with the phone number does not exists  please register"
+          );
+          push("/participants/registeration");
+          localStorage.setItem("PHONE", phoneNumber);
+        }
         const errorData = await response.json();
         dispatch({
           type: "SHOW_TOAST",
@@ -425,7 +426,11 @@ function SadhanaForm({
         isOpen={SubmittedSuccess}
         onClose={() => setSubmittedSuccess(false)}
       >
-        <div className="flex flex-col items-center">
+        <div
+          className={`flex flex-col items-center p-5 rounded-[40px] ${
+            state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+          }`}
+        >
           <p className="text-red-600 font-bold text-xl">Preview Message</p>
           <div className="p-5 flex flex-col gap-2">
             <p className="font-bold">Sadhana Submitted</p>
@@ -448,7 +453,11 @@ function SadhanaForm({
                 // Open the shareable link in a new window
                 window.open(shareableLink);
               }}
-              className="flex items-center border border-green-400 bg-green-200 px-2 rounded-xl "
+              className={`flex items-center border px-4 py-1.5 ${
+                state.theme.theme === "LIGHT"
+                  ? "border-green-400 bg-green-200"
+                  : "border-green-900 bg-green-950"
+              } px-2 rounded-2xl`}
             >
               Whatsapp
               <i>

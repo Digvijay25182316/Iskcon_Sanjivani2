@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useGlobalState } from "./State";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   AcademicCapIcon,
   ArrowTrendingUpIcon,
@@ -19,32 +19,81 @@ import {
   UserIcon,
 } from "@heroicons/react/16/solid";
 import Link from "next/link";
+import UserDetails from "@/components/auth/authenticated/UserDetails";
+import { decrypt } from "./helpers/auth";
 
-function HeaderComponent() {
+interface AUTHRES {
+  id: number;
+  name: "ROLE_ADMIN" | "ROLE_VOLUNTEER" | "ROLE_USER";
+  created: number;
+  modified: number;
+  buf: string;
+}
+
+function HeaderComponent({
+  AUTHRES,
+}: {
+  AUTHRES: { name: string; value: string };
+}) {
+  const { push } = useRouter();
+  useEffect(() => {
+    if (!AUTHRES) {
+      push("/auth/signin");
+    }
+  }, [AUTHRES, push]);
   const { state } = useGlobalState();
   const pathname = usePathname();
-  var parts = pathname.split("/");
 
+  var parts = pathname.split("/");
+  const authres: AUTHRES = JSON.parse(AUTHRES.value);
   // Extract the last part which should be 'levels'
   var actualPathname = parts[parts.length - 1];
 
   return (
     <>
-      <HeadlessMenu />
-      <div>
-        <div
-          className={`md:py-6 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
-            state.theme.theme === "LIGHT"
-              ? "border-b-gray-200"
-              : "border-b-stone-800"
-          }`}
-        >
-          <h1 className="md:text-3xl text-2xl">
+      <HeadlessMenu authres={authres} />
+      <div
+        className={`md:py-6 py-5 md:px-10 px-3 font-bold text-3xl border-b ${
+          state.theme.theme === "LIGHT"
+            ? "border-b-gray-200"
+            : "border-b-stone-800"
+        } flex flex-col`}
+      >
+        <div className="flex items-center justify-between">
+          <h1 className="md:text-3xl text-2xl ">
             {actualPathname ? actualPathname : pathname}
           </h1>
-          <div className={` text-lg font-normal text-gray-500`}>
-            <PathWithIcons pathname={pathname} />
+          <div
+            className={`text-lg border rounded-full pr-2 ${
+              state.theme.theme === "LIGHT"
+                ? "border-gray-100"
+                : "border-stone-900"
+            }`}
+          >
+            <div className="flex items-center">
+              <p
+                className={`p-4  rounded-full ${
+                  state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-900"
+                }`}
+              >
+                <UserIcon className="h-5 w-5" />
+              </p>
+              <div className="px-2 md:text-xl text-sm">
+                <UserDetails email={authres.buf} />
+                <p className="text-sm font-semibold text-gray-400">
+                  {authres.name === "ROLE_ADMIN"
+                    ? "ADMIN"
+                    : authres.name === "ROLE_VOLUNTEER"
+                    ? "VOLUNTEER"
+                    : "USER"}
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div className={` text-lg font-normal text-gray-500`}>
+          <PathWithIcons pathname={pathname} />
         </div>
       </div>
     </>
@@ -85,7 +134,7 @@ const PathWithIcons = ({ pathname }: { pathname: string }) => {
   return <div className="flex items-center">{formattedPath}</div>;
 };
 
-function HeadlessMenu() {
+function HeadlessMenu({ authres }: { authres: AUTHRES }) {
   const { state } = useGlobalState();
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
@@ -111,6 +160,7 @@ function HeadlessMenu() {
         }`}
       >
         <h1 className="text-xl font-bold ">Sanjivani</h1>
+
         <button
           onClick={() => setIsOpen(true)}
           className={`p-3 rounded-full ${
@@ -248,6 +298,23 @@ function HeadlessMenu() {
                   <Cog6ToothIcon className="h-6 w-6" /> Settings
                 </div>
               </Link>
+              <button
+                className={`flex items-center gap-3 py-2 my-1 px-1.5 rounded-2xl font-semibold justify-center mt-8 ${
+                  pathname.startsWith("/admin/customizations")
+                    ? `${
+                        state.theme.theme === "LIGHT"
+                          ? "bg-blue-50 text-blue-700"
+                          : "bg-blue-950 text-blue-300 bg-opacity-40"
+                      }`
+                    : `${
+                        state.theme.theme === "LIGHT"
+                          ? "hover:bg-blue-50 text-black"
+                          : "hover:bg-blue-950 text-stone-300"
+                      }`
+                }`}
+              >
+                Logout
+              </button>
             </div>
           </div>
         </>

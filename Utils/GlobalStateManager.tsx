@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { GlobalStateProvider, useGlobalState } from "./State";
 import Toast from "./Toast";
+import { cookies } from "next/headers";
 function GlobalStateManager({ children }: { children: React.ReactNode }) {
   return (
     <GlobalStateProvider>

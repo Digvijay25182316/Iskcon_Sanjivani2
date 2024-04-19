@@ -28,13 +28,8 @@ async function page({
   const response = await getParticipant(queryString);
   return (
     <div>
-      {response.content.length > 0 ? (
-        <Participants response={response} />
-      ) : (
-        <div className="h-[350px] flex items-center justify-center font-bold text-xl">
-          No Data To Show
-        </div>
-      )}
+      <Participants response={response} />
+
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

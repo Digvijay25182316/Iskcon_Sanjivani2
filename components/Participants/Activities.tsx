@@ -33,13 +33,10 @@ function Activities({
   const [selectedActivity, setSelectedActivity] = useState<
     ScheduledSessions | any
   >({});
-  const [PreviousSessions, setPreviousSessions] = useState<
-    ScheduledSessions[] | any[]
-  >([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const phoneNumber = localStorage.getItem("phoneNumber");
+    const phoneNumber = localStorage.getItem("PHONE");
     if (phoneNumber) {
       setPhoneNumber(phoneNumber);
     }

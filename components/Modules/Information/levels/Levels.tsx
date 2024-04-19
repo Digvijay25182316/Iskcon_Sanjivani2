@@ -22,12 +22,14 @@ import QrCode from "@/Utils/QrCodeComponent";
 import Link from "next/link";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 
-const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
+const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
+  response,
+}) => {
   const [levelCreation, setLevelCreation] = useState(false);
   const { state } = useGlobalState();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [expandedRow, setExpandedRow] = useState<number>(-1);
-  const [selectedLevel, setSelectedLevel] = useState<LevelsData | any>({});
+  const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
     { size: 10 }, // a default page size
@@ -103,6 +105,8 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
               { columnName: "MENTOR", field: "Mentor_Level" },
               { columnName: "PREACHER1", field: "Preacher1_Level" },
               { columnName: "PREACHER2", field: "Preacher2_Level" },
+              { columnName: "displayName", field: "Display_Name" },
+              { columnName: "sessionDay", field: "Session_Day" },
               { columnName: "STATUS", field: "Status_Level" },
             ]}
           />
@@ -124,6 +128,14 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                     : "border-b-2 border-stone700"
                 }`}
               >
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames="font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Accepting_New_Participants"
+                >
+                  <p className="font-bold">ACCEPTING PARTICIPANTS</p>
+                </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
@@ -202,6 +214,22 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                 </HidableColumns>
                 <HidableColumns
                   isColumnHeader={true}
+                  stylesClassNames=" font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Display_Name"
+                >
+                  <p>DISPLAY NAME</p>
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Session_Day"
+                >
+                  <p>SESSION DAY</p>
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
                   stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
                   columnNamesArray={columnNamesArr}
                   ColumnToHide="Status_Level"
@@ -248,7 +276,7 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
             </thead>
             <tbody>
               {response?.content?.length > 0 ? (
-                response?.content.map((item: LevelsData, index) => (
+                response?.content.map((item: LevelToDisplay, index) => (
                   <React.Fragment key={index}>
                     <tr
                       onClick={() => {
@@ -256,6 +284,26 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                         setSelectedLevel(item);
                       }}
                     >
+                      <HidableColumns
+                        ColumnToHide="Accepting_New_Participants"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        {item.acceptingNewParticipants ? "YES" : "NO"}
+                      </HidableColumns>
                       <HidableColumns
                         ColumnToHide="Course_Name_Level"
                         isColumnHeader={false}
@@ -375,6 +423,54 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                         }`}
                       >
                         <VolunteerData volunteerid={item.preacher2} />
+                      </HidableColumns>
+                      <HidableColumns
+                        ColumnToHide="Display_Name"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        {item.displayName ? (
+                          item.displayName
+                        ) : (
+                          <p className="text-gray-400">Not Configured</p>
+                        )}
+                      </HidableColumns>
+                      <HidableColumns
+                        ColumnToHide="Session_Day"
+                        isColumnHeader={false}
+                        columnNamesArray={columnNamesArr}
+                        stylesClassNames={`text-center ${
+                          expandedRow !== index && "border-b"
+                        } ${
+                          customisationObjs.cellSize === "bigger"
+                            ? "py-2"
+                            : customisationObjs.cellSize === "biggest"
+                            ? "py-3"
+                            : "py-1"
+                        } ${
+                          state.theme.theme === "LIGHT"
+                            ? "border-b-gray-200"
+                            : "border-b-stone-800"
+                        }`}
+                      >
+                        {item.sessionDay ? (
+                          item.sessionDay
+                        ) : (
+                          <p className="text-gray-400">Not Configured</p>
+                        )}
                       </HidableColumns>
                       <HidableColumns
                         ColumnToHide="Status_Level"
@@ -577,7 +673,7 @@ const Levels: React.FC<responseDataFetched<LevelsData>> = ({ response }) => {
                             />
                           </div>
                         ) : (
-                          <div>Null</div>
+                          <div className="text-gray-400">Not Configured</div>
                         )}
                       </HidableColumns>
                     </tr>

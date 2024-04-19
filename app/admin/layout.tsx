@@ -3,6 +3,7 @@ import "./globals.css";
 import GlobalStateManager from "@/Utils/GlobalStateManager";
 import SidebarMenu from "@/Utils/SidebarMenu";
 import HeaderComponent from "@/Utils/HeaderComponent";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,15 +15,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const authres: any = cookies().get("AUTHRES");
+
   return (
     <GlobalStateManager>
       <div className="md:w-[18vw] h-screen">
-        <SidebarMenu />
+        <SidebarMenu authres={authres} />
       </div>
       <div
         className={`overflow-y-auto lg:w-[80vw] md:w-[73vw] w-screen lg:ml-2 md:ml-20`}
       >
-        <HeaderComponent />
+        <HeaderComponent AUTHRES={authres} />
         {children}
       </div>
     </GlobalStateManager>

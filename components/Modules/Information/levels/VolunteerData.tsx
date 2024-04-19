@@ -15,7 +15,7 @@ interface Volunteers {
   serviceInterested: string;
 }
 
-function VolunteerData({ volunteerid }: { volunteerid: string }) {
+function VolunteerData({ volunteerid }: { volunteerid: string | number }) {
   const { dispatch } = useGlobalState();
   const [isLoading, setIsLoading] = useState(false);
   const [volunteerData, setVolunteerData] = useState({

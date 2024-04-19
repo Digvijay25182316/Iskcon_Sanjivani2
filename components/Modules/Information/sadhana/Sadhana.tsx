@@ -46,6 +46,7 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
             handleHidables={handleAddItemToColumnNameArr}
             columnNames={[
               { columnName: "PROGRAM NAME", field: "Program_Name" },
+              { columnName: "SADHANA DATE", field: "Sadhana_Date" },
               {
                 columnName: "PARTICIPANT FIRST NAME",
                 field: "Participant_First_Name",
@@ -92,7 +93,6 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                 columnName: "MOBILE/INTERNET-USAGE",
                 field: "Mobile/Internet-Usage",
               },
-              { columnName: "SADHANA DATE", field: "Sadhana_Date" },
             ]}
             options={columnNamesArr}
           />
@@ -131,6 +131,24 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                       }
                     />
                     <Filter category="programName" />
+                  </div>
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames="font-bold px-5 pb-3"
+                  columnNamesArray={columnNamesArr}
+                  ColumnToHide="Sadhana_Date"
+                >
+                  <div className="flex items-center gap-2">
+                    <SortableIcon
+                      fieldName={isSpecialNativeQuery ? "date" : "date"}
+                      tableHeading={"SADHANA DATE"}
+                      isSorted={
+                        urlSearchParams.sort === "date" ||
+                        urlSearchParams.sort === "date"
+                      }
+                    />
+                    <Filter category="date" />
                   </div>
                 </HidableColumns>
                 <HidableColumns
@@ -303,24 +321,6 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                 >
                   MOBILE/INTERNET-USAGE
                 </HidableColumns>
-                <HidableColumns
-                  isColumnHeader={true}
-                  stylesClassNames="font-bold px-5 pb-3"
-                  columnNamesArray={columnNamesArr}
-                  ColumnToHide="Sadhana_Date"
-                >
-                  <div className="flex items-center gap-2">
-                    <SortableIcon
-                      fieldName={isSpecialNativeQuery ? "date" : "date"}
-                      tableHeading={"SADHANA DATE"}
-                      isSorted={
-                        urlSearchParams.sort === "date" ||
-                        urlSearchParams.sort === "date"
-                      }
-                    />
-                    <Filter category="date" />
-                  </div>
-                </HidableColumns>
               </tr>
             </thead>
             <tbody>
@@ -345,6 +345,28 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                     >
                       {item.programName ? (
                         item.programName
+                      ) : (
+                        <p className="text-gray-500">null</p>
+                      )}
+                    </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Sadhana_Date"
+                      isColumnHeader={false}
+                      columnNamesArray={columnNamesArr}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      {item.sadhanaDate ? (
+                        item.sadhanaDate
                       ) : (
                         <p className="text-gray-500">null</p>
                       )}
@@ -697,28 +719,6 @@ const Sadhana: React.FC<responseDataFetched<SadhanaTypes>> = ({ response }) => {
                     >
                       {item.mobileInternetUsage ? (
                         item.mobileInternetUsage
-                      ) : (
-                        <p className="text-gray-500">null</p>
-                      )}
-                    </HidableColumns>
-                    <HidableColumns
-                      ColumnToHide="Sadhana_Date"
-                      isColumnHeader={false}
-                      columnNamesArray={columnNamesArr}
-                      stylesClassNames={`text-center border-b ${
-                        customisationObjs.cellSize === "bigger"
-                          ? "py-2"
-                          : customisationObjs.cellSize === "biggest"
-                          ? "py-3"
-                          : "py-1"
-                      } ${
-                        state.theme.theme === "LIGHT"
-                          ? "border-b-gray-200"
-                          : "border-b-stone-800"
-                      }`}
-                    >
-                      {item.sadhanaDate ? (
-                        item.sadhanaDate
                       ) : (
                         <p className="text-gray-500">null</p>
                       )}

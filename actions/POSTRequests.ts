@@ -68,3 +68,12 @@ export async function POSTADMIN(formData: FormData, url: string) {
     throw new Error(error.message || "Unexpected exception occured");
   }
 }
+
+export async function LOGOUT() {
+  try {
+    cookies().delete("AUTHRES");
+    return { message: "loggedout successfully" };
+  } catch (error: any) {
+    throw new Error(error.message || "Unexpected exception occured");
+  }
+}

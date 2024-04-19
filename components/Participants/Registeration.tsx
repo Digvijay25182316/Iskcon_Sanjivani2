@@ -40,7 +40,8 @@ function Registeration() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const phoneNumber = localStorage.getItem("phoneNumber");
+    const phoneNumber = localStorage.getItem("PHONE");
+    console.log(phoneNumber);
     if (phoneNumber) {
       setFormState((prev: any) => ({
         ...prev, // Spread the previous state
@@ -145,7 +146,6 @@ function Registeration() {
     const lastName = e.get("lastName")?.toString();
     const contactNumber = e.get("contactNumber")?.toString();
     const waNumber = e.get("waNumber")?.toString();
-    const gender = e.get("gender")?.toString();
     const age = e.get("age")?.toString();
     validateStep();
     if (
@@ -154,8 +154,9 @@ function Registeration() {
       !contactNumber ||
       !waNumber ||
       !age ||
-      !gender
+      !formState.gender
     ) {
+      console.log(firstName, lastName, contactNumber, waNumber, age);
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: "please enter the details" },
@@ -167,7 +168,7 @@ function Registeration() {
       lastName,
       contactNumber,
       waNumber,
-      gender,
+      gender: formState.gender,
       age,
     };
     try {

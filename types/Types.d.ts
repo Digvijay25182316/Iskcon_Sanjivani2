@@ -186,6 +186,7 @@ interface ProgramsData {
   incharge: string;
   type: string;
   audienceType: string;
+  sadhanaForm?: number;
   location: string;
 }
 

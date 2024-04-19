@@ -31,6 +31,13 @@ const ExtraCourseRegisteration: React.FC<
     PariticipantData | any
   >({});
 
+  useEffect(() => {
+    const phoneNumber = localStorage.getItem("PHONE");
+    if (phoneNumber) {
+      setPhoneNumber(phoneNumber);
+    }
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (phoneNumber === "") {
@@ -46,13 +53,14 @@ const ExtraCourseRegisteration: React.FC<
       if (response.ok) {
         const responseData = await response.json();
         setParticipantData(responseData.content);
-      } else if (response.status === 404) {
-        console.log(
-          "participant with the phone number does not exists  please register"
-        );
-        push("/participants/registeration");
-        localStorage.setItem("PHONE", phoneNumber);
       } else {
+        if (response.status === 404) {
+          console.log(
+            "participant with the phone number does not exists  please register"
+          );
+          push("/participants/registeration");
+          localStorage.setItem("PHONE", phoneNumber);
+        }
         const errorData = await response.json();
         dispatch({
           type: "SHOW_TOAST",
@@ -127,6 +135,7 @@ const ExtraCourseRegisteration: React.FC<
           Select a program from below that you are interested in
         </h4>
       </div>
+
       <div
         className={`md:p-5 rounded-[40px] p-4  mx-3 mb-6 ${
           state.theme.theme === "LIGHT"

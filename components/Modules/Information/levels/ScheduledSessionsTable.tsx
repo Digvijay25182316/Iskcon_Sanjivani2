@@ -15,7 +15,7 @@ function ScheduledSessionTable({
   levelId,
   levelData,
 }: {
-  levelId: string;
+  levelId: string | number;
   levelData: LevelsData;
 }) {
   const [scheduleSession, setScheduleSession] = useState(false);

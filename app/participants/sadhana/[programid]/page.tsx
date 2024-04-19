@@ -50,7 +50,7 @@ async function page({ params }: { params: { programid: string } }) {
       <NotExistsResource message="Sadhana Form for this program might not be configured" />
     );
   }
-  console.log(sadhana?.status === 404);
+
   return (
     <div>
       <SadhanaForm response={response} sadhanaForm={sadhana} />

@@ -42,7 +42,7 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const phoneNumber = localStorage.getItem("phoneNumber");
+    const phoneNumber = localStorage.getItem("PHONE");
     if (phoneNumber) {
       setPhoneNumber(phoneNumber);
     }
@@ -82,13 +82,14 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
       if (response.ok) {
         const responseData = await response.json();
         setParticipantData(responseData.content);
-      } else if (response.status === 404) {
-        console.log(
-          "participant with the phone number does not exists  please register"
-        );
-        push("/participants/registeration");
-        localStorage.setItem("PHONE", phoneNumber);
       } else {
+        if (response.status === 404) {
+          console.log(
+            "participant with the phone number does not exists  please register"
+          );
+          push("/participants/registeration");
+          localStorage.setItem("PHONE", phoneNumber);
+        }
         const errorData = await response.json();
         dispatch({
           type: "SHOW_TOAST",

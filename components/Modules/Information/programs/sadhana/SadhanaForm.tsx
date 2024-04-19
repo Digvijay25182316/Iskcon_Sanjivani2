@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 import {
   NOR as NORComponent,
@@ -22,10 +22,18 @@ import {
 import { useGlobalState } from "@/Utils/State";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeftIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { POSTADMIN } from "@/actions/POSTRequests";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
 
-function ConfigureSadhana() {
+function ConfigureSadhana({
+  response,
+  sadhanaResponse,
+}: {
+  response?: any;
+  sadhanaResponse?: any;
+}) {
   const pathname = usePathname();
-  const { state } = useGlobalState();
+  const { state, dispatch } = useGlobalState();
   const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const router = useRouter();
@@ -44,6 +52,26 @@ function ConfigureSadhana() {
       databaseField: string;
     }[]
   >([]);
+  console.log(checkedItems.map((item) => item.functionName));
+  const [checkedItemsObjDB, setCheckedItemsObjDB] = useState<any>({});
+  const [checkedItemsObj, setCheckedItemsObj] = useState<any>({
+    programId: response?.id,
+    numberOfRounds: false,
+    earlyJapaRoundsBefore8AM: false,
+    earlyJapaRoundsAfter8AM: false,
+    first8RoundsCompletedTime: false,
+    next8RoundsCompletedTime: false,
+    wakeUpTime: false,
+    sleepTime: false,
+    prabhupadaBookReading: false,
+    nonPrabhupadaBookReading: false,
+    prabhupadaClassHearing: false,
+    guruClassHearing: false,
+    otherClassHearing: false,
+    speaker: false,
+    attendedArti: false,
+    mobileInternetUsage: false,
+  });
   const handleChange = (
     event: ChangeEvent<HTMLInputElement>,
     item: {
@@ -55,15 +83,76 @@ function ConfigureSadhana() {
     }
   ) => {
     const { checked } = event.target;
-
     if (checked) {
       setCheckedItems((prevItems) => [...prevItems, item]);
     } else {
       setCheckedItems((prevItems) =>
         prevItems.filter((prevItem) => prevItem.id !== item.id)
       );
+      setCheckedItemsObj((prevState: any) => ({
+        ...prevState,
+        [item.databaseField]: checked, // Set to the checkbox status
+      }));
     }
   };
+
+  useEffect(() => {
+    const filteredArrForChecked = FormListItems.filter(
+      (item) => sadhanaResponse[item.databaseField] === true
+    );
+    setCheckedItems(filteredArrForChecked);
+  }, [sadhanaResponse]);
+
+  useEffect(() => {
+    setCheckedItemsObj((prevState: any) => {
+      const newState = { ...prevState };
+      checkedItems.forEach((key) => {
+        if (newState.hasOwnProperty(key.databaseField)) {
+          newState[key.databaseField] = true;
+        } else {
+          console.log(newState[key.databaseField]);
+        }
+      });
+      return newState;
+    });
+  }, [checkedItems]);
+
+  async function handleSubmit() {
+    checkedItemsObj.id = response.sadhanaForm;
+    if (sadhanaResponse) {
+      try {
+        const response = await POSTADMIN(
+          checkedItemsObj,
+          `${SERVER_ENDPOINT}/sadhana-form/update`
+        );
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: response.message },
+        });
+      } catch (error: any) {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: error.message },
+        });
+      }
+    } else {
+      try {
+        const response = await POSTADMIN(
+          checkedItemsObj,
+          `${SERVER_ENDPOINT}/sadhana-form/generate`
+        );
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: response.message },
+        });
+      } catch (error: any) {
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "ERROR", message: error.message },
+        });
+      }
+    }
+  }
 
   return (
     <div className="h-screen w-screen overflow-y-auto fixed top-0 bottom-0 right-0 left-0 z-[1000]">
@@ -97,6 +186,9 @@ function ConfigureSadhana() {
                 name="checkbox"
                 id={item.type}
                 className="w-5 h-5 "
+                checked={checkedItems.some(
+                  (checkedItem) => checkedItem.id === item.id
+                )}
                 onChange={(e) => handleChange(e, item)}
               />
               <label htmlFor={item.type} className="font-bold text-lg">
@@ -106,6 +198,7 @@ function ConfigureSadhana() {
           ))}
         </div>
         <button
+          onClick={handleSubmit}
           className={`flex items-center justify-between text-lg text-blue-600 font-bold m-3 ml-6 px-5 py-2 rounded-lg ${
             state.theme.theme === "LIGHT"
               ? "bg-blue-100"
