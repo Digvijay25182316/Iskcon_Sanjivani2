@@ -97,10 +97,12 @@ function ConfigureSadhana({
   };
 
   useEffect(() => {
-    const filteredArrForChecked = FormListItems.filter(
-      (item) => sadhanaResponse[item.databaseField] === true
-    );
-    setCheckedItems(filteredArrForChecked);
+    if (sadhanaResponse) {
+      const filteredArrForChecked = FormListItems.filter(
+        (item) => sadhanaResponse[item.databaseField] === true
+      );
+      setCheckedItems(filteredArrForChecked);
+    }
   }, [sadhanaResponse]);
 
   useEffect(() => {
@@ -118,8 +120,15 @@ function ConfigureSadhana({
   }, [checkedItems]);
 
   async function handleSubmit() {
-    checkedItemsObj.id = response.sadhanaForm;
-    if (sadhanaResponse) {
+    if (Object.keys(checkedItemsObj).length <= 1) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "you haven't selected any field" },
+      });
+      return;
+    }
+    if (response.sadhanaForm > 0) {
+      checkedItemsObj.id = response.sadhanaForm;
       try {
         const response = await POSTADMIN(
           checkedItemsObj,
@@ -143,7 +152,7 @@ function ConfigureSadhana({
         );
         dispatch({
           type: "SHOW_TOAST",
-          payload: { type: "SUCCESS", message: response.message },
+          payload: { type: "SUCCESS", message: "successfully generated form" },
         });
       } catch (error: any) {
         dispatch({

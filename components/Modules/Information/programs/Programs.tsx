@@ -18,6 +18,7 @@ import {
   DocumentCheckIcon,
   DocumentIcon,
   LinkIcon,
+  QrCodeIcon,
 } from "@heroicons/react/16/solid";
 import CopyClipBoard from "@/Utils/CopyToClipBoard";
 
@@ -395,35 +396,47 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className="flex items-center gap-5"
-                        aria-disabled={true}
-                      >
-                        <Link
-                          href={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          className="text-blue-600 underline flex items-center"
-                        >
-                          <LinkIcon className="h-5 w-5" />
-                          link
-                        </Link>
-                        <QrCode
-                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          Content="something"
-                        />
-                        <CopyClipBoard
-                          url={`${LinksActivator()?.toString()}/participants/sadhana/${
-                            item.id
-                          }`}
-                          NotCopied={<DocumentCheckIcon className="h-5 w-6 " />}
-                          whenCopied={
-                            <DocumentIcon className="h-5 w-6 text-green" />
-                          }
-                        />
-                      </div>
+                      {item.sadhanaForm && item.sadhanaForm > 0 ? (
+                        <div className="flex items-center gap-5">
+                          <Link
+                            href={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            className="text-blue-600 underline flex items-center"
+                          >
+                            <LinkIcon className="h-5 w-5" />
+                            link
+                          </Link>
+                          <QrCode
+                            url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            Content="something"
+                          />
+                          <CopyClipBoard
+                            url={`${LinksActivator()?.toString()}/participants/sadhana/${
+                              item.id
+                            }`}
+                            NotCopied={
+                              <DocumentCheckIcon className="h-5 w-6 " />
+                            }
+                            whenCopied={<DocumentIcon className="h-5 w-6 " />}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-5 opacity-25">
+                          <p className="text-blue-600 underline flex items-center">
+                            <LinkIcon className="h-5 w-5" />
+                            link
+                          </p>
+                          <p>
+                            <QrCodeIcon className="h-5 w-5 text-blue-700" />
+                          </p>
+                          <p>
+                            <DocumentIcon className="h-5 w-6 text-blue-700" />
+                          </p>
+                        </div>
+                      )}
                       <Link
                         href={`/admin/information/programs/sadhana/${item.id}`}
                       >

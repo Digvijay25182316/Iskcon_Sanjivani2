@@ -59,7 +59,7 @@ export async function POSTADMIN(formData: FormData, url: string) {
         throw new Error("This Entry Already exists");
       }
       if (response.status === 401) {
-        throw new Error("Request is unauthorized");
+        throw new Error("Your dont have access to the resource");
       }
       const errorData = await response.json();
       throw new Error(errorData.message || errorData.title);

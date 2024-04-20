@@ -7,7 +7,6 @@ export function middleware(req: NextRequest) {
   if (!req.cookies.has("AUTHRES")) {
     return NextResponse.redirect(newURL.href);
   }
-
   return NextResponse.next();
 }
 
