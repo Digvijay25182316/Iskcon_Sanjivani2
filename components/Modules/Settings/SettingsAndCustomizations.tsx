@@ -3,6 +3,7 @@ import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
 import ToggleController from "@/Utils/Icons/ToggleController";
 import { useGlobalState } from "@/Utils/State";
 import { MoonIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 function SettingsAndCustomizations() {
@@ -53,6 +54,22 @@ function SettingsAndCustomizations() {
                   }
                 }}
               />
+            </div>
+          </div>
+          <div className="p-5 flex items-center justify-between w-full">
+            <div
+              className={`p-5 md:mx-5 w-full rounded-3xl ${
+                state.theme.theme === "LIGHT"
+                  ? "bg-gray-50"
+                  : "bg-stone-900 bg-opacity-30"
+              } flex items-center justify-between`}
+            >
+              <p className="text-xl">Change Password</p>
+              <Link href={"/auth/changepassword"}>
+                <button className="bg-red-400 px-4 py-2 text-white">
+                  Change Password
+                </button>
+              </Link>
             </div>
           </div>
         </div>

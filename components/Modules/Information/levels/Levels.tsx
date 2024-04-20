@@ -867,6 +867,102 @@ function AddLevel({
           <form action={handleCreateProgram} className="mt-5 w-full">
             <div className="w-full flex flex-col gap-3">
               <div className="flex flex-col gap-2">
+                <label className="font-semibold text-lg" id="name">
+                  Does this course accepting new participants?
+                </label>
+                <div className="flex items-center gap-5">
+                  <label
+                    htmlFor="AcceptingNewParticipants"
+                    className="flex items-center gap-2"
+                  >
+                    <input
+                      className="h-5 w-5"
+                      type="checkbox"
+                      id="AcceptingNewParticipants"
+                      onChange={() => setAcceptingNewParticipants(true)}
+                      checked={acceptingNewParticipants === true}
+                    />
+                    YES
+                  </label>
+                  <label
+                    htmlFor="NotAcceptingNewParticipants"
+                    className="flex items-center gap-2"
+                  >
+                    <input
+                      className="h-5 w-5"
+                      type="checkbox"
+                      id="NotAcceptingNewParticipants"
+                      onChange={() => setAcceptingNewParticipants(false)}
+                      checked={acceptingNewParticipants === false}
+                    />
+                    NO
+                  </label>
+                </div>
+              </div>
+
+              <div
+                className={`grid grid-cols-1 gap-5 p-3 rounded-3xl ${
+                  state.theme.theme === "LIGHT" ? "bg-gray-50" : "bg-stone-800"
+                }`}
+              >
+                <p className="text-red-400">
+                  This fields are to ensure that this level accepting new
+                  participants
+                </p>
+                <div>
+                  <label className="font-semibold text-lg">sessionDay</label>
+                  <SessionsDays
+                    DataArr={[
+                      "MONDAY",
+                      "TUESDAY",
+                      "WEDNESDAY",
+                      "THURSDAY",
+                      "FRIDAY",
+                      "SATURDAY",
+                      "SUNDAY",
+                    ]}
+                    setSelected={(value: string) => setSessionDay(value)}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="displayName"
+                    className="font-semibold text-lg"
+                  >
+                    Display name
+                  </label>
+                  <input
+                    type="text"
+                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                      state.theme.theme === "LIGHT"
+                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                    }`}
+                    id="displayName"
+                    name="displayName"
+                    placeholder="Enter the display name"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="sessionTime"
+                    className="font-semibold text-lg"
+                  >
+                    Session Time
+                  </label>
+                  <input
+                    type="time"
+                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                      state.theme.theme === "LIGHT"
+                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                    }`}
+                    id="sessionTime"
+                    name="sessionTime"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
                 <label
                   className="font-semibold text-lg"
                   htmlFor="Program_Name"
@@ -1007,74 +1103,6 @@ function AddLevel({
                     }`}
                     id="expected_End_Date"
                     placeholder="expected end date"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-5">
-                <div>
-                  <label className="font-semibold text-lg">sessionDay</label>
-                  <SessionsDays
-                    DataArr={[
-                      "MONDAY",
-                      "TUESDAY",
-                      "WEDNESDAY",
-                      "THURSDAY",
-                      "FRIDAY",
-                      "SATURDAY",
-                      "SUNDAY",
-                    ]}
-                    setSelected={(value: string) => setSessionDay(value)}
-                  />
-                </div>
-                <div>
-                  <label className="font-semibold text-lg">
-                    Accepting New Participants
-                  </label>
-                  <SessionsDays
-                    DataArr={["YES", "NO"]}
-                    setSelected={(value: string) =>
-                      setAcceptingNewParticipants(
-                        value === "YES" ? true : false
-                      )
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="displayName"
-                    className="font-semibold text-lg"
-                  >
-                    Display name
-                  </label>
-                  <input
-                    type="text"
-                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
-                      state.theme.theme === "LIGHT"
-                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
-                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
-                    }`}
-                    id="displayName"
-                    name="displayName"
-                    placeholder="Enter the display name"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="sessionTime"
-                    className="font-semibold text-lg"
-                  >
-                    Session Time
-                  </label>
-                  <input
-                    type="time"
-                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
-                      state.theme.theme === "LIGHT"
-                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
-                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
-                    }`}
-                    id="sessionTime"
-                    name="sessionTime"
                   />
                 </div>
               </div>

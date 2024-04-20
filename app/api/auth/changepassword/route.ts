@@ -1,16 +1,20 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import { decrypt } from "@/Utils/helpers/auth";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const header = new Headers();
-  const cookiesValue = cookies().get("ROLE")?.value;
-  const ROLE = cookiesValue ? JSON.parse(cookiesValue) : "";
+  const cookiesValue = cookies().get("AUTHRES")?.value;
+  const ROLE = cookiesValue && JSON.parse(cookiesValue);
+  const decoded = decrypt(ROLE.buf);
+  const email = decoded.split(":")[0];
   header.append("Content-Type", "application/json");
   header.append("Authorization", `Basic ${ROLE.buf}`);
 
   try {
     const { password } = await req.json();
+
     if (ROLE === "") {
       return NextResponse.json(
         { message: "you are not authenticated" },
@@ -19,7 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
     if (ROLE.name === "ROLE_ADMIN") {
       const response = await fetch(
-        `${SERVER_ENDPOINT}/auth/admin/changePassword`
+        `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${email}&password=${password}`
       );
       if (response.ok) {
         const responseData = await response.json();
@@ -52,7 +56,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
         );
       }
     }
-    return NextResponse.json({ message: "majama" }, { status: 500 });
   } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }

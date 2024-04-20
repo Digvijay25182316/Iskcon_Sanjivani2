@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import UserDetails from "@/components/auth/authenticated/UserDetails";
 import { decrypt } from "./helpers/auth";
+import { LOGOUT } from "@/actions/POSTRequests";
 
 interface AUTHRES {
   id: number;
@@ -91,7 +92,6 @@ function HeaderComponent({
             </div>
           </div>
         </div>
-
         <div className={` text-lg font-normal text-gray-500`}>
           <PathWithIcons pathname={pathname} />
         </div>
@@ -135,9 +135,10 @@ const PathWithIcons = ({ pathname }: { pathname: string }) => {
 };
 
 function HeadlessMenu({ authres }: { authres: AUTHRES }) {
-  const { state } = useGlobalState();
+  const { state, dispatch } = useGlobalState();
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpenOverlay, setIsOpenOverlay] = useState(false);
   useEffect(() => {
     if (isOpen) {
@@ -146,6 +147,21 @@ function HeadlessMenu({ authres }: { authres: AUTHRES }) {
       }, 100);
     }
   }, [isOpen]);
+  const handleLogout = async () => {
+    try {
+      const response = await LOGOUT();
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+      router.push("/auth/signin");
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
+  };
   function onClose() {
     setIsOpenOverlay(false);
     setIsOpen(false);
@@ -299,6 +315,7 @@ function HeadlessMenu({ authres }: { authres: AUTHRES }) {
                 </div>
               </Link>
               <button
+                onClick={handleLogout}
                 className={`flex items-center gap-3 py-2 my-1 px-1.5 rounded-2xl font-semibold justify-center mt-8 ${
                   pathname.startsWith("/admin/customizations")
                     ? `${
