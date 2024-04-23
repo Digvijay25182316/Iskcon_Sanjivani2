@@ -74,7 +74,7 @@ function VolunteerData({ volunteerid }: { volunteerid: string }) {
             <div>
               {volunteerData?.initiatedName
                 ? `${volunteerData?.initiatedName}`
-                : `${volunteerData?.firstName} ${volunteerData?.firstName}`}
+                : `${volunteerData?.firstName} ${volunteerData?.lastName}`}
             </div>
           ) : (
             <p>null</p>

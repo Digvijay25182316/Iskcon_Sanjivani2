@@ -1,11 +1,14 @@
 "use client";
-import useWindowDimensions from "@/Utils/Hooks/WindowDimentions";
 import { useGlobalState } from "@/Utils/State";
 import React, { useState } from "react";
 import ViewController from "./ViewController";
 import SortableIcon from "@/Utils/Icons/SortableIcon";
 import DateFormatter from "@/Utils/DateFormatter";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
+import Modal from "@/Utils/Modal";
+import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
+import { POSTADMIN } from "@/actions/POSTRequests";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
 
 const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
   response,
@@ -13,12 +16,12 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
   const { state, dispatch } = useGlobalState();
 
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const { width } = useWindowDimensions();
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
     { size: 10 }, // a default page size
     { sort: "id" },
   ]);
+  const [isAddactivity, setIsAddActivity] = useState(false);
 
   const handleAddItemToColumnNameArr = (option: { value: string }) => {
     if (columnNamesArr.includes(option.value)) {
@@ -68,7 +71,7 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
                 ? "bg-blue-50 text-blue-500"
                 : "bg-blue-950 bg-opacity-40 text-blue-300"
             }`}
-            onClick={() => console.log(true)}
+            onClick={() => setIsAddActivity(true)}
           >
             + Activity
           </button>
@@ -249,8 +252,117 @@ const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
           </table>
         </div>
       </div>
+      <AddActivity
+        isOpen={isAddactivity}
+        onClose={() => setIsAddActivity(false)}
+      />
     </div>
   );
 };
 
 export default ActivityMaster;
+
+function AddActivity({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  const { state, dispatch } = useGlobalState();
+  const handleSubmit = async (e: FormData) => {
+    const name = e.get("name")?.toString();
+    const description = e.get("description")?.toString();
+    if (!name || !description) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: "please enter the details" },
+      });
+    }
+    const formData: any = { name, description };
+    try {
+      const response = await POSTADMIN(
+        formData,
+        `${SERVER_ENDPOINT}/activity/create`
+      );
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "SUCCESS", message: response.message },
+      });
+    } catch (error: any) {
+      dispatch({
+        type: "SHOW_TOAST",
+        payload: { type: "ERROR", message: error.message },
+      });
+    }
+  };
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div
+        className={`p-5 rounded-3xl mx-2 ${
+          state.theme.theme === "LIGHT"
+            ? "bg-white shadow shadow-gray-200"
+            : "bg-stone-900 shadow shadow-gray-800"
+        }`}
+      >
+        <div>
+          <h1 className="text-2xl font-bold">New Activity</h1>
+          <p className="text-lg">
+            you can add another activity to be selected by participants
+          </p>
+        </div>
+        <div>
+          <form action="">
+            <div className="mt-5 flex flex-col gap-5">
+              <div className="flex flex-col gap-3">
+                <label htmlFor="Name" className="font-semibold text-lg">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                    state.theme.theme === "LIGHT"
+                      ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                      : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                  }`}
+                  name="name"
+                  id="Name"
+                  placeholder="Enter Activity name"
+                />
+              </div>
+              <div className="flex flex-col gap-3">
+                <label htmlFor="Description" className="font-semibold text-lg">
+                  Description
+                </label>
+                <textarea
+                  className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                    state.theme.theme === "LIGHT"
+                      ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                      : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                  }`}
+                  name="description"
+                  id="Description"
+                  placeholder="Enter Activity description"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between md:gap-5 gap-3 mt-5">
+              <button
+                type="button"
+                onClick={onClose}
+                className={`text-red-600 font-semibold text-xl w-full py-2 rounded-xl ${
+                  state.theme.theme === "LIGHT"
+                    ? "bg-red-50"
+                    : "bg-red-900 bg-opacity-20"
+                }`}
+              >
+                Cancel
+              </button>
+              <SubmitHandlerButton />
+            </div>
+          </form>
+        </div>
+      </div>
+    </Modal>
+  );
+}
