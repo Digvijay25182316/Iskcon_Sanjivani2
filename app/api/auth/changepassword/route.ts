@@ -21,9 +21,18 @@ export async function POST(req: NextRequest, res: NextResponse) {
         { status: 401 }
       );
     }
+
     if (ROLE.name === "ROLE_ADMIN") {
+      console.log(encodeURIComponent(email));
       const response = await fetch(
-        `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${email}&password=${password}`
+        `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${encodeURIComponent(
+          email
+        )}&password=${encodeURIComponent(password)}`
+      );
+      console.log(
+        `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${encodeURIComponent(
+          email
+        )}&password=${encodeURIComponent(password)}`
       );
       if (response.ok) {
         const responseData = await response.json();
