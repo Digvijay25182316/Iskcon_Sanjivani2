@@ -24,6 +24,7 @@ async function page({
 }) {
   const queryString = new URLSearchParams(searchParams).toString();
   const response = await getProgram(queryString);
+  console.log(response);
   return (
     <div className="w-full">
       <Programs response={response} />

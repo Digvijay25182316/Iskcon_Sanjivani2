@@ -7,14 +7,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const header = new Headers();
   const cookiesValue = cookies().get("AUTHRES")?.value;
   const ROLE = cookiesValue && JSON.parse(cookiesValue);
-  const decoded = decrypt(ROLE.buf);
+  const decoded = decrypt(ROLE.buf).toString();
   const email = decoded.split(":")[0];
+  const buffer = Buffer.from(decrypt(ROLE.buf).toString()).toString("base64");
   header.append("Content-Type", "application/json");
-  header.append("Authorization", `Basic ${ROLE.buf}`);
-
+  header.append("Authorization", `Basic ${buffer}`);
   try {
     const { password } = await req.json();
-
     if (ROLE === "") {
       return NextResponse.json(
         { message: "you are not authenticated" },
@@ -23,24 +22,25 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     if (ROLE.name === "ROLE_ADMIN") {
-      console.log(encodeURIComponent(email));
+      console.log(buffer);
       const response = await fetch(
         `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${encodeURIComponent(
           email
-        )}&password=${encodeURIComponent(password)}`
-      );
-      console.log(
-        `${SERVER_ENDPOINT}/auth/admin/changePassword?email=${encodeURIComponent(
-          email
-        )}&password=${encodeURIComponent(password)}`
+        )}&password=${encodeURIComponent(password)}`,
+        { method: "GET", headers: header }
       );
       if (response.ok) {
-        const responseData = await response.json();
         return NextResponse.json(
           { message: "changed password successfully" },
           { status: 200 }
         );
       } else {
+        if (response.status === 401) {
+          return NextResponse.json(
+            { message: "You are not authenticated" },
+            { status: response.status }
+          );
+        }
         const errorData = await response.json();
         return NextResponse.json(
           { message: errorData.message },
@@ -49,10 +49,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
       }
     } else {
       const response = await fetch(
-        `${SERVER_ENDPOINT}/auth/user/changePassword`
+        `${SERVER_ENDPOINT}/auth/user/changePassword?password=${password}`,
+        { method: "GET", headers: header }
       );
       if (response.ok) {
-        const responseData = await response.json();
         return NextResponse.json(
           { message: "changed password successfully" },
           { status: 200 }

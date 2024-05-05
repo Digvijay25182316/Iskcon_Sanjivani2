@@ -9,6 +9,7 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 import { POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
+import ChangeRole from "./ChangeRole";
 
 interface PariticipantData {
   firstName: string;
@@ -164,6 +165,13 @@ const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
                   ColumnToHide="Service_Interested_Volunteer"
                 >
                   SERVICE Volunteers
+                </HidableColumns>
+                <HidableColumns
+                  isColumnHeader={true}
+                  stylesClassNames=" whitespace-nowrap font-bold px-5 pb-3"
+                  ColumnToHide="Service_Interested_Volunteer"
+                >
+                  ROLE controller
                 </HidableColumns>
               </tr>
             </thead>
@@ -323,6 +331,23 @@ const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
                         <i className="text-gray-500">null</i>
                       )}
                     </HidableColumns>
+                    <HidableColumns
+                      ColumnToHide="Service_Interested_Volunteer"
+                      isColumnHeader={false}
+                      stylesClassNames={`text-center border-b ${
+                        customisationObjs.cellSize === "bigger"
+                          ? "py-2"
+                          : customisationObjs.cellSize === "biggest"
+                          ? "py-3"
+                          : "py-1"
+                      } ${
+                        state.theme.theme === "LIGHT"
+                          ? "border-b-gray-200"
+                          : "border-b-stone-800"
+                      }`}
+                    >
+                      <ChangeRole volunteer={item} />
+                    </HidableColumns>
                   </tr>
                 ))
               ) : (
@@ -336,7 +361,6 @@ const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
           </table>
         </div>
       </div>
-
       <CreateVolunteer
         isOpen={isOpenCreateVolunteer}
         onClose={() => setIsOpenCreateVolunteer(false)}
@@ -417,7 +441,7 @@ function CreateVolunteer({
         type: "SHOW_TOAST",
         payload: { message: response.message, type: "SUCCESS" },
       });
-    } catch (error:any) {
+    } catch (error: any) {
       dispatch({
         type: "SHOW_TOAST",
         payload: { message: error.message, type: "ERROR" },

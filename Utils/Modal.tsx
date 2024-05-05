@@ -49,7 +49,7 @@ const Modal = ({
     <div
       className={`fixed top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-lg ${
         state.theme.theme === "LIGHT"
-          ? "bg-black bg-opacity-10"
+          ? "bg-white bg-opacity-10"
           : "bg-white bg-opacity-10"
       } transition-opacity z-[2000] ${
         isOpen
