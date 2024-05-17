@@ -27,15 +27,25 @@ function ChangeRole({ volunteer }: { volunteer: VolunteerTypes }) {
       });
       return;
     }
+
     try {
-      const response = await POSTADMIN(
-        formData,
-        `${SERVER_ENDPOINT}/auth/register`
-      );
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "SUCCESS", message: response.message },
+      const response = await fetch(`/api/auth/changerole`, {
+        method: "POST",
+        body: JSON.stringify(formData),
       });
+      if (response.ok) {
+        const responseData = await response.json();
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: responseData.message },
+        });
+      } else {
+        const errorData = await response.json();
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "ERROR", message: errorData.message },
+        });
+      }
     } catch (error: any) {
       dispatch({
         type: "SHOW_TOAST",

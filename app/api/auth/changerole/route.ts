@@ -9,19 +9,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const cookiesValue = cookies().get("AUTHRES")?.value;
   const ROLE = cookiesValue && JSON.parse(cookiesValue);
   const buffer = Buffer.from(decrypt(ROLE.buf).toString()).toString("base64");
-  header.append("Content-Type", "application/json");
   header.append("Authorization", `Basic ${buffer}`);
-  const formData = { email, password, role };
   try {
-    const response = await fetch(`${SERVER_ENDPOINT}/auth/register`, {
-      method: "POST",
-      headers: header,
-      body: JSON.stringify(formData),
-    });
+    const response = await fetch(
+      `${SERVER_ENDPOINT}/auth/register?email=${encodeURIComponent(
+        email
+      )}&password=${encodeURIComponent(password)}&role=${role}`,
+      {
+        method: "POST",
+        headers: header,
+      }
+    );
     if (response.ok) {
-      const responseData = await response.json();
       return NextResponse.json(
-        { message: responseData.message },
+        { message: "changed role successfully" },
         { status: response.status }
       );
     } else {
