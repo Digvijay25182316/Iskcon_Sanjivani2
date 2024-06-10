@@ -6,7 +6,6 @@ import { cookies, headers } from "next/headers";
 export async function POST(formData: FormData, url: string) {
   const header = new Headers();
   header.append("Content-Type", "application/json");
-
   try {
     const response = await fetch(`${url}`, {
       method: "POST",
@@ -15,7 +14,6 @@ export async function POST(formData: FormData, url: string) {
     });
     if (response.ok) {
       const responseData = await response.json();
-
       return { message: responseData.message };
     } else {
       if (response.status === 409) {
@@ -28,7 +26,7 @@ export async function POST(formData: FormData, url: string) {
       throw new Error(errorData.message || errorData.title);
     }
   } catch (error: any) {
-    throw new Error(error.message || "Unexpected exception occured");
+    throw error;
   }
 }
 

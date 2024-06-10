@@ -42,6 +42,7 @@ import {
   ClipboardDocumentListIcon,
 } from "@heroicons/react/16/solid";
 import Modal from "@/Utils/Modal";
+import { ConcentScreen } from "./ConcentScreenRegisteration";
 
 interface FieldTypeFormList {
   id: number;
@@ -65,7 +66,7 @@ function SadhanaForm({
   >({});
   const [focusMobile, setFocusMobile] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [checkedItems, setCheckedItems] = useState<any[]>([]);
   const date = formatDate(new Date());
   const [SubmittedSuccess, setSubmittedSuccess] = useState(false);
@@ -100,53 +101,87 @@ function SadhanaForm({
     setCheckedItems(filteredArrForChecked);
   }, [sadhanaForm]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (phoneNumber === "") {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Enter your phone Number" },
-      });
-      return;
-    } else if (phoneNumber.length < 10) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Enter your phone Number" },
-      });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/participants/phone/${phoneNumber}`);
-      if (response.ok) {
-        const responseData = await response.json();
-        setParticipantData(responseData.content);
-      } else {
-        if (response.status === 404) {
-          console.log(
-            "participant with the phone number does not exists  please register"
+  useEffect(() => {
+    if (phoneNumber.length === 10) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/participants/phone/${phoneNumber}`
           );
-          push("/participants/registeration");
-          localStorage.setItem("PHONE", phoneNumber);
+          if (response.ok) {
+            const responseData = await response.json();
+            setParticipantData(responseData.content);
+          } else {
+            if (response.status === 404) {
+              ///consent screen
+              setIsOpen(true);
+              localStorage.setItem("PHONE", phoneNumber);
+            }
+            const errorData = await response.json();
+            dispatch({
+              type: "SHOW_TOAST",
+              payload: {
+                type: "ERROR",
+                message: errorData.message || errorData.statusText,
+              },
+            });
+          }
+        } catch (error: any) {
+          dispatch({
+            type: "SHOW_TOAST",
+            payload: { type: "ERROR", message: error.message },
+          });
         }
-        const errorData = await response.json();
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: {
-            type: "ERROR",
-            message: errorData.message || errorData.statusText,
-          },
-        });
-      }
-    } catch (error: any) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: error.message },
-      });
-    } finally {
-      setIsLoading(false);
+      })();
     }
-  };
+  }, [phoneNumber]);
+
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
+  //   if (phoneNumber === "") {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: "Enter your phone Number" },
+  //     });
+  //     return;
+  //   } else if (phoneNumber.length < 10) {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: "Enter your phone Number" },
+  //     });
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch(`/api/participants/phone/${phoneNumber}`);
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       setParticipantData(responseData.content);
+  //     } else {
+  //       if (response.status === 404) {
+  //         console.log(
+  //           "participant with the phone number does not exists  please register"
+  //         );
+  //         push("/participants/registeration");
+  //         localStorage.setItem("PHONE", phoneNumber);
+  //       }
+  //       const errorData = await response.json();
+  //       dispatch({
+  //         type: "SHOW_TOAST",
+  //         payload: {
+  //           type: "ERROR",
+  //           message: errorData.message || errorData.statusText,
+  //         },
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: error.message },
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   async function handleSubmitSadhana(e: FormData) {
     const formDataObject: any = {
       programId: response?.id,
@@ -263,7 +298,7 @@ function SadhanaForm({
               : "bg-stone-900 bg-opacity-40"
           }`}
         >
-          <form className="w-full" onSubmit={handleSubmit}>
+          <form className="w-full">
             <div className="flex flex-col w-full gap-5">
               <div className="flex flex-col w-full gap-3">
                 <label htmlFor="Phone_Number" className="font-bold md:text-xl">
@@ -300,7 +335,7 @@ function SadhanaForm({
                     onChange={handleChangePhoneNumber}
                     maxLength={10}
                   />
-                  <button
+                  {/* <button
                     type="button"
                     onClick={handleSubmit}
                     className={`text-xl font-semibold ${
@@ -310,7 +345,7 @@ function SadhanaForm({
                     } rounded px-2 py-1`}
                   >
                     {isLoading ? <LoadingComponent /> : "Search"}
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -421,6 +456,12 @@ function SadhanaForm({
             <SubmitHandlerButton />
           </form>
         </div>
+        <ConcentScreen
+          isOpen={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+          }}
+        />
       </div>
       <Modal
         isOpen={SubmittedSuccess}

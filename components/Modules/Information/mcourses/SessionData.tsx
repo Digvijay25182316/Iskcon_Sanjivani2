@@ -1,5 +1,4 @@
 import { useGlobalState } from "@/Utils/State";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 function CourseData({

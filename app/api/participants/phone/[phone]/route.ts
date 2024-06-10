@@ -13,14 +13,11 @@ export async function GET(
       const responseData = await response.json();
       return NextResponse.json({ content: responseData }, { status: 200 });
     } else {
-      if (response.status === 404) {
-        return NextResponse.json(
-          { message: "Resourse not found" },
-          { status: 404 }
-        );
-      }
       const errorData = await response.json();
-      return NextResponse.json({ message: errorData }, { status: 200 });
+      return NextResponse.json(
+        { message: errorData.message },
+        { status: response.status }
+      );
     }
   } catch (error: any) {
     return NextResponse.json(

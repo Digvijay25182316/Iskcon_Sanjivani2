@@ -52,7 +52,7 @@ async function page({ params }: { params: { programid: string } }) {
   }
 
   return (
-    <div>
+    <div className="h-full">
       <SadhanaForm response={response} sadhanaForm={sadhana} />
     </div>
   );

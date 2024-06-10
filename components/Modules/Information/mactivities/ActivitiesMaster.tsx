@@ -312,7 +312,7 @@ function AddActivity({
           </p>
         </div>
         <div>
-          <form action="">
+          <form action={handleSubmit}>
             <div className="mt-5 flex flex-col gap-5">
               <div className="flex flex-col gap-3">
                 <label htmlFor="Name" className="font-semibold text-lg">

@@ -7,7 +7,7 @@ import VolunteerData from "./VolunteerData";
 import Modal from "@/Utils/Modal";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
-import { POST } from "@/actions/POSTRequests";
+import { POST, POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
 import { useRouter } from "next/navigation";
@@ -542,7 +542,7 @@ function AddProgram({
       location: location,
     };
     try {
-      const response = await POST(
+      const response = await POSTADMIN(
         formData,
         `${SERVER_ENDPOINT}/program/create`
       );

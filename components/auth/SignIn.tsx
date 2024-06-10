@@ -60,7 +60,7 @@ function SignIn() {
   }
   return (
     <div className="w-full min-h-screen flex flex-col items-center mb-10">
-      <p className="my-20 text-center text-5xl font-bold ">Signin</p>
+      <p className="my-20 text-center text-5xl font-bold ">Sign In</p>
       <div
         className={`${
           state.theme.theme === "LIGHT"

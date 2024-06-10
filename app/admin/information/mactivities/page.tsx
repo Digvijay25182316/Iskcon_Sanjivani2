@@ -6,7 +6,7 @@ import PageNavigation from "@/Utils/Pagination";
 
 async function getActivities(queryString: string) {
   unstable_noStore();
-  const response = await fetch(`${SERVER_ENDPOINT}/level/?${queryString}`);
+  const response = await fetch(`${SERVER_ENDPOINT}/activity/`);
   if (response.ok) {
     const responseData = await response.json();
     return responseData;
@@ -26,7 +26,6 @@ async function page({
   return (
     <div>
       <MasterActivities response={response} />
-
       <PageNavigation totalElements={response.totalElements} />
     </div>
   );

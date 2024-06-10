@@ -15,6 +15,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { ConcentScreen } from "./ConcentScreenRegisteration";
 
 function Activities({
   response,
@@ -33,7 +34,8 @@ function Activities({
   const [selectedActivity, setSelectedActivity] = useState<
     ScheduledSessions | any
   >({});
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const phoneNumber = localStorage.getItem("PHONE");
@@ -42,54 +44,89 @@ function Activities({
     }
   }, []);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (phoneNumber === "") {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Enter your phone Number" },
-      });
-      return;
-    } else if (phoneNumber.length < 10) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Enter your phone Number" },
-      });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/participants/phone/${phoneNumber}`);
-      console.log(response);
-      if (response.ok) {
-        const responseData = await response.json();
-        setParticipantData(responseData.content);
-      } else {
-        if (response.status === 404) {
-          console.log(
-            "participant with the phone number does not exists  please register"
+  useEffect(() => {
+    if (phoneNumber.length === 10) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/participants/phone/${phoneNumber}`
           );
-          router.push("/participants/registeration");
-          localStorage.setItem("PHONE", phoneNumber);
+          if (response.ok) {
+            const responseData = await response.json();
+            setParticipantData(responseData.content);
+          } else {
+            if (response.status === 404) {
+              ///consent screen
+              setIsOpen(true);
+              localStorage.setItem("PHONE", phoneNumber);
+            }
+            const errorData = await response.json();
+            dispatch({
+              type: "SHOW_TOAST",
+              payload: {
+                type: "ERROR",
+                message: errorData.message || errorData.statusText,
+              },
+            });
+          }
+        } catch (error: any) {
+          dispatch({
+            type: "SHOW_TOAST",
+            payload: { type: "ERROR", message: error.message },
+          });
         }
-        const errorData = await response.json();
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: {
-            type: "ERROR",
-            message: errorData.message || errorData.statusText,
-          },
-        });
-      }
-    } catch (error: any) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: error.message },
-      });
-    } finally {
-      setIsLoading(false);
+      })();
     }
-  };
+  }, [phoneNumber]);
+
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
+  //   if (phoneNumber === "") {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: "Enter your phone Number" },
+  //     });
+  //     return;
+  //   } else if (phoneNumber.length < 10) {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: "Enter your phone Number" },
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(`/api/participants/phone/${phoneNumber}`);
+  //     console.log(response);
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       setParticipantData(responseData.content);
+  //     } else {
+  //       if (response.status === 404) {
+  //         console.log(
+  //           "participant with the phone number does not exists  please register"
+  //         );
+  //         router.push("/participants/registeration");
+  //         localStorage.setItem("PHONE", phoneNumber);
+  //       }
+  //       const errorData = await response.json();
+  //       dispatch({
+  //         type: "SHOW_TOAST",
+  //         payload: {
+  //           type: "ERROR",
+  //           message: errorData.message || errorData.statusText,
+  //         },
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: error.message },
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   async function handleAttedance(e: FormData) {
     const startDate = e.get("activityDate")?.toString();
@@ -191,7 +228,7 @@ function Activities({
               : "bg-stone-900 bg-opacity-40"
           }`}
         >
-          <form className="w-full" onSubmit={handleSubmit}>
+          <form className="w-full">
             <div className="flex flex-col w-full gap-5">
               <div className="flex flex-col w-full gap-3">
                 <label htmlFor="Phone_Number" className="font-bold md:text-xl">
@@ -229,7 +266,7 @@ function Activities({
                     maxLength={10}
                     placeholder="9090909090"
                   />
-                  <button
+                  {/* <button
                     type="button"
                     onClick={handleSubmit}
                     className={`text-xl font-semibold ${
@@ -239,7 +276,7 @@ function Activities({
                     } rounded px-2 py-1`}
                   >
                     {isLoading ? <LoadingComponent /> : "Search"}
-                  </button>
+                  </button> */}
                 </div>
                 {Errorr.type === "phoneNumber" ? (
                   <p className="text-red-400">{Errorr.message}</p>
@@ -317,6 +354,12 @@ function Activities({
           </form>
         </div>
       </div>
+      <ConcentScreen
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      />
     </div>
   );
 }

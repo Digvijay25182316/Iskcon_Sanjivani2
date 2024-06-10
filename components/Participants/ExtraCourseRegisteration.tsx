@@ -14,13 +14,14 @@ import React, {
   useState,
 } from "react";
 import { useFormStatus } from "react-dom";
+import { ConcentScreen } from "./ConcentScreenRegisteration";
 
 const ExtraCourseRegisteration: React.FC<
   responseDataFetched<LevelToDisplay>
 > = ({ response }) => {
   const { state, dispatch } = useGlobalState();
   const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
     {}
   );
@@ -38,47 +39,82 @@ const ExtraCourseRegisteration: React.FC<
     }
   }, []);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (phoneNumber === "") {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Enter your phone Number" },
-      });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/participants/phone/${phoneNumber}`);
-      if (response.ok) {
-        const responseData = await response.json();
-        setParticipantData(responseData.content);
-      } else {
-        if (response.status === 404) {
-          console.log(
-            "participant with the phone number does not exists  please register"
+  useEffect(() => {
+    if (phoneNumber.length === 10) {
+      (async () => {
+        try {
+          const response = await fetch(
+            `/api/participants/phone/${phoneNumber}`
           );
-          push("/participants/registeration");
-          localStorage.setItem("PHONE", phoneNumber);
+          if (response.ok) {
+            const responseData = await response.json();
+            setParticipantData(responseData.content);
+          } else {
+            if (response.status === 404) {
+              ///consent screen
+              setIsOpen(true);
+              localStorage.setItem("PHONE", phoneNumber);
+            }
+            const errorData = await response.json();
+            dispatch({
+              type: "SHOW_TOAST",
+              payload: {
+                type: "ERROR",
+                message: errorData.message || errorData.statusText,
+              },
+            });
+          }
+        } catch (error: any) {
+          dispatch({
+            type: "SHOW_TOAST",
+            payload: { type: "ERROR", message: error.message },
+          });
         }
-        const errorData = await response.json();
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: {
-            type: "ERROR",
-            message: errorData.message || errorData.statusText,
-          },
-        });
-      }
-    } catch (error: any) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: error.message },
-      });
-    } finally {
-      setIsLoading(false);
+      })();
     }
-  };
+  }, [phoneNumber]);
+
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
+  //   if (phoneNumber === "") {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: "Enter your phone Number" },
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(`/api/participants/phone/${phoneNumber}`);
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       setParticipantData(responseData.content);
+  //     } else {
+  //       if (response.status === 404) {
+  //         console.log(
+  //           "participant with the phone number does not exists  please register"
+  //         );
+  //         push("/participants/registeration");
+  //         localStorage.setItem("PHONE", phoneNumber);
+  //       }
+  //       const errorData = await response.json();
+  //       dispatch({
+  //         type: "SHOW_TOAST",
+  //         payload: {
+  //           type: "ERROR",
+  //           message: errorData.message || errorData.statusText,
+  //         },
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     dispatch({
+  //       type: "SHOW_TOAST",
+  //       payload: { type: "ERROR", message: error.message },
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   async function handleSubmitGeneralRegisteration(e: FormData) {
     const formData: any = {
@@ -143,7 +179,7 @@ const ExtraCourseRegisteration: React.FC<
             : "bg-stone-900 bg-opacity-30"
         }`}
       >
-        <form className="md:w-[400px] w-[80vw]" onSubmit={handleSubmit}>
+        <form className="md:w-[400px] w-[80vw]">
           <div className="flex flex-col w-full gap-5">
             <div className="flex flex-col w-full gap-3">
               <label htmlFor="Phone_Number" className="font-bold md:text-xl">
@@ -179,7 +215,7 @@ const ExtraCourseRegisteration: React.FC<
                   max={9999999999}
                   placeholder="9090909090"
                 />
-                <button
+                {/* <button
                   type="button"
                   onClick={handleSubmit}
                   className={`text-xl font-semibold ${
@@ -189,7 +225,7 @@ const ExtraCourseRegisteration: React.FC<
                   } rounded px-2 py-1`}
                 >
                   {isLoading ? <LoadingComponent /> : "Search"}
-                </button>
+                </button> */}
               </div>
               {Errorr.type === "phoneNumber" ? (
                 <p className="text-red-400">{Errorr.message}</p>
@@ -218,6 +254,12 @@ const ExtraCourseRegisteration: React.FC<
           </div>
         </form>
       </div>
+      <ConcentScreen
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      />
     </div>
   );
 };
