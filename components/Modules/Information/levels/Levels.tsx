@@ -14,27 +14,29 @@ import {
   LinkIcon,
 } from "@heroicons/react/16/solid";
 import Modal from "@/Utils/Modal";
-import { POST, POSTADMIN } from "@/actions/POSTRequests";
+import { POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { LinksActivator } from "@/Utils/LinksActivator";
 import CopyClipBoard from "@/Utils/CopyToClipBoard";
 import QrCode from "@/Utils/QrCodeComponent";
 import Link from "next/link";
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
   response,
 }) => {
-  const [levelCreation, setLevelCreation] = useState(false);
   const { state } = useGlobalState();
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
-  const [expandedRow, setExpandedRow] = useState<number>(-1);
-  const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
+  const [levelCreation, setLevelCreation] = useState(false);
   const [queryArr, setQueryArr] = useState([
     { page: 0 },
     { size: 10 }, // a default page size
     { sort: "id" },
   ]);
+  const [expandedRow, setExpandedRow] = useState<number>(-1);
+  const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
+
+  const linksActivator = LinksActivator()?.toString();
+
   const handleAddItemToColumnNameArr = (option: { value: string }) => {
     if (columnNamesArr.includes(option.value)) {
       setColumnNamesArr(
@@ -275,13 +277,15 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
               </tr>
             </thead>
             <tbody>
-              {response?.content?.length > 0 ? (
-                response?.content.map((item: LevelToDisplay, index) => (
+              {response.content.length > 0 ? (
+                response.content.map((item: LevelToDisplay, index) => (
                   <React.Fragment key={index}>
                     <tr
                       onClick={() => {
-                        toggleRow(index);
-                        setSelectedLevel(item);
+                        if (item) {
+                          toggleRow(index);
+                          setSelectedLevel(item);
+                        }
                       }}
                     >
                       <HidableColumns
@@ -508,34 +512,30 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                             : "border-b-stone-800"
                         }`}
                       >
-                        <div className="flex items-center gap-5">
-                          <Link
-                            href={`${LinksActivator()?.toString()}/participants/attendance/${
-                              item.id
-                            }`}
-                            className="text-blue-600 underline flex items-center"
-                          >
-                            <LinkIcon className="h-5 w-5" />
-                            link
-                          </Link>
-                          <QrCode
-                            url={`${LinksActivator()?.toString()}/participants/attendance/${
-                              item.id
-                            }`}
-                            Content="something"
-                          />
-                          <CopyClipBoard
-                            url={`${LinksActivator()?.toString()}/participants/attendance/${
-                              item.id
-                            }`}
-                            NotCopied={
-                              <DocumentCheckIcon className="h-5 w-6 " />
-                            }
-                            whenCopied={
-                              <DocumentIcon className="h-5 w-6 text-green" />
-                            }
-                          />
-                        </div>
+                        {item && (
+                          <div className="flex items-center gap-5">
+                            <Link
+                              href={`${linksActivator}/participants/attendance/${item.id}`}
+                              className="text-blue-600 underline flex items-center"
+                            >
+                              <LinkIcon className="h-5 w-5" />
+                              link
+                            </Link>
+                            <QrCode
+                              url={`${linksActivator}/participants/attendance/${item.id}`}
+                              Content="something"
+                            />
+                            <CopyClipBoard
+                              url={`${linksActivator}/participants/attendance/${item.id}`}
+                              NotCopied={
+                                <DocumentCheckIcon className="h-5 w-6 " />
+                              }
+                              whenCopied={
+                                <DocumentIcon className="h-5 w-6 text-green" />
+                              }
+                            />
+                          </div>
+                        )}
                       </HidableColumns>
                       <HidableColumns
                         isColumnHeader={false}
@@ -553,34 +553,30 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                             : "border-b-stone-800"
                         }`}
                       >
-                        <div className="flex items-center gap-5">
-                          <Link
-                            href={`${LinksActivator()?.toString()}/participants/activity/${
-                              item.id
-                            }`}
-                            className="text-blue-600 underline flex items-center"
-                          >
-                            <LinkIcon className="h-5 w-5" />
-                            link
-                          </Link>
-                          <QrCode
-                            url={`${LinksActivator()?.toString()}/participants/activity/${
-                              item.id
-                            }`}
-                            Content="something"
-                          />
-                          <CopyClipBoard
-                            url={`${LinksActivator()?.toString()}/participants/activity/${
-                              item.id
-                            }`}
-                            NotCopied={
-                              <DocumentCheckIcon className="h-5 w-6 " />
-                            }
-                            whenCopied={
-                              <DocumentIcon className="h-5 w-6 text-green" />
-                            }
-                          />
-                        </div>
+                        {item && (
+                          <div className="flex items-center gap-5">
+                            <Link
+                              href={`${linksActivator}/participants/activity/${item.id}`}
+                              className="text-blue-600 underline flex items-center"
+                            >
+                              <LinkIcon className="h-5 w-5" />
+                              link
+                            </Link>
+                            <QrCode
+                              url={`${linksActivator}/participants/activity/${item.id}`}
+                              Content="something"
+                            />
+                            <CopyClipBoard
+                              url={`${linksActivator}/participants/activity/${item.id}`}
+                              NotCopied={
+                                <DocumentCheckIcon className="h-5 w-6 " />
+                              }
+                              whenCopied={
+                                <DocumentIcon className="h-5 w-6 text-green" />
+                              }
+                            />
+                          </div>
+                        )}
                       </HidableColumns>
                       <HidableColumns
                         isColumnHeader={false}
@@ -598,34 +594,30 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                             : "border-b-stone-800"
                         }`}
                       >
-                        <div className="flex items-center gap-5">
-                          <Link
-                            href={`${LinksActivator()?.toString()}/participants/rsvp/${
-                              item.id
-                            }`}
-                            className="text-blue-600 underline flex items-center"
-                          >
-                            <LinkIcon className="h-5 w-5" />
-                            link
-                          </Link>
-                          <QrCode
-                            url={`${LinksActivator()?.toString()}/participants/rsvp/${
-                              item.id
-                            }`}
-                            Content="something"
-                          />
-                          <CopyClipBoard
-                            url={`${LinksActivator()?.toString()}/participants/rsvp/${
-                              item.id
-                            }`}
-                            NotCopied={
-                              <DocumentCheckIcon className="h-5 w-6 " />
-                            }
-                            whenCopied={
-                              <DocumentIcon className="h-5 w-6 text-green" />
-                            }
-                          />
-                        </div>
+                        {item && (
+                          <div className="flex items-center gap-5">
+                            <Link
+                              href={`${linksActivator}/participants/rsvp/${item.id}`}
+                              className="text-blue-600 underline flex items-center"
+                            >
+                              <LinkIcon className="h-5 w-5" />
+                              link
+                            </Link>
+                            <QrCode
+                              url={`${linksActivator}/participants/rsvp/${item.id}`}
+                              Content="something"
+                            />
+                            <CopyClipBoard
+                              url={`${linksActivator}/participants/rsvp/${item.id}`}
+                              NotCopied={
+                                <DocumentCheckIcon className="h-5 w-6 " />
+                              }
+                              whenCopied={
+                                <DocumentIcon className="h-5 w-6 text-green" />
+                              }
+                            />
+                          </div>
+                        )}
                       </HidableColumns>
                       <HidableColumns
                         isColumnHeader={false}
@@ -646,24 +638,18 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                         {item?.acceptingNewParticipants ? (
                           <div className="flex items-center gap-5 mx-5">
                             <Link
-                              href={`${LinksActivator()?.toString()}/participants/registeration-new/${
-                                item.id
-                              }`}
+                              href={`${linksActivator}/participants/registeration-new/${item.id}`}
                               className="text-blue-600 underline flex items-center"
                             >
                               <LinkIcon className="h-5 w-5" />
                               link
                             </Link>
                             <QrCode
-                              url={`${LinksActivator()?.toString()}/participants/registeration-new/${
-                                item.id
-                              }`}
+                              url={`${linksActivator}/participants/registeration-new/${item.id}`}
                               Content="something"
                             />
                             <CopyClipBoard
-                              url={`${LinksActivator()?.toString()}/participants/registeration-new/${
-                                item.id
-                              }`}
+                              url={`${linksActivator}/participants/registeration-new/${item.id}`}
                               NotCopied={
                                 <DocumentCheckIcon className="h-5 w-6 " />
                               }
@@ -677,7 +663,7 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                         )}
                       </HidableColumns>
                     </tr>
-                    {expandedRow === index && (
+                    {item && expandedRow === index && (
                       <tr>
                         <td className="border-b" colSpan={10}>
                           <div
@@ -687,10 +673,12 @@ const Levels: React.FC<responseDataFetched<LevelToDisplay>> = ({
                                 : "bg-stone-950 "
                             }`}
                           >
-                            <ScheduledSessionTable
-                              levelId={item.id}
-                              levelData={selectedLevel}
-                            />
+                            {item && (
+                              <ScheduledSessionTable
+                                levelId={item?.id}
+                                levelData={selectedLevel}
+                              />
+                            )}
                           </div>
                         </td>
                       </tr>

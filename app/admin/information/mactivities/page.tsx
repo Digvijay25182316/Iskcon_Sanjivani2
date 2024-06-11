@@ -6,7 +6,7 @@ import PageNavigation from "@/Utils/Pagination";
 
 async function getActivities(queryString: string) {
   unstable_noStore();
-  const response = await fetch(`${SERVER_ENDPOINT}/activity/`);
+  const response = await fetch(`${SERVER_ENDPOINT}/activity/?${queryString}`);
   if (response.ok) {
     const responseData = await response.json();
     return responseData;

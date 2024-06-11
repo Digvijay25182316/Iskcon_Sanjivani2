@@ -13,7 +13,7 @@ import { SERVER_ENDPOINT } from "@/ConfigFetch";
 const ActivityMaster: React.FC<responseDataFetched<ActivityMaster>> = ({
   response,
 }) => {
-  const { state, dispatch } = useGlobalState();
+  const { state } = useGlobalState();
 
   const [columnNamesArr, setColumnNamesArr] = useState<string[]>([]);
   const [queryArr, setQueryArr] = useState([

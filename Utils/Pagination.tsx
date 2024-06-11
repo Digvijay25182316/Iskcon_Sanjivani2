@@ -17,7 +17,7 @@ function Pagination({ totalElements }: { totalElements: number }) {
       new URLSearchParams(searchParams)
     );
 
-    const page = searchParamsUrl.page ? Number(searchParamsUrl.page) : 0;
+    const page = searchParamsUrl?.page ? Number(searchParamsUrl?.page) : 0;
     const pageNumber = currentPage + 1;
     setVisibleElement(pageNumber * 10);
     setCurrentPage(page);
