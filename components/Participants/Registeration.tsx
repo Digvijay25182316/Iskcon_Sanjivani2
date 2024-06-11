@@ -14,6 +14,8 @@ import React, {
   useState,
 } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { GenericErrorPage } from "./GenericErrorPage";
+import { GenericSuccessPage } from "./GenericSuccessPage";
 
 const initialState = {
   action: (formData: FormData, url: string) => Promise<{ message: any }>,
@@ -21,21 +23,23 @@ const initialState = {
 
 function Registeration() {
   const { state, dispatch } = useGlobalState();
-  const [step, setStep] = useState(1);
+  const [isOpenWarning, setIsOpenWarning] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
   const [formState, setFormState] = useState<any>({
     firstName: "",
     lastName: "",
     waNumber: "",
     age: 0,
-    gender: "MALE",
-    contactNumber: ""
+    gender: "",
+    contactNumber: "",
+    city: "",
   });
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const phoneNumber = localStorage.getItem("PHONE");
-    console.log(phoneNumber);
     if (phoneNumber) {
       setFormState((prev: any) => ({
         ...prev, // Spread the previous state
@@ -53,6 +57,7 @@ function Registeration() {
       "age",
       "contactNumber",
       "gender",
+      "city",
     ];
     const stepErrors: any = {};
 
@@ -90,55 +95,13 @@ function Registeration() {
     }));
   };
 
-  function nextHandler() {
-    setStep((prev) => prev + 1);
-  }
-  function prevHandler() {
-    setStep((prev) => prev - 1);
-  }
-
   async function handleSubmit(e: FormData) {
-    if (step === 3) {
-      validateStep();
-      const formData: any = {
-        firstName: formState.firstName,
-        lastName: formState.lastName,
-        waNumber: formState.waNumber,
-        contactNumber: formState.contactNumber,
-        gender: formState.gender,
-        education: formState.education,
-        email: formState.email,
-        city: formState.city,
-        address: formState.address,
-        maritalStatus: formState.maritalStatus,
-        notes: formState.notes,
-        numberOfChildren: formState.numberOfChildren,
-        occupation: formState.occupation,
-        reference: formState.reference,
-        age: formState.age,
-      };
-      try {
-        const response = await POST(
-          formData,
-          `${SERVER_ENDPOINT}/participant/create`
-        );
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "SUCCESS", message: response.message },
-        });
-        router.back();
-      } catch (error: any) {
-        dispatch({
-          type: "SHOW_TOAST",
-          payload: { type: "ERROR", message: error.message },
-        });
-      }
-    }
     const firstName = e.get("firstName")?.toString();
     const lastName = e.get("lastName")?.toString();
     const contactNumber = e.get("contactNumber")?.toString();
     const waNumber = e.get("waNumber")?.toString();
     const age = e.get("age")?.toString();
+    const city = e.get("city")?.toString();
     validateStep();
     if (
       !firstName ||
@@ -146,13 +109,9 @@ function Registeration() {
       !contactNumber ||
       !waNumber ||
       !age ||
-      !formState.gender
+      !formState.gender ||
+      !city
     ) {
-      console.log(firstName, lastName, contactNumber, waNumber, age);
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "please enter the details" },
-      });
       return;
     }
     const formData: any = {
@@ -162,20 +121,34 @@ function Registeration() {
       waNumber,
       gender: formState.gender,
       age,
+      city,
     };
     try {
-      const response = await POST(
-        formData,
-        `${SERVER_ENDPOINT}/participant/create`
-      );
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "SUCCESS", message: response.message },
+      const headers = new Headers();
+      headers.append("Content-Type", "application/json");
+      const response = await fetch(`/api/participants/registration`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(formData),
       });
-      router.back();
+      if (response.ok) {
+        const responseData = await response.json();
+        setIsSuccess(true);
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "SUCCESS", message: responseData.message },
+        });
+        router.back();
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message);
+        setIsOpenWarning(true);
+        dispatch({
+          type: "SHOW_TOAST",
+          payload: { type: "ERROR", message: errorData.message },
+        });
+      }
     } catch (error: any) {
-      console.log("this is generated error");
-      console.log(error);
       dispatch({
         type: "SHOW_TOAST",
         payload: { type: "ERROR", message: error.message },
@@ -185,94 +158,57 @@ function Registeration() {
 
   return (
     <div className="flex flex-col min-h-screen w-screen justify-center items-center">
-      <div className="py-10">
-        <h1 className="text-3xl font-bold">Registeration</h1>
-        <h1 className="text-lg">
-          Looks like you are not registered please register
-        </h1>
+      <div className="text-center py-10">
+        <h1 className="text-4xl font-bold py-2">Registration</h1>
+        <p>Looks Like You Are Not Registered Pleas Register</p>
       </div>
-      {/* <div className="mb-4 md:w-[500px] w-full flex items-center justify-between md:px-0 px-5">
-        <p
-          className={`font-bold border rounded-full px-3.5 py-1 text-lg ${
-            state.theme.theme === "LIGHT"
-              ? `border-gray-300  ${
-                  step === 1 ? "bg-stone-950 text-white" : "text-black bg-white"
-                }`
-              : `border-stone-700 ${
-                  step === 1
-                    ? "text-stone-950 bg-white"
-                    : "bg-stone-950 text-white"
-                }`
-          }`}
-        >
-          1
-        </p>
-        <p className="bg-gray-200 border w-full mx-2"></p>
-        <p
-          className={`font-bold border rounded-full px-3.5 py-1 text-lg ${
-            state.theme.theme === "LIGHT"
-              ? `border-gray-300  ${
-                  step === 2 ? "bg-stone-950 text-white" : "text-black bg-white"
-                }`
-              : `border-stone-700 ${
-                  step === 2
-                    ? "text-stone-950 bg-white"
-                    : "bg-stone-950 text-white"
-                }`
-          }`}
-        >
-          2
-        </p>
-        <p className="bg-gray-200 border w-full mx-2"></p>
-        <p
-          className={`font-bold border rounded-full px-3.5 py-1 text-lg ${
-            state.theme.theme === "LIGHT"
-              ? `border-gray-300  ${
-                  step === 3 ? "bg-stone-950 text-white" : "text-black bg-white"
-                }`
-              : `border-stone-700 ${
-                  step === 3
-                    ? "text-stone-950 bg-white"
-                    : "bg-stone-950 text-white"
-                }`
-          }`}
-        >
-          3
-        </p>
-      </div> */}
       <div
-        className={`md:p-5 rounded-[40px] p-4  mx-3 mb-6 ${
+        className={`md:p-5 rounded-[40px] p-4 mb-6 ${
           state.theme.theme === "LIGHT"
             ? "bg-gray-50"
             : "bg-stone-900 bg-opacity-30"
         }`}
       >
-        <form action={handleSubmit} className="md:w-[500px]">
-          <>
-            {/* {step === 1 ? ( */}
-              <FirstStep
-                nextStep={nextHandler}
-                changeHandler={handleChange}
-                changedValue={formState}
-                error={errors}
-              />
-            {/*) : step === 2 ? (
-              <SecondStep
-                nextStep={nextHandler}
-                prevStep={prevHandler}
-                changeHandler={handleChange}
-                changedValue={formState}
-              />
-            ) : (
-              <ThirdStep
-                prevStep={prevHandler}
-                changeHandler={handleChange}
-                changedValue={formState}
-              />
-            )}*/}
-          </>
+        <form action={handleSubmit} className="md:w-[500px] w-[87vw]">
+          <FirstStep
+            changeHandler={handleChange}
+            changedValue={formState}
+            error={errors}
+          />
         </form>
       </div>
+      <GenericErrorPage
+        isOpen={isOpenWarning}
+        onClose={() => {
+          setIsOpenWarning(false),
+            setFormState({
+              firstName: "",
+              lastName: "",
+              waNumber: "",
+              age: 0,
+              gender: "",
+              contactNumber: "",
+              city: "",
+            });
+        }}
+        errorMessage={errorMessage}
+      />
+      <GenericSuccessPage
+        isOpen={isSuccess}
+        onClose={() => {
+          setIsSuccess(false),
+            setFormState({
+              firstName: "",
+              lastName: "",
+              waNumber: "",
+              age: 0,
+              gender: "",
+              contactNumber: "",
+              city: "",
+            });
+        }}
+        successMessage="Successfully registered"
+      />
     </div>
   );
 }
@@ -280,12 +216,10 @@ function Registeration() {
 export default Registeration;
 
 const FirstStep = ({
-  nextStep,
   changeHandler,
   changedValue,
   error,
 }: {
-  nextStep: () => void;
   changeHandler: (name: string, value: string) => void;
   changedValue: any;
   error: any;
@@ -297,7 +231,7 @@ const FirstStep = ({
 
   return (
     <>
-      <div className="flex flex-col gap-5 w-full">
+      <div className="flex flex-col gap-5 md:w-full ">
         <div className="flex md:flex-row flex-col gap-5 w-full">
           <div className="flex flex-col gap-3 w-full">
             <label htmlFor="firstName" className="font-bold text-lg">
@@ -427,6 +361,9 @@ const FirstStep = ({
               DataArr={["MALE", "FEMALE"]}
               setSelected={(value: string) => changeHandler("gender", value)}
             />
+            {error.gender && (
+              <p className="text-red-500 text-sm mt-1">{error.gender}</p>
+            )}
           </div>
           <div className="flex flex-col gap-3 w-full">
             <label htmlFor="age" className="font-bold text-lg">
@@ -447,6 +384,27 @@ const FirstStep = ({
             />
             {error.age && (
               <p className="text-red-500 text-sm mt-1">{error.age}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-3 w-full">
+            <label htmlFor="city" className="font-bold text-lg">
+              Where Do You Live In Pune?
+            </label>
+            <input
+              type="text"
+              name="city"
+              onChange={(e) => changeHandler(e.target.name, e.target.value)}
+              value={changedValue.city}
+              className={`border px-5 py-2.5 text-lg focus:ring-4 outline-none rounded-xl transition-all duration-500 w-full ${
+                state.theme.theme === "LIGHT"
+                  ? `border-gray-300 focus:ring-blue-100 focus:border-blue-600`
+                  : `border-stone-900 focus:ring-blue-950 focus:border-blue-600 bg-stone-950`
+              }`}
+              id="city"
+              placeholder="Pune"
+            />
+            {error.city && (
+              <p className="text-red-500 text-sm mt-1">{error.city}</p>
             )}
           </div>
         </div>
@@ -774,7 +732,7 @@ function SubmitHandlerButton() {
           }`}
           disabled={pending}
         >
-          Submit
+          Signup & Register
         </button>
       )}
     </>

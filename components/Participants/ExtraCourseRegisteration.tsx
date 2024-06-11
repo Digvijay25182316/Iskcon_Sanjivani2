@@ -38,7 +38,6 @@ const ExtraCourseRegisteration: React.FC<
       setPhoneNumber(phoneNumber);
     }
   }, []);
-
   useEffect(() => {
     if (phoneNumber.length === 10) {
       (async () => {
@@ -141,6 +140,7 @@ const ExtraCourseRegisteration: React.FC<
     }
   }
   const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
     if (!isNaN(Number(e.target.value))) {
       if (e.target.value.length > 10) {
         setErrorr({

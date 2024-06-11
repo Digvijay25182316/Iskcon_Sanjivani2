@@ -1,16 +1,24 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { phone: string } }
-) {
+export async function POST(req: NextRequest) {
+  const { participantId, levelId } = await req.json();
+  const header = new Headers();
+  header.append("Content-Type", "application/json");
+  const formData = {
+    participantId,
+    levelId,
+  };
   try {
     const response = await fetch(
-      `${SERVER_ENDPOINT}/participant/phone/${params.phone}`
+      `${SERVER_ENDPOINT}/participant-registration/register`,
+      {
+        method: "POST",
+        headers: header,
+        body: JSON.stringify(formData),
+      }
     );
+
     if (response.ok) {
       const responseData = await response.json();
       return NextResponse.json(
@@ -18,26 +26,26 @@ export async function GET(
         { status: response.status }
       );
     } else {
-      const errorData = await response.json();
       if (response.status === 404) {
         return NextResponse.json(
-          { message: errorData.message },
+          { message: "The Number Is Not Registered" },
           { status: response.status }
         );
       }
       if (response.status === 409) {
         return NextResponse.json(
-          { message: errorData.message },
+          { message: "You Have Already Registered" },
           { status: response.status }
         );
       }
-
+      const errorData = await response.json();
       console.log(errorData);
       return NextResponse.json(
         { message: errorData.message },
         { status: response.status }
       );
     }
+    // return NextResponse.json({ content: "Success" }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { message: error.message || "something unexpected happened" },

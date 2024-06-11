@@ -19,26 +19,16 @@ export function ConcentScreen({
           state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-900"
         }`}
       >
-        <div className="flex flex-col items-center py-5">
+        <div className="flex flex-col items-center py-5 gap-5">
           <p
-            className={`rounded-full p-8 ${
-              state.theme.theme === "LIGHT" ? "bg-red-100" : "bg-red-600 "
+            className={`rounded-full p-2 ${
+              state.theme.theme === "LIGHT" ? "bg-red-100" : "bg-yellow-600 "
             }`}
           >
-            <ExclamationTriangleIcon className="h-20 w-20 text-yellow-500" />
+            <ExclamationTriangleIcon className="h-20 w-20 text-red-500" />
           </p>
-          <p className="font-bold text-3xl">404</p>
-          <p className="font-semibold md:text-4xl text-2xl">
-            Participant Not Found
-          </p>
-          <p
-            className={`text-2xl rounded-xl py-1.5 px-2 my-5 ${
-              state.theme.theme === "LIGHT"
-                ? "bg-red-100 text-red-500"
-                : "bg-red-900 text-red-400 bg-opacity-30"
-            }`}
-          >
-            Please register
+          <p className="font-semibold md:text-4xl text-2xl text-center">
+            Phone Number Does Not Exist Please Sign Up
           </p>
         </div>
         <div className="flex justify-center gap-8">
