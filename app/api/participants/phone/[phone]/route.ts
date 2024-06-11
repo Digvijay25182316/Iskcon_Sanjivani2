@@ -18,21 +18,19 @@ export async function GET(
         { status: response.status }
       );
     } else {
-      const errorData = await response.json();
       if (response.status === 404) {
         return NextResponse.json(
-          { message: errorData.message },
+          { message: "Phone Number is not registered" },
           { status: response.status }
         );
       }
       if (response.status === 409) {
         return NextResponse.json(
-          { message: errorData.message },
+          { message: "You Have Already Registered" },
           { status: response.status }
         );
       }
-
-      console.log(errorData);
+      const errorData = await response.json();
       return NextResponse.json(
         { message: errorData.message },
         { status: response.status }
