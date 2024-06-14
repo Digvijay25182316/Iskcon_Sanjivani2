@@ -35,7 +35,6 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
   >({});
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [newRegistered, setNewRegistered] = useState(false);
 
   useEffect(() => {
     const phoneNumber = localStorage.getItem("PHONE");
@@ -79,7 +78,7 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
         }
       })();
     }
-  }, [phoneNumber, newRegistered]);
+  }, [phoneNumber]);
 
   // const handleSubmit = async (e: FormEvent) => {
   //   e.preventDefault();
