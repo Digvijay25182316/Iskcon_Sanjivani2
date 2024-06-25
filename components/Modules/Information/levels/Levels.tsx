@@ -729,9 +729,6 @@ function AddLevel({
   const [selectedProgram, setSelectedProgram] = useState<ProgramsData | any>(
     {}
   );
-  const [selectSessionDay, setSelectSessionsDay] = useState("");
-  const [isOpenForGenericRegisteration, setIsOpenForGenericRegisteration] =
-    useState(false);
   useEffect(() => {
     (async () => {
       try {
@@ -784,6 +781,7 @@ function AddLevel({
     const expectedEndDate = e.get("expectedEndDate")?.toString();
     const displayName = e.get("displayName")?.toString();
     const sessionTime = e.get("sessionTime")?.toString();
+    const posterUrl = e.get("posterUrl")?.toString();
     if (!name || !description || !expectedEndDate || !expectedStartDate) {
       dispatch({
         type: "SHOW_TOAST",
@@ -808,6 +806,7 @@ function AddLevel({
       sessionDay,
       acceptingNewParticipants,
       sessionTime: `${sessionTime}:00.000000`,
+      posterUrl,
       preacher1,
       preacher2,
       mentor,
@@ -947,6 +946,22 @@ function AddLevel({
                     }`}
                     id="sessionTime"
                     name="sessionTime"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="posterUrl" className="font-semibold text-lg">
+                    Post Url For Program Details
+                  </label>
+                  <input
+                    type="text"
+                    className={`rounded-xl px-4 py-2 text-lg border transition-all duration-500 ${
+                      state.theme.theme === "LIGHT"
+                        ? "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-100 bg-white"
+                        : "focus:border-blue-600 outline-none focus:ring-4 focus:ring-blue-950 bg-stone-950 border-stone-800"
+                    }`}
+                    id="posterUrl"
+                    name="posterUrl"
+                    placeholder="https://www.iskconpune.com/ram-navami-isk/"
                   />
                 </div>
               </div>

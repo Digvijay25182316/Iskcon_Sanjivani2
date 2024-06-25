@@ -1,8 +1,10 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import ExtraCourseRegisteration from "@/components/Participants/ExtraCourseRegisteration";
+import { unstable_noStore } from "next/cache";
 import React from "react";
 
 async function getLevelArr() {
+  unstable_noStore();
   const response = await fetch(
     `${SERVER_ENDPOINT}/level/new-participant-levels`
   );

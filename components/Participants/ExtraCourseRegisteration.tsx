@@ -1,22 +1,19 @@
 "use client";
-import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import LoadingComponent from "@/Utils/Icons/LoadingComponent";
 import { useGlobalState } from "@/Utils/State";
-import { POST } from "@/actions/POSTRequests";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { GenericSuccessPage } from "./GenericSuccessPage";
 import { GenericErrorPage } from "./GenericErrorPage";
 import { useRouter } from "next/navigation";
 import React, {
   ChangeEvent,
-  FormEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 import { useFormStatus } from "react-dom";
-import { ConcentScreen } from "./ConcentScreenRegisteration";
+import Modal from "@/Utils/Modal";
 
 const ExtraCourseRegisteration: React.FC<
   responseDataFetched<LevelToDisplay>
@@ -26,6 +23,7 @@ const ExtraCourseRegisteration: React.FC<
   const [isOpenWarning, setIsOpenWarning] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<LevelToDisplay | any>({});
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenPoster, setIsOpenPoster] = useState(false);
   const [Errorr, setErrorr] = useState<{ type: string; message: string } | any>(
     {}
   );
@@ -205,7 +203,6 @@ const ExtraCourseRegisteration: React.FC<
       return;
     }
   }
-
   const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
     if (!isNaN(Number(e.target.value))) {
@@ -408,6 +405,7 @@ const ExtraCourseRegisteration: React.FC<
           <div className="flex flex-col gap-3">
             <label className="font-bold text-xl ">Select Programs</label>
             <MenuOthersDropDown
+              setIsOpenPoster={(value: boolean) => setIsOpenPoster(value)}
               DataArr={response.content}
               setSelected={(value: any) => setSelectedLevel(value)}
             />
@@ -435,6 +433,11 @@ const ExtraCourseRegisteration: React.FC<
         }}
         successMessage="Successfully registered"
       />
+      <CourseDetailsOverlay
+        item={selectedLevel.posterUrl}
+        isOpenPoster={isOpenPoster}
+        setIsOpenPoster={(value: boolean) => setIsOpenPoster(value)}
+      />
     </div>
   );
 };
@@ -442,9 +445,11 @@ const ExtraCourseRegisteration: React.FC<
 export default ExtraCourseRegisteration;
 
 function MenuOthersDropDown({
+  setIsOpenPoster,
   setSelected,
   DataArr,
 }: {
+  setIsOpenPoster: (value: boolean) => void;
   setSelected: (value: LevelToDisplay) => void;
   DataArr: LevelToDisplay[];
 }) {
@@ -581,6 +586,16 @@ function MenuOthersDropDown({
                     <></>
                   )}
                   <p>{item.sessionDay}</p>
+                  <p
+                    onClick={() => setIsOpenPoster(true)}
+                    className={
+                      state.theme.theme === "LIGHT"
+                        ? "bg-red-300 text-red-800 px-3 rounded-full"
+                        : "bg-red-900 text-red-300 px-3 rounded-full"
+                    }
+                  >
+                    i
+                  </p>
                 </div>
               ))}
             </div>
@@ -615,6 +630,7 @@ function formatTime(timeObject: number[]) {
 function SubmitHandlerButton() {
   const { state } = useGlobalState();
   const { pending } = useFormStatus();
+
   return (
     <>
       {pending ? (
@@ -766,5 +782,67 @@ function MenuToggleComponent({
         </div>
       )}
     </div>
+  );
+}
+///if somebody clicks on the i button then a popup will appear and below is its component
+function CourseDetailsOverlay({
+  item,
+  isOpenPoster,
+  setIsOpenPoster,
+}: {
+  item: string;
+  setIsOpenPoster: (value: boolean) => void;
+  isOpenPoster: boolean;
+}) {
+  const { state } = useGlobalState();
+  return (
+    <>
+      <Modal isOpen={isOpenPoster} onClose={() => setIsOpenPoster(false)}>
+        {item ? (
+          <div
+            className={`rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto ${
+              state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-900"
+            }`}
+          >
+            <img
+              src={item}
+              className="w-[90vw] md:w-[400px] rounded-t-2xl"
+              onError={(error) => console.log(error)}
+              alt="Poster-Image"
+            />
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsOpenPoster(false)}
+                className={`flex justify-center py-2 rounded-lg w-[100px] my-5 font-bold ${
+                  state.theme.theme === "LIGHT"
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-700 text-white"
+                }`}
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`md:w-[300px] w-[90vw] text-center py-10 rounded-[40px] flex flex-col items-center gap-10 ${
+              state.theme.theme === "LIGHT"
+                ? "bg-white shadow-lg"
+                : "bg-stone-900 shadow-black shadow-lg"
+            }`}
+          >
+            <p className="font-bold text-xl">No Poster is configured</p>
+            <button
+              onClick={() => setIsOpenPoster(false)}
+              className={`flex text-center w-[100px] justify-center py-1.5 rounded-lg ${
+                state.theme.theme === "LIGHT" ? "bg-blue-500" : "bg-blue-700"
+              }`}
+            >
+              Ok
+            </button>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 }
