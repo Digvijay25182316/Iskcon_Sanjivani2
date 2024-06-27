@@ -1,51 +1,110 @@
 import React, { useEffect } from "react";
 import { useGlobalState } from "./State";
 import LoadingComponent from "./Icons/LoadingComponent";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  ExclamationCircleIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
+import Modal from "./Modal";
 
 function Toast() {
   const { state, dispatch } = useGlobalState();
-  useEffect(() => {
-    if (state.toast.toast.isVisible) {
-      setTimeout(() => {
-        dispatch({ type: "HIDE_TOAST" });
-      }, 3000);
-    }
-  }, [state.toast.toast.isVisible, dispatch]);
+  // useEffect(() => {
+  //   if (state.toast.toast.isVisible) {
+  //     setTimeout(() => {
+  //       dispatch({ type: "HIDE_TOAST" });
+  //     }, 3000);
+  //   }
+  // }, [state.toast.toast.isVisible, dispatch]);
 
   return (
-    <div
-      className={`fixed z-[10000] -top-10 transition-all duration-700 mx-auto lg:left-[35vw] md:left-[30vw] left-[5vw] backdrop-blur-xl border md:w-[400px] w-[90vw] rounded-3xl px-4 py-2 text-lg ${
-        state.toast.toast.isVisible
-          ? "translate-y-full"
-          : " -translate-y-full scale-75"
-      } ${
-        state.theme.theme === "LIGHT"
-          ? "border-gray-200 shadow-xl shadow-gray-100 bg-black bg-opacity-20"
-          : "border-stone-700 shadow-lg shadow-stone-900 bg-white bg-opacity-20"
-      }`}
-    >
+    <div className={`fixed z-[10000]`}>
       {state.toast.toast.type === "LOADING" ? (
-        <div className="flex items-center">
-          <i>
-            <LoadingComponent />
-          </i>
-          <div className="flex items-center">{state.toast.toast.message}</div>
-        </div>
+        <Modal
+          isOpen={state.toast.toast.isVisible}
+          onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        >
+          <div
+            className={`md:w-[500px] w-[90vw] py-10 rounded-[40px] ${
+              state.theme.theme === "LIGHT"
+                ? "bg-white shadow-xl"
+                : "bg-stone-900 shadow-xl shadow-stone-950"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-5 pb-10">
+              <p className="text-center">
+                <LoadingComponent />
+              </p>
+              <p className="font-bold text-2xl">{state.toast.toast.message}</p>
+            </div>
+          </div>
+        </Modal>
       ) : state.toast.toast.type === "SUCCESS" ? (
-        <div className="flex items-center md:gap-5 gap-3 py-1.5">
-          <i className="bg-green-600 p-1 rounded-full text-white">
-            <CheckIcon className="h-5 w-5" />
-          </i>
-          <div className="flex items-center">{state.toast.toast.message}</div>
-        </div>
+        <Modal
+          isOpen={state.toast.toast.isVisible}
+          onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        >
+          <div
+            className={`md:w-[500px] w-[90vw] py-10 rounded-[40px] ${
+              state.theme.theme === "LIGHT"
+                ? "bg-white shadow-xl"
+                : "bg-stone-900 shadow-xl shadow-stone-950"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-5 pb-10">
+              <p className="text-center">
+                <CheckCircleIcon className="h-20 w-20 text-green-600" />
+              </p>
+              <p className="font-bold text-2xl">{state.toast.toast.message}</p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => dispatch({ type: "HIDE_TOAST" })}
+                className={`w-[200px] py-2 rounded-lg font-semibold text-lg focus:ring-4 ${
+                  state.theme.theme === "LIGHT"
+                    ? "bg-blue-700 text-white ring-blue-100"
+                    : " bg-blue-700 text-white ring-blue-300"
+                }`}
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </Modal>
       ) : (
-        <div className="flex items-center md:gap-5 gap-3 py-1.5">
-          <i className="bg-red-600 p-1 rounded-full text-white">
-            <XMarkIcon className="h-5 w-5" />
-          </i>
-          <div className="flex items-center">{state.toast.toast.message}</div>
-        </div>
+        <Modal
+          isOpen={state.toast.toast.isVisible}
+          onClose={() => dispatch({ type: "HIDE_TOAST" })}
+        >
+          <div
+            className={`md:w-[500px] w-[90vw] py-10 rounded-[40px] ${
+              state.theme.theme === "LIGHT"
+                ? "bg-white shadow-xl"
+                : "bg-stone-900 shadow-xl shadow-stone-950"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-5 pb-10">
+              <p className="text-center">
+                <ExclamationCircleIcon className="h-20 w-20" />
+              </p>
+              <p className="font-bold text-2xl">{state.toast.toast.message}</p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => dispatch({ type: "HIDE_TOAST" })}
+                className={`w-[200px] py-2 rounded-lg font-semibold text-lg focus:ring-4 ${
+                  state.theme.theme === "LIGHT"
+                    ? "bg-blue-700 text-white ring-blue-100"
+                    : " bg-blue-700 text-white ring-blue-300"
+                }`}
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

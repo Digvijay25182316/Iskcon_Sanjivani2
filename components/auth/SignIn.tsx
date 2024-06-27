@@ -10,7 +10,7 @@ function SignIn() {
   const { state, dispatch } = useGlobalState();
   const router = useRouter();
   async function handleAuthenticate(e: FormData) {
-    const email = e.get("email")?.toString();
+    const email = e.get("email")?.toString()?.toLowerCase();
     const password = e.get("password")?.toString();
 
     if (!email || !password) {

@@ -23,7 +23,6 @@ const DataTableComponent: React.FC<DataTableComponenProps> = ({
     cellSize: "normal",
   });
   const { state } = useGlobalState();
-  console.log(selected);
 
   function handleCkeck(object: any) {
     setSelected(object);

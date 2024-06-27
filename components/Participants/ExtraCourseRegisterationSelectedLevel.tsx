@@ -137,17 +137,13 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
 
       if (response.ok) {
         const responseData = await response.json();
-        setIsSuccess(true);
-
         localStorage.removeItem("PHONE");
         dispatch({
           type: "SHOW_TOAST",
-          payload: { type: "SUCCESS", message: responseData.message },
+          payload: { type: "SUCCESS", message: "Successfully registered" },
         });
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.message);
-        setIsOpenWarning(true);
         dispatch({
           type: "SHOW_TOAST",
           payload: { type: "ERROR", message: errorData.message },
@@ -190,8 +186,6 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
       });
       if (!responseRegister.ok) {
         const errorData = await responseRegister.json();
-        setIsOpenWarning(true);
-        setErrorMessage(errorData.message);
         dispatch({
           type: "SHOW_TOAST",
           payload: { type: "ERROR", message: errorData.message },
@@ -204,8 +198,6 @@ const ExtraCourseRegisterationSelectedLevel: React.FC<{
       );
       if (!responseParticipant.ok) {
         const errorData = await responseParticipant.json();
-        setIsOpenWarning(true);
-        setErrorMessage(errorData.message);
         dispatch({
           type: "SHOW_TOAST",
           payload: {

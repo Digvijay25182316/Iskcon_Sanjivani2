@@ -35,7 +35,7 @@ async function getLevel(levelId: string) {
 async function page({ params }: { params: { levelid: string } }) {
   const responseLevel = await getLevel(params.levelid);
   const response = await getScheduledSessions(params.levelid);
-  if (!response) {
+  if (!response || response.content.length === 0) {
     return <NotExistsResource message="No Scheduled sessions for this level" />;
   }
   if (!responseLevel) {

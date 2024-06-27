@@ -46,6 +46,7 @@ const Programs: React.FC<responseDataFetched<ProgramsData>> = ({
   const [customisationObjs, setCustomisationObjs] = useState({
     cellSize: "normal",
   });
+  const linksActivator = LinksActivator();
 
   function handleCustomisation(object: any) {
     setCustomisationObjs((prevState) => ({

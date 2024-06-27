@@ -1,6 +1,5 @@
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import NotExistsResource from "@/Utils/NotExistsResource";
-import Attendance from "@/components/Participants/Attendance";
 import Rsvp from "@/components/Participants/Rsvp";
 import React from "react";
 
@@ -41,7 +40,7 @@ async function page({ params }: { params: { levelid: string } }) {
     return <NotExistsResource message="This level doesn't exist" />;
   }
 
-  if (!response) {
+  if (!response || response.content.length === 0) {
     return <NotExistsResource message="No Scheduled sessions for this level" />;
   }
   return (

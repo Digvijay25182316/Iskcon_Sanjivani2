@@ -133,16 +133,23 @@ function Registeration() {
       });
       if (response.ok) {
         const responseData = await response.json();
-        setIsSuccess(true);
+        setFormState({
+          firstName: "",
+          lastName: "",
+          contactNumber: "",
+          waNumber: "",
+          gender: "",
+          age: "",
+          city: "",
+        });
         dispatch({
           type: "SHOW_TOAST",
           payload: { type: "SUCCESS", message: responseData.message },
         });
+
         router.back();
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.message);
-        setIsOpenWarning(true);
         dispatch({
           type: "SHOW_TOAST",
           payload: { type: "ERROR", message: errorData.message },
@@ -177,38 +184,6 @@ function Registeration() {
           />
         </form>
       </div>
-      <GenericErrorPage
-        isOpen={isOpenWarning}
-        onClose={() => {
-          setIsOpenWarning(false),
-            setFormState({
-              firstName: "",
-              lastName: "",
-              waNumber: "",
-              age: 0,
-              gender: "",
-              contactNumber: "",
-              city: "",
-            });
-        }}
-        errorMessage={errorMessage}
-      />
-      <GenericSuccessPage
-        isOpen={isSuccess}
-        onClose={() => {
-          setIsSuccess(false),
-            setFormState({
-              firstName: "",
-              lastName: "",
-              waNumber: "",
-              age: 0,
-              gender: "",
-              contactNumber: "",
-              city: "",
-            });
-        }}
-        successMessage="Successfully registered"
-      />
     </div>
   );
 }

@@ -10,6 +10,17 @@ import { DocumentIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { POSTADMINCOURSES } from "@/actions/POSTRequests";
 import Papa from "papaparse";
 import DownloadCSVFile from "@/components/Modules/Information/mcourses/DownloadEmptyCSV";
+import { SERVER_ENDPOINT } from "@/ConfigFetch";
+
+interface formDataUpload {
+  code: string;
+  name: string;
+  description: string;
+  sessionName: string;
+  sessionDescription: string;
+  sessionCode: string;
+  durationInMinutes: string;
+}
 
 const CoursesMaster: React.FC<responseDataFetched<Sessions>> = ({
   response,
@@ -410,11 +421,12 @@ function CreateCourse({
     const errorArr: string[] = [];
     const success = [];
     Papa.parse(file, {
+      worker: true,
       download: true,
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-      step: async function (row: any, index: any) {
+      step: async function (row: { data: formDataUpload }, index) {
         // Accessing Code, Description, SessionName, and SessionDescription from each row
         const header = new Headers();
         header.append("Content-Type", "application/json");
@@ -427,38 +439,61 @@ function CreateCourse({
           sessionCode,
           durationInMinutes,
         } = row.data;
-        const formData: {
-          code: string;
-          name: string;
-          description: string;
-          sessionName: string;
-          sessionDescription: string;
-          sessionCode: string;
-          durationInMinutes: number;
-        } = {
-          code,
-          name,
-          description,
-          sessionName,
-          sessionDescription,
-          sessionCode,
-          durationInMinutes: Number(durationInMinutes),
-        };
-        await POSTADMINCOURSES(formData);
-        // const response = await POSTADMINCOURSES(formData);
+        try {
+          if (
+            code ||
+            name ||
+            description ||
+            sessionCode ||
+            sessionDescription ||
+            sessionName ||
+            durationInMinutes
+          ) {
+            const formData = {
+              code,
+              name,
+              description,
+              sessionCode,
+              sessionDescription,
+              sessionName,
+              durationInMinutes,
+            };
+            const courseResponse = await fetch(
+              `/api/admin/information/courses/upload`,
+              {
+                method: "POST",
+                headers: header,
+                body: JSON.stringify(formData),
+              }
+            );
+            if (courseResponse.ok) {
+              const responseData = await courseResponse.json();
+              success.push(responseData);
+            } else {
+              const errorData = await courseResponse.json();
+              errorArr.push(errorData);
+            }
+          } else {
+            errorArr.push(
+              `row ${index} data could not be uploaded due to insufficient fields`
+            );
+          }
+        } catch (error: any) {
+          errorArr.push(`an exception occured : ${error.message}`);
+        }
       },
-      error: function (error: any) {
+      error: function (error) {
         console.error("Error during parsing:", error);
       },
       complete: function () {
         errorArr.length > 0
           ? dispatch({
               type: "SHOW_TOAST",
-              payload: { type: "ERROR", message: errorArr },
+              payload: { message: `${errorArr.toString()}`, type: "ERROR" },
             })
           : dispatch({
               type: "SHOW_TOAST",
-              payload: { type: "SUCCESS", message: "All done!" },
+              payload: { message: "All done!", type: "SUCCESS" },
             });
       },
     });
@@ -472,51 +507,6 @@ function CreateCourse({
     const sessionDescription = e.get("sessionDescription")?.toString();
     const sessionCode = e.get("sessionCode")?.toString();
     const durationInMinutes = e.get("durationInMinutes")?.toString();
-    if (
-      !code ||
-      !name ||
-      !description ||
-      !sessionName ||
-      !sessionDescription ||
-      !sessionCode ||
-      !durationInMinutes
-    ) {
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: "Please fill all the details" },
-      });
-      return;
-    }
-    const formData: {
-      code: string;
-      name: string;
-      description: string;
-      sessionName: string;
-      sessionDescription: string;
-      sessionCode: string;
-      durationInMinutes: number;
-    } = {
-      code,
-      name,
-      description,
-      sessionName,
-      sessionDescription,
-      sessionCode,
-      durationInMinutes: Number(durationInMinutes),
-    };
-    try {
-      const response = await POSTADMINCOURSES(formData);
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "SUCCCESS", message: response.message },
-      });
-    } catch (error: any) {
-      console.log(error);
-      dispatch({
-        type: "SHOW_TOAST",
-        payload: { type: "ERROR", message: error.message },
-      });
-    }
   };
 
   return (

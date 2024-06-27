@@ -10,16 +10,21 @@ import { HidableColumns } from "@/Utils/TableUtils/HidableColumns";
 import { POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import ChangeRole from "./ChangeRole";
+import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
 
-interface PariticipantData {
+interface VolunteerCreation {
   firstName: string;
   lastName: string;
   initiatedName: string;
   contactNumber: string;
-  dob: string;
+  waNumber: string;
+  age: string;
+  email: string;
+  password: string;
   gender: string;
-  currentServices: string;
+  address: string;
   serviceInterests: string;
+  currentServices: string;
 }
 
 const Volunteers: React.FC<responseDataFetched<VolunteerTypes>> = ({
@@ -382,6 +387,7 @@ function CreateVolunteer({
   const [incharge, setInCharge] = useState(0);
   const [volunteersArr, setVolunteersArr] = useState([]);
   const [SelectedGender, setSelectedGender] = useState("");
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     (async () => {
       try {
@@ -405,6 +411,10 @@ function CreateVolunteer({
     })();
   }, [dispatch]);
 
+  function Formvalidatation(formData: VolunteerCreation) {
+    Array(formData).forEach((item) => console.log(item));
+  }
+
   const handleVolunteerCreation = async (e: FormData) => {
     const firstName = e.get("firstName")?.toString();
     const lastName = e.get("lastName")?.toString();
@@ -414,7 +424,7 @@ function CreateVolunteer({
     const age = e.get("age")?.toString();
     const email = e.get("email")?.toString();
     const password = e.get("password")?.toString();
-    const gender = e.get("gender")?.toString();
+    const gender = SelectedGender;
     const address = e.get("address")?.toString();
     const serviceInterests = e.get("serviceInterests")?.toString();
     const currentServices = e.get("currentServices")?.toString();
@@ -432,6 +442,8 @@ function CreateVolunteer({
       serviceInterests,
       currentServices,
     };
+    Formvalidatation(formData);
+    console.log(formData);
     try {
       const response = await POSTADMIN(
         formData,
@@ -553,6 +565,7 @@ function CreateVolunteer({
                     required
                     id="wa_Number"
                     placeholder="7878899532"
+                    maxLength={10}
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -574,6 +587,7 @@ function CreateVolunteer({
                     required
                     id="contact_Number"
                     placeholder="7878899543"
+                    maxLength={10}
                   />
                 </div>
               </div>
@@ -733,16 +747,7 @@ function CreateVolunteer({
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className={`text-blue-600 font-semibold text-xl w-full py-2 rounded-xl ${
-                    state.theme.theme === "LIGHT"
-                      ? "bg-blue-50 "
-                      : "bg-blue-900 bg-opacity-20"
-                  }`}
-                >
-                  Submit
-                </button>
+                <SubmitHandlerButton />
               </div>
             </div>
           </form>
