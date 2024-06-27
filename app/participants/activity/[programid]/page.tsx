@@ -19,8 +19,12 @@ async function getProgram(programId: string) {
   const response = await fetch(`${SERVER_ENDPOINT}/program/id/${programId}`);
   if (response.ok) {
     const responseData = await response.json();
+
     return responseData;
   } else {
+    if (response.status === 404) {
+      return null;
+    }
     const errorData = await response.json();
     throw new Error(errorData.message || errorData.statusText);
   }
@@ -32,6 +36,10 @@ async function page({ params }: { params: { programid: string } }) {
 
   if (!response) {
     return <NotExistsResource message="This program might not exists" />;
+  }
+
+  if (responseActivity?.length > 0) {
+    return <NotExistsResource message="No Activities To Show" />;
   }
 
   return (

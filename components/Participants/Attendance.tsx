@@ -383,166 +383,178 @@ function Attendance({ response, level }: responseDataFetched<Sessions> | any) {
               </div>
             ) : null}
           </div>
-          <form
-            action={
-              isOpen ? handleSubmitAttendanceIfNotRegistered : handleAttedance
-            }
-          >
-            {isOpen && (
-              <div
-                className={`p-2 rounded-xl flex flex-col gap-4 my-4 ${
-                  state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
-                }`}
-              >
-                <p className="text-center font-semibold text-xl text-red-400">
-                  Since You&apos;r Not Registered Fill Additional Details
+          {LatestSession?.id || PreviousSessions.length > 0 ? (
+            <form
+              action={
+                isOpen ? handleSubmitAttendanceIfNotRegistered : handleAttedance
+              }
+            >
+              {isOpen && (
+                <div
+                  className={`p-2 rounded-xl flex flex-col gap-4 my-4 ${
+                    state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
+                  }`}
+                >
+                  <p className="text-center font-semibold text-xl text-red-400">
+                    Since You&apos;r Not Registered Fill Additional Details
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="firstName" className="font-bold text-lg">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      id="firstName"
+                      className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
+                        state.theme.theme === "LIGHT"
+                          ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
+                          : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
+                      }`}
+                      placeholder="John"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="lastName" className="font-bold text-lg">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      id="lastName"
+                      className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
+                        state.theme.theme === "LIGHT"
+                          ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
+                          : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
+                      }`}
+                      placeholder="Doe"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="age" className="font-bold text-lg">
+                      Age
+                    </label>
+                    <input
+                      type="number"
+                      name="age"
+                      id="age"
+                      className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
+                        state.theme.theme === "LIGHT"
+                          ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
+                          : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
+                      }`}
+                      max={100}
+                      min={3}
+                      placeholder="43"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="gender" className="font-bold text-lg">
+                      Gender
+                    </label>
+                    <MenuToggleComponent
+                      DataArr={["MALE", "FEMALE"]}
+                      setSelected={(value) => setSelectedGender(value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="city" className="font-bold text-lg">
+                      Where Do You Live In Pune
+                    </label>
+                    <input
+                      name="city"
+                      id="city"
+                      type="type"
+                      className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
+                        state.theme.theme === "LIGHT"
+                          ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
+                          : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
+                      }`}
+                      placeholder="Pune"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <div className={`text-xl font-bold mx-4`}>
+                  <p>Latest session</p>
+                  <p className="font-normal text-sm">
+                    select from latest session
+                  </p>
+                </div>
+                {LatestSession?.id ? (
+                  <label className="flex items-center gap-5 mx-4 py-2 font-bold">
+                    <input
+                      type="radio"
+                      name="sessionAttendence"
+                      checked={LatestSession?.id === recordAttended?.id}
+                      onChange={(e) => {
+                        setRecordAttended(LatestSession);
+                      }}
+                      className="h-6 w-6"
+                    />
+                    <p className="text-lg">{LatestSession?.name}</p>
+                  </label>
+                ) : (
+                  <p className="text-center font-xl font-bold py-5">
+                    No Latest Sessions To Show
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-5 px-5">
+                <p
+                  className={`w-[50%] border ${
+                    state.theme.theme === "LIGHT"
+                      ? "border-gray-400"
+                      : "border-stone-700"
+                  }`}
+                ></p>
+                <p
+                  className={`font-bold ${
+                    state.theme.theme === "LIGHT"
+                      ? "text-gray-600"
+                      : "text-stone-600"
+                  }`}
+                >
+                  OR
                 </p>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="firstName" className="font-bold text-lg">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    id="firstName"
-                    className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
-                      state.theme.theme === "LIGHT"
-                        ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
-                        : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
-                    }`}
-                    placeholder="John"
-                    required
-                  />
+                <p
+                  className={`w-[50%] border ${
+                    state.theme.theme === "LIGHT"
+                      ? "border-gray-400"
+                      : "border-stone-700"
+                  }`}
+                ></p>
+              </div>
+              <div>
+                <div className={`text-xl font-bold mx-4`}>
+                  <p>Previous sessions</p>
+                  <p className="font-normal text-sm">
+                    select from previous sessions
+                  </p>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="lastName" className="font-bold text-lg">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    id="lastName"
-                    className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
-                      state.theme.theme === "LIGHT"
-                        ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
-                        : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
-                    }`}
-                    placeholder="Doe"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="age" className="font-bold text-lg">
-                    Age
-                  </label>
-                  <input
-                    type="number"
-                    name="age"
-                    id="age"
-                    className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
-                      state.theme.theme === "LIGHT"
-                        ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
-                        : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
-                    }`}
-                    max={100}
-                    min={3}
-                    placeholder="43"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="gender" className="font-bold text-lg">
-                    Gender
-                  </label>
-                  <MenuToggleComponent
-                    DataArr={["MALE", "FEMALE"]}
-                    setSelected={(value) => setSelectedGender(value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="city" className="font-bold text-lg">
-                    Where Do You Live In Pune
-                  </label>
-                  <input
-                    name="city"
-                    id="city"
-                    type="type"
-                    className={`outline-none w-full border focus:ring-4 py-1.5 px-4  ${
-                      state.theme.theme === "LIGHT"
-                        ? `bg-white focus:ring-blue-100 focus:border-blue-600 border-gray-400`
-                        : `bg-stone-950 focus:border-blue-700 focus:ring-blue-950 border-stone-700`
-                    }`}
-                    placeholder="Pune"
-                    required
+                <div className="my-5 mx-2">
+                  <MenuOthersDropDown
+                    DataArr={PreviousSessions}
+                    setSelected={(value: ScheduledSessions) =>
+                      setRecordAttended(value)
+                    }
+                    selectedValue={recordAttended}
+                    position="up"
                   />
                 </div>
               </div>
-            )}
-            <div>
-              <div className={`text-xl font-bold mx-4`}>
-                <p>Latest session</p>
-                <p className="font-normal text-sm">
-                  select from latest session
-                </p>
-              </div>
-              <label className="flex items-center gap-5 mx-4 py-2 font-bold">
-                <input
-                  type="radio"
-                  name="sessionAttendence"
-                  checked={LatestSession.id === recordAttended?.id}
-                  onChange={(e) => {
-                    setRecordAttended(LatestSession);
-                  }}
-                  className="h-6 w-6"
-                />
-                <p className="text-lg">{LatestSession?.name}</p>
-              </label>
-            </div>
-            <div className="flex items-center gap-5 px-5">
-              <p
-                className={`w-[50%] border ${
-                  state.theme.theme === "LIGHT"
-                    ? "border-gray-400"
-                    : "border-stone-700"
-                }`}
-              ></p>
-              <p
-                className={`font-bold ${
-                  state.theme.theme === "LIGHT"
-                    ? "text-gray-600"
-                    : "text-stone-600"
-                }`}
-              >
-                OR
-              </p>
-              <p
-                className={`w-[50%] border ${
-                  state.theme.theme === "LIGHT"
-                    ? "border-gray-400"
-                    : "border-stone-700"
-                }`}
-              ></p>
-            </div>
-            <div>
-              <div className={`text-xl font-bold mx-4`}>
-                <p>Previous sessions</p>
-                <p className="font-normal text-sm">
-                  select from previous sessions
-                </p>
-              </div>
-              <div className="my-5 mx-2">
-                <MenuOthersDropDown
-                  DataArr={PreviousSessions}
-                  setSelected={(value: ScheduledSessions) =>
-                    setRecordAttended(value)
-                  }
-                  selectedValue={recordAttended}
-                  position="up"
-                />
-              </div>
-            </div>
-            <SubmitHandlerButton />
-          </form>
+              <SubmitHandlerButton />
+            </form>
+          ) : (
+            <p className="text-center font-xl font-bold py-5">
+              No Sessions To Show
+            </p>
+          )}
         </div>
       </div>
       <GenericErrorPage

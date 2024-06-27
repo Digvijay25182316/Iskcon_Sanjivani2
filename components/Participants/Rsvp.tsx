@@ -70,19 +70,10 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
           );
           if (response.ok) {
             const responseData = await response.json();
-            setIsOpen(false);
             setParticipantData(responseData.content);
           } else {
             if (response.status === 404) {
               ///consent screen
-              const errorData = await response.json();
-              dispatch({
-                type: "SHOW_TOAST",
-                payload: {
-                  type: "ERROR",
-                  message: errorData.message || errorData.statusText,
-                },
-              });
               setIsOpen(true);
               localStorage.setItem("PHONE", phoneNumber);
             }
