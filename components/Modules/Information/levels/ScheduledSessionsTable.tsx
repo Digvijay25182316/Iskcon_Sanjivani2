@@ -7,7 +7,7 @@ import LoadingSkeleton from "@/Utils/LoadingSkeleton";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import SubmitHandlerButton from "@/Utils/SubmitHandlerButton";
 import Modal from "@/Utils/Modal";
-import { POST } from "@/actions/POSTRequests";
+import { POST, POSTADMIN } from "@/actions/POSTRequests";
 import { SERVER_ENDPOINT } from "@/ConfigFetch";
 import DateFormatter from "@/Utils/DateFormatter";
 
@@ -270,7 +270,7 @@ function ScheduleSession({
       }
     })();
   }, [dispatch]);
-
+  console.log(SelectedCourse);
   useEffect(() => {
     (async () => {
       try {
@@ -318,7 +318,7 @@ function ScheduleSession({
       programId: level.programId,
     };
     try {
-      const response = await POST(
+      const response = await POSTADMIN(
         formData,
         `${SERVER_ENDPOINT}/session/schedule`
       );

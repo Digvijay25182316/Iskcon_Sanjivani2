@@ -18,9 +18,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { GenericErrorPage } from "./GenericErrorPage";
-import { GenericSuccessPage } from "./GenericSuccessPage";
-
 function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
   const [answer, setAnswer] = useState("");
   const { state, dispatch } = useGlobalState();
@@ -50,16 +47,18 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
       setPhoneNumber(phoneNumber);
     }
   }, []);
-
   useEffect(() => {
     const future: ScheduledSessions[] = [];
     const past: ScheduledSessions[] = [];
+
     response?.content?.forEach((session: ScheduledSessions, index: number) => {
       if (new Date(session.startTime) <= new Date()) {
         future.push(session);
       }
     });
-    setLatestSession(future[0]);
+    if (future.length > 0) {
+      setLatestSession(future[0]);
+    }
   }, [response]);
 
   useEffect(() => {
@@ -76,7 +75,14 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
           } else {
             if (response.status === 404) {
               ///consent screen
-
+              const errorData = await response.json();
+              dispatch({
+                type: "SHOW_TOAST",
+                payload: {
+                  type: "ERROR",
+                  message: errorData.message || errorData.statusText,
+                },
+              });
               setIsOpen(true);
               localStorage.setItem("PHONE", phoneNumber);
             }
@@ -503,84 +509,90 @@ function Rsvp({ response, level }: responseDataFetched<Sessions> | any) {
                 </div>
               </div>
             )}
-            <div>
-              <div className={`text-xl font-bold mx-4`}>
-                <p>Future session</p>
-                <p className="font-normal text-sm">
-                  confirm you presence for future sessions
-                </p>
+            {LatestSession.length > 0 ? (
+              <div>
+                <div className={`text-xl font-bold mx-4`}>
+                  <p>Future session</p>
+                  <p className="font-normal text-sm">
+                    confirm you presence for future sessions
+                  </p>
+                </div>
+                <div
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-2xl my-5 ${
+                    state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
+                  }`}
+                >
+                  <p className=" whitespace-nowrap">Session :</p>
+                  <p className="mx-5">{LatestSession?.name}</p>
+                </div>
+                <div className="flex items-center gap-5">
+                  {rsvpResponse ? (
+                    <>
+                      {isLoading ? (
+                        <LoadingComponent />
+                      ) : (
+                        <button
+                          type="submit"
+                          onClick={() => setAnswer("NO")}
+                          className={`w-full rounded-lg text-xl py-2 ${
+                            state.theme.theme === "LIGHT"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-red-950 text-red-600 bg-opacity-35"
+                          }`}
+                          disabled={isLoading}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <div
+                      className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
+                        state.theme.theme === "LIGHT"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-red-950 text-red-600 bg-opacity-35"
+                      }`}
+                    >
+                      <XMarkIcon className="h-8 w-8" />
+                    </div>
+                  )}
+                  {rsvpResponse ? (
+                    <div
+                      className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
+                        state.theme.theme === "LIGHT"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-blue-950 text-blue-600 bg-opacity-25"
+                      }`}
+                    >
+                      <CheckIcon className="h-8 w-8" />
+                    </div>
+                  ) : (
+                    <>
+                      {isLoading ? (
+                        <LoadingComponent />
+                      ) : (
+                        <button
+                          onClick={() => setAnswer("YES")}
+                          type="submit"
+                          className={`w-full rounded-lg text-xl py-2 ${
+                            state.theme.theme === "LIGHT"
+                              ? "bg-blue-100 text-blue-600"
+                              : "bg-blue-950 text-blue-600 bg-opacity-25"
+                          }`}
+                          disabled={isLoading}
+                        >
+                          Confirm
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-              <div
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-2xl my-5 ${
-                  state.theme.theme === "LIGHT" ? "bg-white" : "bg-stone-950"
-                }`}
-              >
-                <p className=" whitespace-nowrap">Session :</p>
-                <p className="mx-5">{LatestSession.name}</p>
-              </div>
-              <div className="flex items-center gap-5">
-                {rsvpResponse ? (
-                  <>
-                    {isLoading ? (
-                      <LoadingComponent />
-                    ) : (
-                      <button
-                        type="submit"
-                        onClick={() => setAnswer("NO")}
-                        className={`w-full rounded-lg text-xl py-2 ${
-                          state.theme.theme === "LIGHT"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-red-950 text-red-600 bg-opacity-35"
-                        }`}
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <div
-                    className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
-                      state.theme.theme === "LIGHT"
-                        ? "bg-red-100 text-red-600"
-                        : "bg-red-950 text-red-600 bg-opacity-35"
-                    }`}
-                  >
-                    <XMarkIcon className="h-8 w-8" />
-                  </div>
-                )}
-                {rsvpResponse ? (
-                  <div
-                    className={`w-full rounded-lg text-xl py-1.5 flex justify-center ${
-                      state.theme.theme === "LIGHT"
-                        ? "bg-blue-100 text-blue-600"
-                        : "bg-blue-950 text-blue-600 bg-opacity-25"
-                    }`}
-                  >
-                    <CheckIcon className="h-8 w-8" />
-                  </div>
-                ) : (
-                  <>
-                    {isLoading ? (
-                      <LoadingComponent />
-                    ) : (
-                      <button
-                        onClick={() => setAnswer("YES")}
-                        type="submit"
-                        className={`w-full rounded-lg text-xl py-2 ${
-                          state.theme.theme === "LIGHT"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-blue-950 text-blue-600 bg-opacity-25"
-                        }`}
-                        disabled={isLoading}
-                      >
-                        Confirm
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
+            ) : (
+              <p className="text-xl font-bold text-red-400 text-center">
+                No Future sessions to show
+              </p>
+            )}
           </form>
         </div>
       </div>
